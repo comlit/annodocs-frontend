@@ -14,16 +14,22 @@ function Landing() {
     const navigate = useNavigate()
     const {isOpen, onOpen, onClose} = useDisclosure()
 
+
     function handleLogin() {
         onClose()
         navigate('/dashboard')
+    }
+
+    function onSignIn() {
+
     }
 
     return (
         <>
             <AbsoluteCenter>
                 <Heading as='h1'>Welcome to the landing page</Heading>
-                <Button onClick={onOpen}>Login</Button>
+                <Button onClick={() => {console.log("test")}}>Login</Button>
+                <Button onClick={onSignIn}>EInloggen</Button>
             </AbsoluteCenter>
 
             <Modal isOpen={isOpen} onClose={onClose}>

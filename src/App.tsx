@@ -13,19 +13,19 @@ function App() {
 
     return (
         <>
-            <BrowserRouter>
-                <Flex id='layout' minH='100vh' direction='column'>
-                    <Header/>
-                    <Routes>
-                        <Route index element={<Landing/>}/>
-                        <Route path='/dashboard/*' element={<Dashboard/>}/>
-                        <Route path='/search/*' element={<Search/>}/>
-                        <Route path='/create/*' element={<Create/>}/>
-                        <Route path='/edit/*' element={<Edit/>}/>
-                    </Routes>
-                    <Footer/>
-                </Flex>
-            </BrowserRouter>
+                <BrowserRouter>
+                    <Flex id='layout' minH='100vh' direction='column'>
+                        <Header/>
+                        <Routes>
+                            <Route index element={<Landing/>}/>
+                            <Route path='/dashboard/*' element={<Dashboard/>}/>
+                            <Route path='/search/*' element={<Search/>}/>
+                            <Route path='/create/*' element={<Create/>}/>
+                            <Route path='/edit/*' element={<Edit/>}/>
+                        </Routes>
+                        <Footer/>
+                    </Flex>
+                </BrowserRouter>
         </>
     )
 }
