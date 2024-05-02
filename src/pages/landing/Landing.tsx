@@ -1,19 +1,17 @@
 import {
     AbsoluteCenter,
-    Button,
-    Heading,
-    Modal, ModalBody, ModalCloseButton,
-    ModalContent, ModalFooter,
-    ModalHeader,
-    ModalOverlay,
+    Button, Checkbox, FormControl, FormLabel,
+    Heading, Input, Link,
+    Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, Stack,
     useDisclosure
 } from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 function Landing() {
     const navigate = useNavigate()
     const {isOpen, onOpen, onClose} = useDisclosure()
-
+    const user = useSelector((state: any) => state.auth.user)
 
     function handleLogin() {
         onClose()
@@ -28,25 +26,46 @@ function Landing() {
         <>
             <AbsoluteCenter>
                 <Heading as='h1'>Welcome to the landing page</Heading>
-                <Button onClick={() => {console.log("test")}}>Login</Button>
-                <Button onClick={onSignIn}>EInloggen</Button>
+                <Button onClick={onOpen}>Login</Button>
+                <Button onClick={onSignIn}>Einloggen</Button>
+                <p>{user?.email}</p>
             </AbsoluteCenter>
 
             <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay/>
                 <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalHeader>Anmelden</ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
-                        Login form goes here
+                        <Stack spacing={4}>
+                            <FormControl id="email">
+                                <FormLabel>Email address</FormLabel>
+                                <Input type="email"/>
+                            </FormControl>
+                            <FormControl id="password">
+                                <FormLabel>Password</FormLabel>
+                                <Input type="password"/>
+                            </FormControl>
+                            <Stack spacing={10}>
+                                <Stack
+                                    direction={{base: 'column', sm: 'row'}}
+                                    align={'start'}
+                                    justify={'space-between'}>
+                                    <Checkbox>Remember me</Checkbox>
+                                    <Link color={'blue.400'}>Forgot password?</Link>
+                                </Stack>
+                            </Stack>
+                        </Stack>
                     </ModalBody>
-
                     <ModalFooter>
-                        <Button variant='ghost'>Abbrechen</Button>
-                        <Button colorScheme='blue' mr={3} onClick={handleLogin}>
-                            Einloggen
+                        <Button
+                            onClick={handleLogin}
+                            bg={'blue.400'}
+                            color={'white'}
+                            _hover={{
+                                bg: 'blue.500',
+                            }}>
+                            Sign in
                         </Button>
-
                     </ModalFooter>
                 </ModalContent>
             </Modal>
