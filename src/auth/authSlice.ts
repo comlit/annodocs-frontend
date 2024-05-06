@@ -8,13 +8,21 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
  */
 export const refreshToken = createAsyncThunk("auth/fetchToken", async () => {
     //TODO: get access token and user data from server
-    console.log("fetching token")
-    return await fetch('https://jsonplaceholder.typicode.com/users/1')
-        .then(response => response.json())
+    let response;
+    try {
+        response = await fetch('https://jsonplaceholder.typicode.com/users/1')
+    } catch (e) {
+        throw new Error("server not available")
+    }
+    //TODO: handle response errors
+    if (!response.ok) {
+        throw new Error("server not available")
+    }
+    return await response.json()
 })
 
 /**
- * async thunk to login a user with email and password
+ * async thunk to log in a user with email and password
  * if valid a refresh-token will be set as a httpOnly cookie from the server
  * if the login-data is valid, the promise will resolve with the access token and user data
  * if the login-data is invalid, the promise will reject

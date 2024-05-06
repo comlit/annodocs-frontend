@@ -25,13 +25,15 @@ function App() {
                 <BrowserRouter>
                     <Flex id='layout' minH='100vh' direction='column'>
                         <Header/>
-                        <Routes>
-                            <Route index element={<Landing/>}/>
-                            <Route path='/dashboard/*' element={<Dashboard/>}/>
-                            <Route path='/search/*' element={<Search/>}/>
-                            <Route path='/create/*' element={<Create/>}/>
-                            <Route path='/edit/*' element={<Edit/>}/>
-                        </Routes>
+                        <Flex pb='65px' width='100%'>
+                            <Routes>
+                                <Route index element={<Landing/>}/>
+                                <Route path='/dashboard/*' element={<Dashboard/>}/>
+                                <Route path='/search/*' element={<Search/>}/>
+                                <Route path='/create/*' element={<Create/>}/>
+                                <Route path='/edit/*' element={<Edit/>}/>
+                            </Routes>
+                        </Flex>
                         <Footer/>
                     </Flex>
                 </BrowserRouter>

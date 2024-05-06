@@ -34,7 +34,7 @@ function Landing() {
 
     return (
         <>
-            <Box position={'relative'} bg='gray.50' h={'100%'}>
+            <Box position={'relative'} bg='gray.50' h={'100%'} w='100%'>
                 <Container
                     as={SimpleGrid}
                     maxW={'7xl'}
@@ -84,8 +84,8 @@ function Landing() {
                 </Container>
                 <Blur
                     position={'absolute'}
-                    top={-10}
-                    left={-10}
+                    top={-20}
+                    left={-20}
                     style={{filter: 'blur(70px)'}}
                 />
             </Box>
