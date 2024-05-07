@@ -1,58 +1,12 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-
-/**
- * async thunk to fetch access token and user data from server when the app starts
- * it assumes that a valid refresh token is present as a httpOnly cookie
- * if a valid refresh token is present, the promise will resolve with the access token and user data
- * if the refresh token is invalid or not present, the promise will reject
- */
-export const refreshToken = createAsyncThunk("auth/fetchToken", async () => {
-    //TODO: get access token and user data from server
-    let response;
-    try {
-        response = await fetch('https://jsonplaceholder.typicode.com/users/1')
-    } catch (e) {
-        throw new Error("server not available")
-    }
-    //TODO: handle response errors
-    if (!response.ok) {
-        throw new Error("server not available")
-    }
-    return await response.json()
-})
-
-/**
- * async thunk to log in a user with email and password
- * if valid a refresh-token will be set as a httpOnly cookie from the server
- * if the login-data is valid, the promise will resolve with the access token and user data
- * if the login-data is invalid, the promise will reject
- */
-export const login = createAsyncThunk("auth/login", async (credentials: { email: string, password: string, rememberMe: boolean }) => {
-    console.log("logging in")
-    console.log(credentials)
-    return await fetch('https://jsonplaceholder.typicode.com/users/1')
-        .then(response => response.json())
-})
-
-/**
- * async thunk to register a user with email and password and other data
- * a refresh-token will be set as a httpOnly cookie from the server
- * if the server is available, the promise will resolve with the access token and user data
- * if the server is not available, the promise will reject
- */
-export const register = createAsyncThunk("auth/register", async (credentials: { email: string, password: string, rememberMe: boolean }) => {
-    console.log("logging in")
-    console.log(credentials)
-    return await fetch('https://jsonplaceholder.typicode.com/users/1')
-        .then(response => response.json())
-})
+import {createSlice} from '@reduxjs/toolkit'
+import {login, refreshToken, register} from "./thunks.ts";
 
 export const authSlice = createSlice({
     name: 'auth',
     initialState: {
         token: '',
         isAuthenticated: false,
-        isLoading: true,
+        isLoading: false,
         user: null,
     },
     reducers: {
@@ -64,10 +18,9 @@ export const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(refreshToken.fulfilled, (state, action) => {
-            console.log("fulfilled")
             //TODO: replace with real data
-            state.token = action.payload.phone
-            state.user = action.payload
+            state.token = action.payload.payload
+            //state.user = action.payload.user
             state.isAuthenticated = true
             state.isLoading = false
         })
@@ -82,10 +35,8 @@ export const authSlice = createSlice({
         })
 
         builder.addCase(login.fulfilled, (state, action) => {
-            console.log("fulfilled")
-            //TODO: replace with real data
-            state.token = action.payload.phone
-            state.user = action.payload
+            state.token = action.payload.payload
+            //state.user = action.payload
             state.isAuthenticated = true
             state.isLoading = false
         })
@@ -100,11 +51,11 @@ export const authSlice = createSlice({
         })
 
         builder.addCase(register.fulfilled, (state, action) => {
-            console.log("fulfilled")
-            //TODO: replace with real data
-            state.token = action.payload.phone
-            state.user = action.payload
-            state.isAuthenticated = true
+            if (action.payload.message === "success") {
+                state.token = action.payload.payload
+                state.isAuthenticated = true
+                //state.user = action.payload.user
+            }
             state.isLoading = false
         })
         builder.addCase(register.pending, (state) => {

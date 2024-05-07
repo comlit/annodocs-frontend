@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
     Box,
     Stack,
@@ -14,23 +14,36 @@ import {
 } from '@chakra-ui/react';
 import Login from "./Login.tsx";
 import Register from "./Register.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {login, register} from "../../auth/thunks.ts";
 
 function Landing() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const loading = useSelector(state => state.auth.loading)
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
     const [loginState, setLoginState] = useState('login')
-    const [isLoading, setIsLoading] = useState(false)
 
     function changeState(newState) {
         setLoginState(newState)
     }
 
     async function submit(formData) {
-        setIsLoading(true)
-        console.log(formData)
-        await new Promise(r => setTimeout(r, 1000))
-        setIsLoading(false)
+        // @ts-expect-error ts hat irgendein problem mit dem type. funktioniert aber so
+        dispatch(login(formData))
     }
+
+    async function submitRegister(formData) {
+        console.log(formData)
+        // @ts-expect-error ts hat irgendein problem mit dem type. funktioniert aber so
+        dispatch(register({...formData, state: 'NRW'}))
+    }
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard')
+        }
+    }, [isAuthenticated, navigate])
 
     return (
         <>
@@ -75,8 +88,8 @@ function Landing() {
                             p={8}>
                             {
                                 loginState === 'login' ?
-                                    <Login changeState={changeState} submit={submit} isLoading={isLoading}/> :
-                                    <Register changeState={changeState} submit={submit} isLoading={isLoading}/>
+                                    <Login changeState={changeState} submit={submit} isLoading={loading}/> :
+                                    <Register changeState={changeState} submit={submitRegister} isLoading={loading}/>
                             }
                         </Box>
                         form

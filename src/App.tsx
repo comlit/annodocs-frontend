@@ -10,7 +10,7 @@ import Create from "./pages/create/Create.tsx";
 import Edit from "./pages/edit/Edit.tsx";
 import {useDispatch} from "react-redux";
 import {useEffect} from "react";
-import {refreshToken} from "./auth/authSlice.ts";
+import {refreshToken} from "./auth/thunks.ts";
 
 function App() {
     const dispatch = useDispatch()
