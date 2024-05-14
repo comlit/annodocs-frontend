@@ -1,6 +1,7 @@
 import {AbsoluteCenter, Box} from "@chakra-ui/react";
 import TextAnnotator from "./annotation/TextAnnotator.tsx";
 import {useState} from "react";
+import Annotator from "./annotation/Annotator.tsx";
 
 function Edit() {
     const [value, setValue] = useState([]);
@@ -9,16 +10,7 @@ function Edit() {
 
     return (
         <Box m='50px'>
-            <TextAnnotator
-                content={'onssssssssssssssssssssssssssssssssssssfinsvoisnvonpdniorbnbdrobribndiorbdinbrndbdnobbdbdrinobdinobdrnoibdronibdbndibbnbdronibdpbos'}
-                value={value}
-                onChange={value => setValue(value)}
-                getSpan={span => ({
-                    ...span,
-                    tag: tag,
-                    color: 'red',
-                })}
-            />
+            <Annotator/>
         </Box>
     );
 }
