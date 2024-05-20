@@ -5,14 +5,14 @@ export interface MarkProps {
     tag: string
 }
 
-function Mark({content, start, end, tag}: MarkProps) {
+function ForeignMark({content, start, end, tag}: MarkProps) {
     return (
         <>
             {tag && (
                 <span
                     style={{fontSize: '0.7em',
                         fontWeight: 500,
-                        marginTop: 26,
+                        marginTop: -17,
                         position: 'absolute',
                         background: 'lightblue',
                         borderRadius: 4,
@@ -21,7 +21,7 @@ function Mark({content, start, end, tag}: MarkProps) {
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
                         paddingLeft: 4,
-                        paddingRight: 4}}
+                        paddingRight: 4,}}
                     title={tag}
                 >
                     {tag}
@@ -31,7 +31,7 @@ function Mark({content, start, end, tag}: MarkProps) {
                 style={{
                     borderRadius: 4,
                     cursor: 'pointer',
-                    borderBottom: `2px solid rgba(255, 0, 0, 0.5)`,
+                    borderTop: `2px solid rgba(0, 0, 0, 0.5)`,
                     backgroundColor: 'rgba(255, 0, 0, 0)'
                 }}
                 data-start={start}
@@ -44,4 +44,4 @@ function Mark({content, start, end, tag}: MarkProps) {
     )
 }
 
-export default Mark
+export default ForeignMark
