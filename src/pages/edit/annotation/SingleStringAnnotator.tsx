@@ -15,19 +15,52 @@ type TextSplit = {
 }
 
 type ForeignAnnotation = {
+    ids: number[],
+    start: number,
+    end: number,
+    name: string[],
+    color: string[],
+    first?: boolean
+}
+
+type Annotation = {
+    id: number,
     start: number,
     end: number,
     name: string,
+    color: string,
     first?: boolean
+}
+
+interface Mark {
+    id: number;
+    start: number;
+    end: number;
+    name: string;
+    color: string;
+    level?: number;
+}
+
+interface SplitMark {
+    start: number;
+    end: number;
+    levelsInfo: { level: number, color: string, name: string, id: number }[];
 }
 
 
 function SingleStringAnnotator() {
-    const [existingAnnotaions, setExistingAnnotations] = useState<ForeignAnnotation[]>([{
+    const [existingAnnotaions, setExistingAnnotations] = useState<Mark[]>([{
+        id: 1,
         start: 10,
         end: 20,
-        name: "Müller"
-    }, {start: 30, end: 40, name: "Schweifel"}, {start: 50, end: 80, name: "Tervel"}])
+        name: "Müller", color: "blue"
+    }, {id: 2, start: 30, end: 60, name: "Schäfer", color: "black"}, {
+        id: 3,
+        start: 45,
+        end: 120,
+        name: "Tervel",
+        color: "green"
+    }, {id: 4, start: 100, end: 150, name: "Merkel", color: "orange"}])
     const [text, setText] = useState<string>("(1) Die Sache ist frei von Sachmängeln, wenn sie bei Gefahrübergang den subjektiven Anforderungen, den objektiven Anforderungen und den Montageanforderungen dieser Vorschrift entspricht.")
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
 
@@ -194,38 +227,119 @@ function SingleStringAnnotator() {
         return splits
     }
 
+    function splitMarks(marks: Mark[], ends: number[]): SplitMark[] {
+        // Sort marks by start time, and then by end time for stable sorting
+        marks.sort((a, b) => a.start - b.start || a.end - b.end);
+
+        let events: { time: number, type: 'start' | 'end', mark: Mark }[] = [];
+        let result: SplitMark[] = [];
+        let activeMarks: Mark[] = [];
+        let markLevels: { [id: number]: number } = {};
+
+        // Create a list of all start and end events
+        for (let mark of marks) {
+            events.push({ time: mark.start, type: 'start', mark });
+            events.push({ time: mark.end, type: 'end', mark });
+        }
+
+        // Sort events first by time, then by type ('end' before 'start' if they have the same time)
+        events.sort((a, b) => a.time - b.time || (a.type === 'end' ? -1 : 1));
+
+        let currentTime: number | null = null;
+
+        for (let event of events) {
+            if (currentTime !== null && currentTime !== event.time && activeMarks.length > 0) {
+                // Create split intervals between currentTime and event.time
+                let splitMark: SplitMark = {
+                    start: currentTime,
+                    end: event.time,
+                    levelsInfo: []
+                };
+
+                for (let activeMark of activeMarks) {
+                    splitMark.levelsInfo.push({
+                        level: markLevels[activeMark.id],
+                        color: activeMark.color,
+                        name: activeMark.name,
+                        id: activeMark.id
+                    });
+                }
+
+                result.push(splitMark);
+            }
+            currentTime = event.time;
+
+            if (event.type === 'start') {
+                activeMarks.push(event.mark);
+
+                // Assign a level to the mark if it doesn't have one already
+                if (!(event.mark.id in markLevels)) {
+                    // Find the lowest available level
+                    let levelFound = false;
+                    for (let i = 0; i < activeMarks.length; i++) {
+                        if (activeMarks.every(mark => markLevels[mark.id] !== i)) {
+                            markLevels[event.mark.id] = i;
+                            levelFound = true;
+                            break;
+                        }
+                    }
+                    if (!levelFound) {
+                        markLevels[event.mark.id] = Object.keys(markLevels).length;
+                    }
+                }
+            } else {
+                activeMarks = activeMarks.filter(mark => mark.id !== event.mark.id);
+            }
+        }
+        //Split result by ends
+        let splitResults: SplitMark[] = [];
+        for(let mark of result){
+            const splitup: SplitMark[] = []
+            const endsInRange = ends.filter(end => end >= mark.start && end <= mark.end);
+            let lastEnd = mark.start;
+            for(let end of endsInRange){
+                splitup.push({
+                    start: lastEnd,
+                    end: end,
+                    levelsInfo: JSON.parse(JSON.stringify(mark.levelsInfo))
+                });
+                lastEnd = end;
+            }
+            if(lastEnd != mark.end){
+                splitup.push({
+                    start: lastEnd,
+                    end: mark.end,
+                    levelsInfo: JSON.parse(JSON.stringify(mark.levelsInfo))
+                });
+            }
+
+            splitResults = splitResults.concat(splitup);
+        }
+
+
+        //Delete names so that they are only shown once per mark
+        let ids: number[] = [];
+        for(let obj of splitResults){
+            for(let level of obj.levelsInfo){
+                if(ids.includes(level.id)){
+                    level.name = "";
+                } else {
+                    ids.push(level.id);
+                }
+            }
+        }
+
+        return splitResults;
+    }
+
     const renderSplits = () => {
         const ends = splits.map((split) => split.end)
 
-        //split up annotations that are in multiple splits into multiple annotations
-        const splitupannotations: ForeignAnnotation[] = []
-        for (const annotation of existingAnnotaions) {
-            const splitup = []
-            const endsInRange = ends.filter((end) => end >= annotation.start && end <= annotation.end)
-            if (endsInRange.length == 0) {
-                splitupannotations.push({...annotation, first: true})
-                continue;
-            }
-            //split annotation at ends
-            let start = annotation.start
-            for (const end of endsInRange) {
-                splitup.push({start: start, end: end, name: annotation.name})
-                start = end
-            }
-            if (start != annotation.end) {
-                splitup.push({start: start, end: annotation.end, name: annotation.name})
-            }
-            splitup[0] = {...splitup[0], first: true}
-            splitupannotations.push(...splitup)
-        }
-
-        console.log(splitupannotations.map((annotation) => {
-            return text.slice(annotation.start, annotation.end)
-        }))
+        const foreignAnnotations: SplitMark[] = splitMarks(existingAnnotaions, ends);
 
         //render splits
         return splits.map((split, index) => {
-            const annotations = splitupannotations.filter((annotation) => {
+            const annotations = foreignAnnotations.filter((annotation) => {
                 return annotation.start >= split.start && annotation.end <= split.end
             })
             //console.log(annotations)
@@ -245,10 +359,14 @@ function SingleStringAnnotator() {
                     elements.push(<span key={`${i}_${index}_a`} data-start={start}
                                         data-end={annotation.start}>{text.slice(start, annotation.start)}</span>)
                     elements.push(<ForeignMark key={`${i}_${index}_b`} start={annotation.start}
-                                        end={annotation.end} content={text.slice(annotation.start, annotation.end)} tag={annotation.name}/>)
+                                               end={annotation.end}
+                                               content={text.slice(annotation.start, annotation.end)}
+                                               marks={annotation.levelsInfo}/>)
                 } else {
-                elements.push(<ForeignMark key={`${i}_${index}`} start={annotation.start}
-                                    end={annotation.end} content={text.slice(annotation.start, annotation.end)} tag={annotation.first ? annotation.name : ""}/>)
+                    elements.push(<ForeignMark key={`${i}_${index}`} start={annotation.start}
+                                               end={annotation.end}
+                                               content={text.slice(annotation.start, annotation.end)}
+                                               marks={annotation.levelsInfo}/>)
                 }
                 start = annotation.end
             }
@@ -256,7 +374,7 @@ function SingleStringAnnotator() {
                 elements.push(<span key={index} data-start={start}
                                     data-end={split.end}>{text.slice(start, split.end)}</span>)
             }
-            if(!(split as AnnotationSplit).color)
+            if (!(split as AnnotationSplit).color)
                 return elements
             else
                 return <Mark key={index} content={elements} start={split.start} end={split.end} tag="SIE"/>

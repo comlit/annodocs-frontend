@@ -1,14 +1,18 @@
+
 export interface MarkProps {
     content: string | JSX.Element | JSX.Element[]
     start: number
     end: number
-    tag: string
+    marks: { level: number, color: string, name: string, id: number }[];
 }
 
-function ForeignMark({content, start, end, tag}: MarkProps) {
+function ForeignMark({content, start, end, marks}: MarkProps) {
+
+    const names = marks.map(mark => mark.name).join(', ');
+
     return (
         <>
-            {tag && (
+            {names && (
                 <span
                     style={{fontSize: '0.7em',
                         fontWeight: 500,
@@ -22,16 +26,15 @@ function ForeignMark({content, start, end, tag}: MarkProps) {
                         whiteSpace: 'nowrap',
                         paddingLeft: 4,
                         paddingRight: 4,}}
-                    title={tag}
+                    title={JSON.stringify(marks)}
                 >
-                    {tag}
+                    {names}
                 </span>
             )}
             <mark
                 style={{
-                    borderRadius: 4,
                     cursor: 'pointer',
-                    borderTop: `2px solid rgba(0, 0, 0, 0.5)`,
+                    borderTop: `2px solid lightgreen`,
                     backgroundColor: 'rgba(255, 0, 0, 0)'
                 }}
                 data-start={start}
