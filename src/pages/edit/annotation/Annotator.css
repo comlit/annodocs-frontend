@@ -1,89 +1,343 @@
-div.jnhtml { font-family: Arial; font-size: 100% }
+.mark-name:hover {
+    z-index: 1000;
+    cursor: pointer;
+
+}
+.mark-name {
+    line-height: 1.5;
+}
+
+
+div.jnhtml {
+    font-family: Arial;
+    font-size: 100%
+}
 
 /* CR10912 CellPadding Tabellen 26.6.2013 */
-.jnhtml td, .jnhtml th { padding: 1mm }
+.jnhtml td, .jnhtml th {
+    padding: 1mm
+}
 
-.jnhtml       dl { margin: 1ex auto 0px; padding: 0 0.2em}
-.jnhtml       dt { float: left }
-.jnhtml dl dt { margin-bottom: 1ex; min-width: 1.3em; text-align: right}
-.jnhtml dl dt { margin-bottom: 1ex; min-width: 1.8em; text-align: right}
-.jnhtml dl dt { margin-bottom: 1ex; min-width: 2.3em; text-align: right}
-.jnhtml dl dt { margin-bottom: 1ex; min-width: 2.8em; text-align: right}
+.jnhtml dl {
+    margin: 1ex auto 0px;
+    padding: 0 0.2em
+}
 
-.jnhtml       dd { margin-bottom: 1ex    }
-.jnhtml dl dd { margin-left:   2em;   }
-.jnhtml dl dd { margin-left:   2.5em; }
-.jnhtml dl dd { margin-left:   3em;   }
-.jnhtml dl dd { margin-left:   3.5em; }
+.jnhtml dt {
+    float: left
+}
 
-.jnhtml h1 { margin-top: 18pt; margin-bottom: 9pt }
-.jnhtml h2 { margin-top: 15pt; margin-bottom: 7pt }
-.jnhtml h3 { margin-top: 12pt; margin-bottom: 6pt }
-.jnhtml h4 { margin-top: 10pt; margin-bottom: 5pt }
-.jnhtml h5 { margin-top:  8pt; margin-bottom: 4pt }
-.jnhtml h6 { margin-top:  4pt; margin-bottom: 2pt }
-.jnhtml h7 { margin-top:  1pt; margin-bottom: 1pt }
-.jnhtml h8 { margin-top:  1pt; margin-bottom: 1pt }
-.jnhtml h9 { margin-top:  1pt; margin-bottom: 1pt }
+.jnhtml dl dt {
+    margin-bottom: 1ex;
+    min-width: 1.3em;
+    text-align: right
+}
 
-.jnhtml .Section0 { margin-top: 4ex }
-.jnhtml .Section1 { margin-top: 3ex }
-.jnhtml .Section2 { margin-top: 3ex }
-.jnhtml .Section3 { margin-top: 2ex }
-.jnhtml .Section4 { margin-top: 2ex }
-.jnhtml .Section5 { margin-top: 1ex }
-.jnhtml .Section6 { margin-top: 1ex }
+.jnhtml dl dt {
+    margin-bottom: 1ex;
+    min-width: 1.8em;
+    text-align: right
+}
 
-.jnhtml .Ident0  { text-align: center; font-weight: bold }
-.jnhtml .Ident1  { text-align: center; font-weight: bold }
-.jnhtml .Ident2  { text-align: center; font-weight: bold }
-.jnhtml .Ident3  { text-align: center; letter-spacing: 0.2em }
-.jnhtml .Ident4  { text-align: center }
-.jnhtml .Ident5  { text-align: center }
-.jnhtml .Ident6  { text-align: center }
-.jnhtml .Ident7  { text-align: center }
-.jnhtml .Ident8  { text-align: center }
-.jnhtml .Ident9  { text-align: center }
+.jnhtml dl dt {
+    margin-bottom: 1ex;
+    min-width: 2.3em;
+    text-align: right
+}
 
-.jnhtml .Title0  { text-align: center; font-weight: bold }
-.jnhtml .Title1  { text-align: center; font-weight: bold }
-.jnhtml .Title2  { text-align: center; font-weight: bold }
-.jnhtml .Title3  { text-align: center; letter-spacing: 0.2em }
-.jnhtml .Title4  { text-align: center }
-.jnhtml .Title5  { text-align: center; font-weight: bold }
-.jnhtml .Title6  { text-align: center }
-.jnhtml .Title7  { text-align: center }
-.jnhtml .Title8  { text-align: center }
-.jnhtml .Title9  { text-align: center }
+.jnhtml dl dt {
+    margin-bottom: 1ex;
+    min-width: 2.8em;
+    text-align: right
+}
 
-.jnhtml .SubTitle0  { text-align: center }
-.jnhtml .SubTitle1  { text-align: center }
-.jnhtml .SubTitle2  { text-align: center }
-.jnhtml .SubTitle3  { text-align: center }
-.jnhtml .SubTitle4  { text-align: center }
-.jnhtml .SubTitle5  { text-align: center }
-.jnhtml .SubTitle6  { text-align: center }
-.jnhtml .SubTitle7  { text-align: center }
-.jnhtml .SubTitle8  { text-align: center }
-.jnhtml .SubTitle9  { text-align: center }
+.jnhtml dd {
+    margin-bottom: 1ex
+}
 
-.jnhtml .Department { text-align: center; letter-spacing: 0.2em; margin-top: 8pt }
-.jnhtml .Person     { text-align: center }
-.jnhtml .SP         { letter-spacing: 0.2em }
+.jnhtml dl dd {
+    margin-left: 2em;
+}
+
+.jnhtml dl dd {
+    margin-left: 2.5em;
+}
+
+.jnhtml dl dd {
+    margin-left: 3em;
+}
+
+.jnhtml dl dd {
+    margin-left: 3.5em;
+}
+
+.jnhtml h1 {
+    margin-top: 18pt;
+    margin-bottom: 9pt
+}
+
+.jnhtml h2 {
+    margin-top: 15pt;
+    margin-bottom: 7pt
+}
+
+.jnhtml h3 {
+    margin-top: 12pt;
+    margin-bottom: 6pt
+}
+
+.jnhtml h4 {
+    margin-top: 10pt;
+    margin-bottom: 5pt
+}
+
+.jnhtml h5 {
+    margin-top: 8pt;
+    margin-bottom: 4pt
+}
+
+.jnhtml h6 {
+    margin-top: 4pt;
+    margin-bottom: 2pt
+}
+
+.jnhtml h7 {
+    margin-top: 1pt;
+    margin-bottom: 1pt
+}
+
+.jnhtml h8 {
+    margin-top: 1pt;
+    margin-bottom: 1pt
+}
+
+.jnhtml h9 {
+    margin-top: 1pt;
+    margin-bottom: 1pt
+}
+
+.jnhtml .Section0 {
+    margin-top: 4ex
+}
+
+.jnhtml .Section1 {
+    margin-top: 3ex
+}
+
+.jnhtml .Section2 {
+    margin-top: 3ex
+}
+
+.jnhtml .Section3 {
+    margin-top: 2ex
+}
+
+.jnhtml .Section4 {
+    margin-top: 2ex
+}
+
+.jnhtml .Section5 {
+    margin-top: 1ex
+}
+
+.jnhtml .Section6 {
+    margin-top: 1ex
+}
+
+.jnhtml .Ident0 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Ident1 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Ident2 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Ident3 {
+    text-align: center;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .Ident4 {
+    text-align: center
+}
+
+.jnhtml .Ident5 {
+    text-align: center
+}
+
+.jnhtml .Ident6 {
+    text-align: center
+}
+
+.jnhtml .Ident7 {
+    text-align: center
+}
+
+.jnhtml .Ident8 {
+    text-align: center
+}
+
+.jnhtml .Ident9 {
+    text-align: center
+}
+
+.jnhtml .Title0 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Title1 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Title2 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Title3 {
+    text-align: center;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .Title4 {
+    text-align: center
+}
+
+.jnhtml .Title5 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .Title6 {
+    text-align: center
+}
+
+.jnhtml .Title7 {
+    text-align: center
+}
+
+.jnhtml .Title8 {
+    text-align: center
+}
+
+.jnhtml .Title9 {
+    text-align: center
+}
+
+.jnhtml .SubTitle0 {
+    text-align: center
+}
+
+.jnhtml .SubTitle1 {
+    text-align: center
+}
+
+.jnhtml .SubTitle2 {
+    text-align: center
+}
+
+.jnhtml .SubTitle3 {
+    text-align: center
+}
+
+.jnhtml .SubTitle4 {
+    text-align: center
+}
+
+.jnhtml .SubTitle5 {
+    text-align: center
+}
+
+.jnhtml .SubTitle6 {
+    text-align: center
+}
+
+.jnhtml .SubTitle7 {
+    text-align: center
+}
+
+.jnhtml .SubTitle8 {
+    text-align: center
+}
+
+.jnhtml .SubTitle9 {
+    text-align: center
+}
+
+.jnhtml .Department {
+    text-align: center;
+    letter-spacing: 0.2em;
+    margin-top: 8pt
+}
+
+.jnhtml .Person {
+    text-align: center
+}
+
+.jnhtml .SP {
+    letter-spacing: 0.2em
+}
+
 /* .jnhtml .SP         { color: grey; letter-spacing: 0.2em } */
-.jnhtml .Rec        { vertical-align:  super; font-size: xx-small; margin-right: 0.2em }
-.jnhtml .Rec.nichtamtlich { display: none }
+.jnhtml .Rec {
+    vertical-align: super;
+    font-size: xx-small;
+    margin-right: 0.2em
+}
+
+.jnhtml .Rec.nichtamtlich {
+    display: none
+}
+
 /* .jnhtml .Rec.nichtamtlich { display: inline } */
-.jnhtml .FnR, .FootnoteSuper { vertical-align: super; font-size: xx-small; text-decoration: none }
-.jnhtml .Footnote   { text-decoration: none }
-.jnhtml table { border-collapse: collapse }
+.jnhtml .FnR, .FootnoteSuper {
+    vertical-align: super;
+    font-size: xx-small;
+    text-decoration: none
+}
+
+.jnhtml .Footnote {
+    text-decoration: none
+}
+
+.jnhtml table {
+    border-collapse: collapse
+}
 
 /* zusaetzlich eingefuegt dixi, wegen div-font-size-Definition in style.css */
-.jnhtml div div { font-size: 1.00em; }
-.jnheader h1 { font-size:1.40em; text-align:center; }
-.jnheader h2 { font-size:1.20em; text-align:center; }
-.jnheader h3 { font-size:1.00em; text-align:center; }
-.jnfussnote h4 { font-size:1.00em; text-align:left; }
+.jnhtml div div {
+    font-size: 1.00em;
+}
+
+.jnheader h1 {
+    font-size: 1.40em;
+    text-align: center;
+}
+
+.jnheader h2 {
+    font-size: 1.20em;
+    text-align: center;
+}
+
+.jnheader h3 {
+    font-size: 1.00em;
+    text-align: center;
+}
+
+.jnfussnote h4 {
+    font-size: 1.00em;
+    text-align: left;
+}
+
 /*
 .jnheader h1 { font-size:2.10em; text-align:center; }
 .jnheader h2 { font-size:1.55em; text-align:center; }
@@ -91,43 +345,145 @@ div.jnhtml { font-family: Arial; font-size: 100% }
 
 /* hinzugefuegt dixi, 21.1.2008, da Standangabe und Hinweistext im eNorm- */
 /* Format eigene xml-Tags bekommen haben */
-.jnhtml span.small { font-size: 70%; }
+.jnhtml span.small {
+    font-size: 70%;
+}
+
 /* SP-4808: Analyse zeigte, dass .jnhtml div.jurAbsatz nicht gezogen wurde */
-.jurAbsatz {margin-top: 0.9em; }
+.jurAbsatz {
+    margin-top: 0.9em;
+    /* line-height: 1.5em; */
+}
 
 /* .jnhtml .standangaben { background-color: #BFD3EB; } */
-.jnhtml .StandangabeStand { font-weight:bold;
-    text-decoration:underline;
-    vertical-align:top;
+.jnhtml .StandangabeStand {
+    font-weight: bold;
+    text-decoration: underline;
+    vertical-align: top;
 }
-.jnhtml .StandangabeAufh  { font-weight:bold;
-    vertical-align:top;
-}
-.jnhtml .StandangabeHinweis { font-weight:bold;
-    text-decoration:underline;
-    font-style:italic;
-    vertical-align:top;
-}
-.jnhtml .StandkommentarAufh { font-weight:bold; }
 
-.jnhtml .S0  { text-align: center; }
-.jnhtml .S1  { text-align: center; letter-spacing: 0.2em}
-.jnhtml .S2  { text-align: center; font-weight: bold }
-.jnhtml .S3  { text-align: center; font-weight: bold; letter-spacing: 0.2em }
-.jnhtml .S4  { text-align: center; font-size: 110% }
-.jnhtml .S5  { text-align: center; font-size: 110%; letter-spacing: 0.2em}
-.jnhtml .S6  { text-align: center; font-size: 110%; font-weight: bold }
-.jnhtml .S7  { text-align: center; font-size: 110%; font-weight: bold; letter-spacing: 0.2em}
-.jnhtml .S8  { text-align: center; font-size:
-        120% }
-.jnhtml .S9  { text-align: center; font-size: 120%; letter-spacing: 0.2em }
+.jnhtml .StandangabeAufh {
+    font-weight: bold;
+    vertical-align: top;
+}
 
-.jnhtml .TS1  { text-align: center; font-size: 110%; font-weight: bold }
-.jnhtml .TS2  { text-align: center; font-size: 110%; font-weight: bold; letter-spacing: 0.2em }
-.jnhtml .TS3  { text-align: center; font-size: 120% }
-.jnhtml .TS4  { text-align: center; font-size: 120%; letter-spacing: 0.2em }
-.jnhtml .TS5  { text-align: center; font-size: 120%; font-weight: bold }
-.jnhtml .TS6  { text-align: center; font-size: 120%; font-weight: bold; letter-spacing: 0.2em }
-.jnhtml .TS7  { text-align: center; font-size: 140% }
-.jnhtml .TS8  { text-align: center; font-size: 140%; letter-spacing: 0.2em }
-.jnhtml .TS9  { text-align: center; font-size: 140%; font-weight: bold; letter-spacing: 0.2em }
+.jnhtml .StandangabeHinweis {
+    font-weight: bold;
+    text-decoration: underline;
+    font-style: italic;
+    vertical-align: top;
+}
+
+.jnhtml .StandkommentarAufh {
+    font-weight: bold;
+}
+
+.jnhtml .S0 {
+    text-align: center;
+}
+
+.jnhtml .S1 {
+    text-align: center;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .S2 {
+    text-align: center;
+    font-weight: bold
+}
+
+.jnhtml .S3 {
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .S4 {
+    text-align: center;
+    font-size: 110%
+}
+
+.jnhtml .S5 {
+    text-align: center;
+    font-size: 110%;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .S6 {
+    text-align: center;
+    font-size: 110%;
+    font-weight: bold
+}
+
+.jnhtml .S7 {
+    text-align: center;
+    font-size: 110%;
+    font-weight: bold;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .S8 {
+    text-align: center;
+    font-size: 120%
+}
+
+.jnhtml .S9 {
+    text-align: center;
+    font-size: 120%;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .TS1 {
+    text-align: center;
+    font-size: 110%;
+    font-weight: bold
+}
+
+.jnhtml .TS2 {
+    text-align: center;
+    font-size: 110%;
+    font-weight: bold;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .TS3 {
+    text-align: center;
+    font-size: 120%
+}
+
+.jnhtml .TS4 {
+    text-align: center;
+    font-size: 120%;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .TS5 {
+    text-align: center;
+    font-size: 120%;
+    font-weight: bold
+}
+
+.jnhtml .TS6 {
+    text-align: center;
+    font-size: 120%;
+    font-weight: bold;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .TS7 {
+    text-align: center;
+    font-size: 140%
+}
+
+.jnhtml .TS8 {
+    text-align: center;
+    font-size: 140%;
+    letter-spacing: 0.2em
+}
+
+.jnhtml .TS9 {
+    text-align: center;
+    font-size: 140%;
+    font-weight: bold;
+    letter-spacing: 0.2em
+}

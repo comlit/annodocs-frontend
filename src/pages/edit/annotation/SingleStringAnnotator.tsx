@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import Mark from "./Mark.tsx";
 import ForeignMark from "./ForeignMark.tsx";
 
@@ -12,24 +12,6 @@ type TextSplit = {
     start: number,
     end: number,
     content: string
-}
-
-type ForeignAnnotation = {
-    ids: number[],
-    start: number,
-    end: number,
-    name: string[],
-    color: string[],
-    first?: boolean
-}
-
-type Annotation = {
-    id: number,
-    start: number,
-    end: number,
-    name: string,
-    color: string,
-    first?: boolean
 }
 
 interface Mark {
@@ -48,36 +30,24 @@ interface SplitMark {
 }
 
 
-function SingleStringAnnotator() {
-    const [existingAnnotaions, setExistingAnnotations] = useState<Mark[]>([{
-        id: 1,
-        start: 10,
-        end: 20,
-        name: "Müller", color: "blue"
-    }, {id: 2, start: 30, end: 60, name: "Schäfer", color: "black"}, {
-        id: 3,
-        start: 45,
-        end: 120,
-        name: "Tervel",
-        color: "green"
-    }, {id: 4, start: 100, end: 150, name: "Merkel", color: "orange"}])
-    const [text, setText] = useState<string>("(1) Die Sache ist frei von Sachmängeln, wenn sie bei Gefahrübergang den subjektiven Anforderungen, den objektiven Anforderungen und den Montageanforderungen dieser Vorschrift entspricht.")
+function SingleStringAnnotator({text, existingAnnotations}: { text: string, existingAnnotations: Mark[] }) {
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
+
+    const ref = useRef<HTMLElement>(null);
 
     useEffect(() => {
         const intitialsplit: TextSplit = {start: 0, end: text.length, content: text}
         setSplits([intitialsplit]);
-    }, []);
+    }, [text]);
 
-    const mouseUp = () => {
+    const mouseUp = useCallback(() => {
+        console.log("mouseup on " + text.slice(0, 10))
         //TODO: FIX mouseup is only triggered when mouse is released inside the div
         const selection = document.getSelection();
         if (!selection || selection?.isCollapsed)
             return;
 
-        //console.log(selection);
-
-        //absolute start and end of selection
+        //get absolute start and end of selection
         let start = 0
         let end = text.length
         if (selection.anchorNode == selection.focusNode) {
@@ -90,16 +60,44 @@ function SingleStringAnnotator() {
             }
         } else {
             //selection is in multiple nodes
+            if(!ref.current)
+                return;
             if (!isSelectionBackwards(selection)) {
-                start = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
-                end = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
+                if (ref.current.contains(selection.anchorNode) && ref.current.contains(selection.focusNode)) {
+                    start = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
+                    end = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
+                } else {
+                    if(ref.current.contains(selection.anchorNode)){
+                        start = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
+                        end = text.length
+                    }else if(ref.current.contains(selection.focusNode)){
+                        start = 0
+                        end = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
+                    }
+                }
             } else {
-                start = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
-                end = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
+                if (ref.current && ref.current.contains(selection.anchorNode) && ref.current.contains(selection.focusNode)) {
+                    start = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
+                    end = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
+                } else {
+                    if(ref.current.contains(selection.anchorNode)){
+                        start = 0
+                        end = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
+                    }else if(ref.current.contains(selection.focusNode)){
+                        start = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
+                        end = text.length
+                    }
+                }
             }
         }
-        if (Number.isNaN(start) || Number.isNaN(end)) {
-            console.log("start or end is NaN");
+        // if selection is not inside the annotator everything will be marked. which is not intended
+        // selection is deleted before all annotators are updated. which ist not intended
+        //TODO: FIX
+
+
+        console.log(start, end, text.slice(start, end))
+        //something went very wrong
+        if (isNaN(start) || isNaN(end)) {
             document.getSelection()?.empty();
             return;
         }
@@ -213,8 +211,19 @@ function SingleStringAnnotator() {
             });
         }
 
+        console.log("delete selection on" + text.slice(0, 10))
         document.getSelection()?.empty();
-    }
+    }, [splits, text]);
+
+    useEffect(() => {
+        // Fügen Sie den globalen Mouseup-Listener hinzu
+        document.addEventListener('mouseup', mouseUp);
+
+        // Entfernen Sie den Listener beim Cleaning-up
+        return () => {
+            document.removeEventListener('mouseup', mouseUp);
+        };
+    }, [mouseUp]);
 
     const isSelectionBackwards = (selection: Selection) => {
         return selection.anchorNode.compareDocumentPosition(selection.focusNode) === Node.DOCUMENT_POSITION_PRECEDING
@@ -231,15 +240,15 @@ function SingleStringAnnotator() {
         // Sort marks by start time, and then by end time for stable sorting
         marks.sort((a, b) => a.start - b.start || a.end - b.end);
 
-        let events: { time: number, type: 'start' | 'end', mark: Mark }[] = [];
-        let result: SplitMark[] = [];
+        const events: { time: number, type: 'start' | 'end', mark: Mark }[] = [];
+        const result: SplitMark[] = [];
         let activeMarks: Mark[] = [];
-        let markLevels: { [id: number]: number } = {};
+        const markLevels: { [id: number]: number } = {};
 
         // Create a list of all start and end events
-        for (let mark of marks) {
-            events.push({ time: mark.start, type: 'start', mark });
-            events.push({ time: mark.end, type: 'end', mark });
+        for (const mark of marks) {
+            events.push({time: mark.start, type: 'start', mark});
+            events.push({time: mark.end, type: 'end', mark});
         }
 
         // Sort events first by time, then by type ('end' before 'start' if they have the same time)
@@ -247,16 +256,16 @@ function SingleStringAnnotator() {
 
         let currentTime: number | null = null;
 
-        for (let event of events) {
+        for (const event of events) {
             if (currentTime !== null && currentTime !== event.time && activeMarks.length > 0) {
                 // Create split intervals between currentTime and event.time
-                let splitMark: SplitMark = {
+                const splitMark: SplitMark = {
                     start: currentTime,
                     end: event.time,
                     levelsInfo: []
                 };
 
-                for (let activeMark of activeMarks) {
+                for (const activeMark of activeMarks) {
                     splitMark.levelsInfo.push({
                         level: markLevels[activeMark.id],
                         color: activeMark.color,
@@ -293,11 +302,11 @@ function SingleStringAnnotator() {
         }
         //Split result by ends
         let splitResults: SplitMark[] = [];
-        for(let mark of result){
+        for (const mark of result) {
             const splitup: SplitMark[] = []
             const endsInRange = ends.filter(end => end >= mark.start && end <= mark.end);
             let lastEnd = mark.start;
-            for(let end of endsInRange){
+            for (const end of endsInRange) {
                 splitup.push({
                     start: lastEnd,
                     end: end,
@@ -305,7 +314,7 @@ function SingleStringAnnotator() {
                 });
                 lastEnd = end;
             }
-            if(lastEnd != mark.end){
+            if (lastEnd != mark.end) {
                 splitup.push({
                     start: lastEnd,
                     end: mark.end,
@@ -318,10 +327,10 @@ function SingleStringAnnotator() {
 
 
         //Delete names so that they are only shown once per mark
-        let ids: number[] = [];
-        for(let obj of splitResults){
-            for(let level of obj.levelsInfo){
-                if(ids.includes(level.id)){
+        const ids: number[] = [];
+        for (const obj of splitResults) {
+            for (const level of obj.levelsInfo) {
+                if (ids.includes(level.id)) {
                     level.name = "";
                 } else {
                     ids.push(level.id);
@@ -335,7 +344,7 @@ function SingleStringAnnotator() {
     const renderSplits = () => {
         const ends = splits.map((split) => split.end)
 
-        const foreignAnnotations: SplitMark[] = splitMarks(existingAnnotaions, ends);
+        const foreignAnnotations: SplitMark[] = splitMarks(existingAnnotations, ends);
 
         //render splits
         return splits.map((split, index) => {
@@ -383,7 +392,7 @@ function SingleStringAnnotator() {
     }
 
     return (
-        <div className="jurAbsatz" onMouseUp={mouseUp}>{renderSplits()}</div>
+        <div className="jurAbsatz" ref={ref} onMouseUp={mouseUp}>{renderSplits()}</div>
     )
 }
 

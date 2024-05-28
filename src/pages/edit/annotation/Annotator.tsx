@@ -1,100 +1,22 @@
 import './Annotator.css'
-import {useRef} from "react";
 import SingleStringAnnotator from "./SingleStringAnnotator.tsx";
 
 function Annotator() {
 
-    const markRef = useRef()
-
-    /*
-    const [selectedNodes, setSelectedNodes] = useState([]);
-    const [selectedText, setSelectedText] = useState<string>();
-    const [start, setStart] = useState<number>();
-    const [end, setEnd] = useState<number>();
-    */
-
-    const mouseUp = () => {
-        const selection = document.getSelection();
-
-        if (!selection || selection?.isCollapsed)
-            return;
-
-        const parent = document.getSelection()?.getRangeAt(0).commonAncestorContainer;
-        let selectedNodes = [];
-
-        let start = selection?.anchorOffset;
-        let end = selection?.focusOffset;
-        if (parent && selection?.anchorNode != selection?.focusNode) {
-            if (selectionIsBackwards(selection)) {
-                selectedNodes = [selection.focusNode, ...getTextNodesBetween(parent, selection.focusNode, selection.anchorNode), selection.anchorNode]
-                start = selection.focusOffset;
-                end = selection.anchorOffset;
-            } else
-                selectedNodes = [selection.anchorNode, ...getTextNodesBetween(parent, selection.anchorNode, selection.focusNode), selection.focusNode]
-        } else
-            selectedNodes = [selection?.anchorNode]
-
-        if (selectedNodes.length == 1) {
-            console.log("only one node selected");
-            selection.getRangeAt(0).surroundContents(document.createElement('mark'));
-        } else {
-            console.log("multiple nodes selected");
-            for (let i = 0; i < selectedNodes.length; i++) {
-                if (i == 0) {
-                    const range = document.createRange();
-                    range.setStart(selectedNodes[i], start);
-                    range.setEnd(selectedNodes[i], selectedNodes[i].textContent?.length ?? 0);
-                    range.surroundContents(document.createElement('mark'));
-                } else if (i == selectedNodes.length - 1) {
-                    const range = document.createRange();
-                    range.setStart(selectedNodes[i], 0);
-                    range.setEnd(selectedNodes[i], end);
-                    range.surroundContents(document.createElement('mark'));
-                } else {
-                    const range = document.createRange();
-                    range.selectNode(selectedNodes[i]);
-                    range.surroundContents(document.createElement('mark'));
-                }
-            }
-        }
-        document.getSelection()?.empty();
-    }
-
-
-    function getTextNodesBetween(rootNode: Node, startNode: Node, endNode: Node) {
-        let pastStartNode = false, reachedEndNode = false
-        const textNodes: Node[] = [];
-
-        function getTextNodes(node: Node) {
-            if (node == startNode) {
-                pastStartNode = true;
-            } else if (node == endNode) {
-                reachedEndNode = true;
-            } else if (node.nodeType == 3) {
-                if (pastStartNode && !reachedEndNode && !/^\s*$/.test(node.nodeValue ?? "")) {
-                    textNodes.push(node);
-                }
-            } else {
-                for (let i = 0, len = node.childNodes.length; !reachedEndNode && i < len; ++i) {
-                    getTextNodes(node.childNodes[i]);
-                }
-            }
-        }
-
-        getTextNodes(rootNode);
-        return textNodes;
-    }
-
-    const selectionIsBackwards = (selection: Selection) => {
-        return selection.anchorNode.compareDocumentPosition(selection.focusNode) === Node.DOCUMENT_POSITION_PRECEDING
-    }
 
 
     return (
         <>
             <div className="jnhtml">
                 <div>
-                    <SingleStringAnnotator/>
+                    <SingleStringAnnotator
+                        text={"(1) Die Sache ist frei von Sachmängeln, wenn sie bei Gefahrübergang den subjektiven Anforderungen, den objektiven Anforderungen und den Montageanforderungen dieser Vorschrift entspricht."}
+                        existingAnnotations={[
+                            {id: 1, start: 90, end: 170, name: "Müller", color: "#ffcaca"},
+                            {id: 2, start: 30, end: 60, name: "Schäfer", color: "#0000FF"},
+                            {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
+                            {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
+                        ]}/>
                     <div className="jurAbsatz">(2) Die Sache entspricht den subjektiven Anforderungen, wenn sie <dl>
                         <dt>1.</dt>
                         <dd>
@@ -154,12 +76,15 @@ function Annotator() {
                                 Käufer erwarten kann.
                             </div>
                         </dd>
-                    </dl>Zu der üblichen Beschaffenheit nach Satz 1 Nummer 2 gehören Menge, Qualität und sonstige
-                        Merkmale der Sache, einschließlich ihrer Haltbarkeit, Funktionalität, Kompatibilität und
-                        Sicherheit. Der Verkäufer ist durch die in Satz 1 Nummer 2 Buchstabe b genannten öffentlichen
-                        Äußerungen nicht gebunden, wenn er sie nicht kannte und auch nicht kennen konnte, wenn die
-                        Äußerung im Zeitpunkt des Vertragsschlusses in derselben oder in gleichwertiger Weise berichtigt
-                        war oder wenn die Äußerung die Kaufentscheidung nicht beeinflussen konnte.
+                    </dl>
+                        <SingleStringAnnotator
+                            text={"Zu der üblichen Beschaffenheit nach Satz 1 Nummer 2 gehören Menge, Qualität und sonstige Merkmale der Sache, einschließlich ihrer Haltbarkeit, Funktionalität, Kompatibilität und Sicherheit. Der Verkäufer ist durch die in Satz 1 Nummer 2 Buchstabe b genannten öffentlichen Äußerungen nicht gebunden, wenn er sie nicht kannte und auch nicht kennen konnte, wenn die Äußerung im Zeitpunkt des Vertragsschlusses in derselben oder in gleichwertiger Weise berichtigt war oder wenn die Äußerung die Kaufentscheidung nicht beeinflussen konnte."}
+                            existingAnnotations={[
+                                {id: 1, start: 90, end: 170, name: "Müller", color: "#ffcaca"},
+                                {id: 2, start: 30, end: 60, name: "Schäfer", color: "#0000FF"},
+                                {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
+                                {id: 4, start: 180, end: 400, name: "Merkel", color: "#FFA500"}
+                            ]}/>
                     </div>
                     <div className="jurAbsatz">(4) Soweit eine Montage durchzuführen ist, entspricht die Sache den
                         Montageanforderungen, wenn die Montage <dl>
