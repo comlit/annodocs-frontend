@@ -1,22 +1,41 @@
 import './Annotator.css'
 import SingleStringAnnotator from "./SingleStringAnnotator.tsx";
+import {useEffect, useState} from "react";
 
 function Annotator() {
 
+    //TODO: set ids automatically, but that can only be done once the backend response and how the rendering is handled is known
 
+    const [annotationIDs, setAnnotationIDs] = useState<string[]>(["1", "2"])
+    const [finishedAnnotations, setFinishedAnnotations] = useState<string[]>([])
+
+    const finishedCallback = (id: string) => {
+        setFinishedAnnotations(prevState => [...prevState, id])
+        console.log(id, " finished")
+    }
+
+    useEffect(() => {
+        if(finishedAnnotations.length != 0 && annotationIDs.every(id => finishedAnnotations.includes(id))){
+            setFinishedAnnotations([])
+            document.getSelection()?.empty()
+            console.log("all finished")
+        }
+    }, [finishedAnnotations, annotationIDs])
 
     return (
         <>
             <div className="jnhtml">
                 <div>
                     <SingleStringAnnotator
+                        id={"1"}
                         text={"(1) Die Sache ist frei von Sachmängeln, wenn sie bei Gefahrübergang den subjektiven Anforderungen, den objektiven Anforderungen und den Montageanforderungen dieser Vorschrift entspricht."}
                         existingAnnotations={[
                             {id: 1, start: 90, end: 170, name: "Müller", color: "#ffcaca"},
                             {id: 2, start: 30, end: 60, name: "Schäfer", color: "#0000FF"},
                             {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
                             {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
-                        ]}/>
+                        ]}
+                        finishedCallback={finishedCallback}/>
                     <div className="jurAbsatz">(2) Die Sache entspricht den subjektiven Anforderungen, wenn sie <dl>
                         <dt>1.</dt>
                         <dd>
@@ -34,9 +53,16 @@ function Annotator() {
                             </div>
                         </dd>
                     </dl>
-                        Zu der Beschaffenheit nach Satz 1 Nummer 1 gehören Art, Menge, Qualität, Funktionalität,
-                        Kompatibilität, Interoperabilität und sonstige Merkmale der Sache, für die die Parteien
-                        Anforderungen vereinbart haben.
+                        <SingleStringAnnotator
+                            id={"3"}
+                            text={"Zu der Beschaffenheit nach Satz 1 Nummer 1 gehören Art, Menge, Qualität, Funktionalität, Kompatibilität, Interoperabilität und sonstige Merkmale der Sache, für die die Parteien Anforderungen vereinbart haben."}
+                            existingAnnotations={[
+                                {id: 1, start: 10, end: 35, name: "Müller", color: "#ffcaca"},
+                                {id: 2, start: 30, end: 60, name: "Schäfer", color: "#0000FF"},
+                                {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
+                                {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
+                            ]}
+                            finishedCallback={finishedCallback}/>
                     </div>
                     <div className="jurAbsatz">
                         (3) Soweit nicht wirksam etwas anderes vereinbart wurde, entspricht die
@@ -78,13 +104,15 @@ function Annotator() {
                         </dd>
                     </dl>
                         <SingleStringAnnotator
+                            id={"2"}
                             text={"Zu der üblichen Beschaffenheit nach Satz 1 Nummer 2 gehören Menge, Qualität und sonstige Merkmale der Sache, einschließlich ihrer Haltbarkeit, Funktionalität, Kompatibilität und Sicherheit. Der Verkäufer ist durch die in Satz 1 Nummer 2 Buchstabe b genannten öffentlichen Äußerungen nicht gebunden, wenn er sie nicht kannte und auch nicht kennen konnte, wenn die Äußerung im Zeitpunkt des Vertragsschlusses in derselben oder in gleichwertiger Weise berichtigt war oder wenn die Äußerung die Kaufentscheidung nicht beeinflussen konnte."}
                             existingAnnotations={[
                                 {id: 1, start: 90, end: 170, name: "Müller", color: "#ffcaca"},
                                 {id: 2, start: 30, end: 60, name: "Schäfer", color: "#0000FF"},
                                 {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
                                 {id: 4, start: 180, end: 400, name: "Merkel", color: "#FFA500"}
-                            ]}/>
+                            ]}
+                            finishedCallback={finishedCallback}/>
                     </div>
                     <div className="jurAbsatz">(4) Soweit eine Montage durchzuführen ist, entspricht die Sache den
                         Montageanforderungen, wenn die Montage <dl>

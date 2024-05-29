@@ -30,7 +30,12 @@ interface SplitMark {
 }
 
 
-function SingleStringAnnotator({text, existingAnnotations}: { text: string, existingAnnotations: Mark[] }) {
+function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback}: {
+    id: string,
+    text: string,
+    existingAnnotations: Mark[],
+    finishedCallback: (id: string) => void
+}) {
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
 
     const ref = useRef<HTMLElement>(null);
@@ -40,12 +45,35 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
         setSplits([intitialsplit]);
     }, [text]);
 
-    const mouseUp = useCallback(() => {
-        console.log("mouseup on " + text.slice(0, 10))
-        //TODO: FIX mouseup is only triggered when mouse is released inside the div
+
+    /**
+     * Get the start and end indices of the current selection
+     * please refactor this, this is horrible
+     * @returns {{start: number, end: number} | null} The start and end indices of the selection or null if the selection is collapsed or not in the annotator
+     */
+    const getSelection = () => {
         const selection = document.getSelection();
+
+        //return if selection is collapsed
         if (!selection || selection?.isCollapsed)
-            return;
+            return null;
+
+        //return if ref is broken, shouldn't happen though. if it does, something is very wrong
+        if (!ref.current)
+            return null;
+
+        //return if selection is not in annotator
+        if (!ref.current.contains(selection.anchorNode) && !ref.current.contains(selection.focusNode)) {
+            const range = selection.getRangeAt(0);
+            const nodeRange = document.createRange();
+            nodeRange.selectNodeContents(ref.current);
+            if (range.compareBoundaryPoints(Range.START_TO_END, nodeRange) > 0 && range.compareBoundaryPoints(Range.END_TO_START, nodeRange) < 0) {
+                return {start: 0, end: text.length}
+            } else {
+                finishedCallback(id)
+                return null;
+            }
+        }
 
         //get absolute start and end of selection
         let start = 0
@@ -60,17 +88,15 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
             }
         } else {
             //selection is in multiple nodes
-            if(!ref.current)
-                return;
             if (!isSelectionBackwards(selection)) {
                 if (ref.current.contains(selection.anchorNode) && ref.current.contains(selection.focusNode)) {
                     start = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
                     end = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
                 } else {
-                    if(ref.current.contains(selection.anchorNode)){
+                    if (ref.current.contains(selection.anchorNode)) {
                         start = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
                         end = text.length
-                    }else if(ref.current.contains(selection.focusNode)){
+                    } else if (ref.current.contains(selection.focusNode)) {
                         start = 0
                         end = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
                     }
@@ -80,28 +106,35 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
                     start = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
                     end = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
                 } else {
-                    if(ref.current.contains(selection.anchorNode)){
+                    if (ref.current.contains(selection.anchorNode)) {
                         start = 0
                         end = parseInt(selection.anchorNode.parentElement.getAttribute('data-start'), 10) + selection.anchorOffset
-                    }else if(ref.current.contains(selection.focusNode)){
+                    } else if (ref.current.contains(selection.focusNode)) {
                         start = parseInt(selection.focusNode.parentElement.getAttribute('data-start'), 10) + selection.focusOffset
                         end = text.length
                     }
                 }
             }
         }
-        // if selection is not inside the annotator everything will be marked. which is not intended
-        // selection is deleted before all annotators are updated. which ist not intended
-        //TODO: FIX
 
-
-        console.log(start, end, text.slice(start, end))
-        //something went very wrong
+        //something went very wrong if this happens
         if (isNaN(start) || isNaN(end)) {
-            document.getSelection()?.empty();
-            return;
+            //document.getSelection()?.empty();
+            finishedCallback(id)
+            return null;
         }
 
+        return {start, end}
+    }
+
+    /**
+     * Handle the mouseup event
+     */
+    const mouseUp = useCallback(() => {
+        const selection = getSelection();
+        if (!selection)
+            return
+        const {start, end} = selection;
 
         //only one split is affected
         if (splits.find(e => e.start <= start && e.end >= end)) {
@@ -110,7 +143,8 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
             })
             if (!affected || (affected as AnnotationSplit).color) {
                 console.log("no affected split or affected split is annotation");
-                document.getSelection()?.empty();
+                //document.getSelection()?.empty();
+                finishedCallback(id)
                 return;
             }
             const splitstart = affected.start
@@ -154,7 +188,8 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
             //if this is true something went extremely wrong
             if (affectedsplits.length == 0) {
                 console.log("no affected splits");
-                document.getSelection()?.empty();
+                //document.getSelection()?.empty();
+                finishedCallback(id)
                 return;
             }
             let markstart = start;
@@ -210,9 +245,9 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
                 return splits;
             });
         }
-
-        console.log("delete selection on" + text.slice(0, 10))
-        document.getSelection()?.empty();
+        
+        finishedCallback(id)
+        //dont add the suggested things to tha dependency array. it will break shit
     }, [splits, text]);
 
     useEffect(() => {
@@ -236,6 +271,11 @@ function SingleStringAnnotator({text, existingAnnotations}: { text: string, exis
         return splits
     }
 
+    /**
+     * Split marks for easy rendering
+     * @param marks
+     * @param ends
+     */
     function splitMarks(marks: Mark[], ends: number[]): SplitMark[] {
         // Sort marks by start time, and then by end time for stable sorting
         marks.sort((a, b) => a.start - b.start || a.end - b.end);
