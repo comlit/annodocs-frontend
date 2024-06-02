@@ -10,7 +10,10 @@
 
 div.jnhtml {
     font-family: Arial;
-    font-size: 100%
+    font-size: 100%;
+    border-color: aqua;
+    border-width: 1px;
+    border-style: solid;
 }
 
 /* CR10912 CellPadding Tabellen 26.6.2013 */

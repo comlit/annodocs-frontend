@@ -30,11 +30,13 @@ interface SplitMark {
 }
 
 
-function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback}: {
+function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback, focused, clickedCallback}: {
     id: string,
     text: string,
     existingAnnotations: Mark[],
-    finishedCallback: (id: string) => void
+    finishedCallback: (id: string) => void,
+    focused: number,
+    clickedCallback: (id: number) => void
 }) {
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
 
@@ -410,12 +412,16 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback}
                     elements.push(<ForeignMark key={`${i}_${index}_b`} start={annotation.start}
                                                end={annotation.end}
                                                content={text.slice(annotation.start, annotation.end)}
-                                               marks={annotation.levelsInfo}/>)
+                                               marks={annotation.levelsInfo}
+                                               focused={focused}
+                                               clickedCallback={clickedCallback}/>)
                 } else {
                     elements.push(<ForeignMark key={`${i}_${index}`} start={annotation.start}
                                                end={annotation.end}
                                                content={text.slice(annotation.start, annotation.end)}
-                                               marks={annotation.levelsInfo}/>)
+                                               marks={annotation.levelsInfo}
+                                               focused={focused}
+                                               clickedCallback={clickedCallback}/>)
                 }
                 start = annotation.end
             }

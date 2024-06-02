@@ -1,17 +1,31 @@
+import {ReactNode} from "react";
+
 export interface MarkProps {
-    content: string | JSX.Element | JSX.Element[]
+    content: string | ReactNode | ReactNode[]
     start: number
     end: number
     marks: { level: number, color: string, name: string, id: number }[];
+    focused: number;
+    clickedCallback: (id: number) => void;
 }
 
-function ForeignMark({content, start, end, marks}: MarkProps) {
+export interface Mark {
+    level: number;
+    color: string;
+    name: string;
+    id: number;
+}
 
-    const constructMark = (marks: { level: number, color: string, name: string, id: number }[]) => {
+function ForeignMark({content, start, end, marks, focused, clickedCallback}: MarkProps) {
+
+    /**
+     * Constructs marks when no mark is focused
+     * @param marks
+     */
+    const constructMarkNoFocus = (marks: Mark[]) => {
         const sortedMarks = marks.sort((a, b) => a.level - b.level);
-        let combinedElement: JSX.Element = <mark
+        let combinedElement: ReactNode = <mark
             style={{
-                cursor: 'pointer',
                 borderTop: `2px solid ${sortedMarks[0].color}`,
                 backgroundColor: 'rgba(255, 0, 0, 0)',
                 paddingTop: sortedMarks[0].level * 4,
@@ -25,7 +39,6 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
         for (let i = 1; i < sortedMarks.length; i++) {
             combinedElement = <mark
                 style={{
-                    cursor: 'pointer',
                     borderTop: `2px solid ${sortedMarks[i].color}`,
                     backgroundColor: 'rgba(255, 0, 0, 0)',
                     paddingTop: sortedMarks[i].level * 4,
@@ -39,7 +52,75 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
         return combinedElement;
     }
 
-    const constructName = (marks: { level: number, color: string, name: string, id: number }[]) => {
+    /**
+     * Constructs marks when a mark is focused
+     * @param marks
+     */
+    const constructMarkFocus = (marks: Mark[]) => {
+        const focussedMark = marks.find(mark => mark.id === focused);
+        if (focussedMark)
+            return <mark
+                style={{
+                    borderTop: `2px solid ${focussedMark.color}`,
+                    backgroundColor: 'rgba(255, 0, 0, 0)',
+                    paddingTop: 0,
+                }}
+                data-start={start}
+                data-end={end}
+            >
+                {content}
+            </mark>
+        else
+            return <mark
+                style={{
+                    borderTop: `2px solid ${"#d1d1d1"}`,
+                    backgroundColor: 'rgba(255, 0, 0, 0)',
+                    paddingTop: 0,
+                }}
+                data-start={start}
+                data-end={end}
+            >
+                {content}
+            </mark>
+    }
+
+    const constructMark = (marks: Mark[]) => {
+        if (!focused)
+            return constructMarkNoFocus(marks)
+        else
+            return constructMarkFocus(marks)
+    }
+
+    const constructNameNoFocus = (marks: Mark[]) => {
+        const focusedMark = marks.find(mark => mark.id === focused);
+        if(focusedMark)
+            return <span
+                className={'mark-name'}
+                style={{
+                    fontSize: '0.7em',
+                    fontWeight: 500,
+                    marginTop: -17,
+                    position: 'absolute',
+                    background: focusedMark.color,
+                    borderRadius: 4,
+                    maxWidth: 50,
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    paddingLeft: 4,
+                    paddingRight: 4,
+                    color: getContrastColor(focusedMark.color),
+                }}
+                title={focusedMark.name}
+                onClick={() => clickedCallback(focusedMark.id)}
+            >
+                {focusedMark.name}
+            </span>
+        else
+            return null;
+    }
+
+    const constructNameFocus = (marks: Mark[]) => {
         const filteredMarks = marks.filter(mark => mark.name);
         if (filteredMarks.length === 0)
             return null;
@@ -64,11 +145,20 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
                     color: getContrastColor(filteredMarks[i].color),
                 }}
                 title={filteredMarks[i].name}
+                onClick={() => clickedCallback(filteredMarks[i].id)}
             >
                     {filteredMarks[i].name}
                 </span>)
         }
         return names;
+    }
+
+    const constructName = (marks: Mark[]) => {
+
+        if (!focused)
+            return constructNameFocus(marks)
+        else
+            return constructNameNoFocus(marks)
     }
 
     function getContrastColor(hexColor: string) {

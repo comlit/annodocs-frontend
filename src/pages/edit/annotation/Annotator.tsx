@@ -6,19 +6,23 @@ function Annotator() {
 
     //TODO: set ids automatically, but that can only be done once the backend response and how the rendering is handled is known
 
-    const [annotationIDs, setAnnotationIDs] = useState<string[]>(["1", "2"])
+    const [focusedAnnotation, setFocusedAnnotation] = useState<number | null>(null)
+
+    const [annotationIDs, setAnnotationIDs] = useState<string[]>(["1", "2", "3"])
     const [finishedAnnotations, setFinishedAnnotations] = useState<string[]>([])
 
     const finishedCallback = (id: string) => {
         setFinishedAnnotations(prevState => [...prevState, id])
-        console.log(id, " finished")
+    }
+
+    const clickedCallback = (id: number) => {
+        setFocusedAnnotation(prevState => prevState == id ? null : id)
     }
 
     useEffect(() => {
         if(finishedAnnotations.length != 0 && annotationIDs.every(id => finishedAnnotations.includes(id))){
             setFinishedAnnotations([])
             document.getSelection()?.empty()
-            console.log("all finished")
         }
     }, [finishedAnnotations, annotationIDs])
 
@@ -35,7 +39,9 @@ function Annotator() {
                             {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
                             {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
                         ]}
-                        finishedCallback={finishedCallback}/>
+                        finishedCallback={finishedCallback}
+                        focused={focusedAnnotation}
+                        clickedCallback={clickedCallback}/>
                     <div className="jurAbsatz">(2) Die Sache entspricht den subjektiven Anforderungen, wenn sie <dl>
                         <dt>1.</dt>
                         <dd>
@@ -62,7 +68,9 @@ function Annotator() {
                                 {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
                                 {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
                             ]}
-                            finishedCallback={finishedCallback}/>
+                            finishedCallback={finishedCallback}
+                            focused={focusedAnnotation}
+                            clickedCallback={clickedCallback}/>
                     </div>
                     <div className="jurAbsatz">
                         (3) Soweit nicht wirksam etwas anderes vereinbart wurde, entspricht die
@@ -112,7 +120,9 @@ function Annotator() {
                                 {id: 3, start: 45, end: 120, name: "Tervel", color: "#008000"},
                                 {id: 4, start: 180, end: 400, name: "Merkel", color: "#FFA500"}
                             ]}
-                            finishedCallback={finishedCallback}/>
+                            finishedCallback={finishedCallback}
+                            focused={focusedAnnotation}
+                            clickedCallback={clickedCallback}/>
                     </div>
                     <div className="jurAbsatz">(4) Soweit eine Montage durchzuführen ist, entspricht die Sache den
                         Montageanforderungen, wenn die Montage <dl>
