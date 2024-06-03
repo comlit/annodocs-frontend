@@ -2,21 +2,18 @@ import './Annotator.css'
 import SingleStringAnnotator from "./SingleStringAnnotator.tsx";
 import {useEffect, useState} from "react";
 
-function Annotator() {
+
+function Annotator({focusedAnnotation, clickedCallback}: { focusedAnnotation: number | null, clickedCallback: (id: number) => void }){
 
     //TODO: set ids automatically, but that can only be done once the backend response and how the rendering is handled is known
 
-    const [focusedAnnotation, setFocusedAnnotation] = useState<number | null>(null)
+    //const [focusedAnnotation, setFocusedAnnotation] = useState<number | null>(null)
 
     const [annotationIDs, setAnnotationIDs] = useState<string[]>(["1", "2", "3"])
     const [finishedAnnotations, setFinishedAnnotations] = useState<string[]>([])
 
     const finishedCallback = (id: string) => {
         setFinishedAnnotations(prevState => [...prevState, id])
-    }
-
-    const clickedCallback = (id: number) => {
-        setFocusedAnnotation(prevState => prevState == id ? null : id)
     }
 
     useEffect(() => {

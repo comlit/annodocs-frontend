@@ -5,10 +5,12 @@ import {useState} from "react";
 
 function Edit() {
 
-    //TODO: pull up state to this component
-
     const [focusedAnnotation, setFocusedAnnotation] = useState<number | null>(null)
     const [editMode, setEditMode] = useState<boolean>(false)
+
+    const clickedCallback = (id: number) => {
+        setFocusedAnnotation(prevState => prevState == id ? null : id)
+    }
 
     return (
         <Box m='50px'>
@@ -16,7 +18,7 @@ function Edit() {
                 templateColumns="5fr 1fr"
                 gap="10px">
                 <GridItem>
-                    <Annotator/>
+                    <Annotator focusedAnnotation={focusedAnnotation} clickedCallback={clickedCallback}/>
                 </GridItem>
                 <GridItem>
                     <AnnotatorSidebar/>
