@@ -18,6 +18,8 @@ export interface Mark {
 
 function ForeignMark({content, start, end, marks, focused, clickedCallback}: MarkProps) {
 
+    const offset = 3;
+
     /**
      * Constructs marks when no mark is focused
      * @param marks
@@ -28,7 +30,7 @@ function ForeignMark({content, start, end, marks, focused, clickedCallback}: Mar
             style={{
                 borderTop: `2px solid ${sortedMarks[0].color}`,
                 backgroundColor: 'rgba(255, 0, 0, 0)',
-                paddingTop: sortedMarks[0].level * 4,
+                paddingTop: sortedMarks[0].level * offset,
             }}
             data-start={start}
             data-end={end}
@@ -41,7 +43,7 @@ function ForeignMark({content, start, end, marks, focused, clickedCallback}: Mar
                 style={{
                     borderTop: `2px solid ${sortedMarks[i].color}`,
                     backgroundColor: 'rgba(255, 0, 0, 0)',
-                    paddingTop: sortedMarks[i].level * 4,
+                    paddingTop: sortedMarks[i].level * offset,
                 }}
                 data-start={start}
                 data-end={end}
@@ -132,7 +134,7 @@ function ForeignMark({content, start, end, marks, focused, clickedCallback}: Mar
                 style={{
                     fontSize: '0.7em',
                     fontWeight: 500,
-                    marginTop: -17 - Math.max(...marks.map(mark => mark.level)) * 4 - i * 20,
+                    marginTop: -17 - Math.max(...marks.map(mark => mark.level)) * offset - i * 20,
                     position: 'absolute',
                     background: filteredMarks[i].color,
                     borderRadius: 4,
