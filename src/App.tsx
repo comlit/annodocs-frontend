@@ -5,7 +5,7 @@ import Footer from "./layout/Footer.tsx";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Landing from "./pages/landing/Landing.tsx";
 import Dashboard from "./pages/dashboard/Dashboard.tsx";
-import Search from "./pages/pages/Search.tsx";
+import Search from "./pages/search/Search.tsx";
 import Create from "./pages/create/Create.tsx";
 import Edit from "./pages/edit/Edit.tsx";
 import {useDispatch} from "react-redux";
