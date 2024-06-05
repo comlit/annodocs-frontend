@@ -1,11 +1,11 @@
-import {ReactNode} from "react";
+import {ReactNode, useContext} from "react";
+import AnnotationContext from "../AnnotationContext.ts";
 
 export interface MarkProps {
     content: string | ReactNode | ReactNode[]
     start: number
     end: number
     marks: { level: number, color: string, name: string, id: number }[];
-    focused: number;
     clickedCallback: (id: number) => void;
 }
 
@@ -16,7 +16,10 @@ export interface Mark {
     id: number;
 }
 
-function ForeignMark({content, start, end, marks, focused, clickedCallback}: MarkProps) {
+function ForeignMark({content, start, end, marks, clickedCallback}: MarkProps) {
+
+    const {focusedAnnotation} = useContext(AnnotationContext)
+    const focused = focusedAnnotation;
 
     const offset = 3;
 

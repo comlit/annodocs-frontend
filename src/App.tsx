@@ -31,7 +31,7 @@ function App() {
                                 <Route path='/dashboard/*' element={<Dashboard/>}/>
                                 <Route path='/search/*' element={<Search/>}/>
                                 <Route path='/create/*' element={<Create/>}/>
-                                <Route path='/edit/*' element={<Edit/>}/>
+                                <Route path='/editor/*' element={<Edit/>}/>
                             </Routes>
                         </Flex>
                         <Footer/>

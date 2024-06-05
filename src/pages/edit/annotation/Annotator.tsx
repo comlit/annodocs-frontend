@@ -3,7 +3,7 @@ import SingleStringAnnotator from "./SingleStringAnnotator.tsx";
 import {useEffect, useState} from "react";
 
 
-function Annotator({focusedAnnotation, clickedCallback}: { focusedAnnotation: number | null, clickedCallback: (id: number) => void }){
+function Annotator({clickedCallback}: { clickedCallback: (id: number) => void }){
 
     //TODO: set ids automatically, but that can only be done once the backend response and how the rendering is handled is known
 
@@ -37,7 +37,6 @@ function Annotator({focusedAnnotation, clickedCallback}: { focusedAnnotation: nu
                             {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
                         ]}
                         finishedCallback={finishedCallback}
-                        focused={focusedAnnotation}
                         clickedCallback={clickedCallback}/>
                     <div className="jurAbsatz">(2) Die Sache entspricht den subjektiven Anforderungen, wenn sie <dl>
                         <dt>1.</dt>
@@ -66,7 +65,6 @@ function Annotator({focusedAnnotation, clickedCallback}: { focusedAnnotation: nu
                                 {id: 4, start: 100, end: 150, name: "Merkel", color: "#FFA500"}
                             ]}
                             finishedCallback={finishedCallback}
-                            focused={focusedAnnotation}
                             clickedCallback={clickedCallback}/>
                     </div>
                     <div className="jurAbsatz">
@@ -118,7 +116,6 @@ function Annotator({focusedAnnotation, clickedCallback}: { focusedAnnotation: nu
                                 {id: 4, start: 180, end: 400, name: "Merkel", color: "#FFA500"}
                             ]}
                             finishedCallback={finishedCallback}
-                            focused={focusedAnnotation}
                             clickedCallback={clickedCallback}/>
                     </div>
                     <div className="jurAbsatz">(4) Soweit eine Montage durchzuführen ist, entspricht die Sache den

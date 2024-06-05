@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import Mark from "./Mark.tsx";
 import ForeignMark from "./ForeignMark.tsx";
 
@@ -30,12 +30,11 @@ interface SplitMark {
 }
 
 
-function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback, focused, clickedCallback}: {
+function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback, clickedCallback}: {
     id: string,
     text: string,
     existingAnnotations: Mark[],
     finishedCallback: (id: string) => void,
-    focused: number,
     clickedCallback: (id: number) => void
 }) {
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
@@ -53,7 +52,7 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
      * please refactor this, this is horrible
      * @returns {{start: number, end: number} | null} The start and end indices of the selection or null if the selection is collapsed or not in the annotator
      */
-    const getSelection = () => {
+    const getSelection = (): { start: number; end: number; } | null => {
         const selection = document.getSelection();
 
         //return if selection is collapsed
@@ -413,14 +412,12 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
                                                end={annotation.end}
                                                content={text.slice(annotation.start, annotation.end)}
                                                marks={annotation.levelsInfo}
-                                               focused={focused}
                                                clickedCallback={clickedCallback}/>)
                 } else {
                     elements.push(<ForeignMark key={`${i}_${index}`} start={annotation.start}
                                                end={annotation.end}
                                                content={text.slice(annotation.start, annotation.end)}
                                                marks={annotation.levelsInfo}
-                                               focused={focused}
                                                clickedCallback={clickedCallback}/>)
                 }
                 start = annotation.end
