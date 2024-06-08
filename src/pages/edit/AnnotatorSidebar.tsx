@@ -16,10 +16,10 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         <Box h="100%">
             <Text>Bearbeiten eine Vorhandenen oder erstellen einer neuen Annotation</Text>
             <Button onClick={() => {
-                //TODO: fix, doesnt work completely yet
                 if(window.confirm("Wollen Sie die Änderungen verwerfen?")) {
                     setEditMode(false);
-                    setFocusedAnnotation(null);
+                    //cant do that here ig
+                    //setFocusedAnnotation(null);
                 }
             }}>Zurück</Button>
             <Button onClick={() => {setEditMode(false); setFocusedAnnotation(null)}}>Speichern</Button>
@@ -43,7 +43,9 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     const detailModeLayout = <>
         <Box h="100%">
             <Text>Details der ausgewählten Annotation</Text>
-            <Text>{annotations.find(annotation => annotation.id === focusedAnnotation)?.name}</Text>
+            <Text>Name: {annotations.find(annotation => annotation.id === focusedAnnotation)?.name}</Text>
+            <Text>Farbe: {annotations.find(annotation => annotation.id === focusedAnnotation)?.color}</Text>
+            <Text>Teile: {JSON.stringify(annotations.find(annotation => annotation.id === focusedAnnotation)?.parts)}</Text>
             <Button onClick={() => setFocusedAnnotation(null)}>Zurück</Button>
             <Button mt="auto" onClick={() => setEditMode(true)}>Annotation Bearbeiten</Button>
         </Box>

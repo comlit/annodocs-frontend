@@ -31,12 +31,13 @@ interface SplitMark {
 }
 
 
-function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback, clickedCallback}: {
+function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback, clickedCallback, key}: {
     id: string,
     text: string,
     existingAnnotations: Mark[],
     finishedCallback: (id: string, splits: (AnnotationSplit | TextSplit)[]) => void,
-    clickedCallback: (id: number) => void
+    clickedCallback: (id: number) => void,
+    key: string
 }) {
 
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
@@ -57,13 +58,19 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
     const getSelection = (): { start: number; end: number; } | null => {
         const selection = document.getSelection();
 
+        console.log("selection broken?", id)
+
         //return if selection is collapsed
         if (!selection || selection?.isCollapsed)
             return null;
 
+
+
         //return if ref is broken, shouldn't happen though. if it does, something is very wrong
         if (!ref.current)
             return null;
+
+        console.log("hello", id)
 
         //return if selection is not in annotator
         if (!ref.current.contains(selection.anchorNode) && !ref.current.contains(selection.focusNode)) {
@@ -439,7 +446,7 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
     }
 
     return (
-        <div className="jurAbsatz" ref={ref} onMouseUp={mouseUp}>{renderSplits()}</div>
+        <div key={id} ref={ref} onMouseUp={mouseUp}>{renderSplits()}</div>
     )
 }
 

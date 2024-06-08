@@ -1,9 +1,10 @@
 import { createContext } from 'react';
+import {Annotation} from "./Edit.tsx";
 
 interface AnnotationContext {
     focusedAnnotation: number | null;
     editMode: boolean;
-    annotations: {id: number, start: number, end: number, name: string, color: string}[];
+    annotations: Annotation[];
 }
 
 const AnnotationContext = createContext({} as AnnotationContext);
