@@ -5,7 +5,7 @@ import AnnotationListItem from "./AnnotationListItem.tsx";
 
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     setEditMode: (enabled: boolean) => void,
-    setFocusedAnnotation: (id: number) => void
+    setFocusedAnnotation: (id: number | null) => void
 }) {
 
     const {editMode, annotations, focusedAnnotation} = useContext(AnnotationContext)

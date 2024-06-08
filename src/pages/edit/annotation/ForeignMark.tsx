@@ -6,7 +6,6 @@ export interface MarkProps {
     start: number
     end: number
     marks: { level: number, color: string, name: string, id: number }[];
-    clickedCallback: (id: number) => void;
 }
 
 export interface Mark {
@@ -16,9 +15,9 @@ export interface Mark {
     id: number;
 }
 
-function ForeignMark({content, start, end, marks, clickedCallback}: MarkProps) {
+function ForeignMark({content, start, end, marks}: MarkProps) {
 
-    const {focusedAnnotation} = useContext(AnnotationContext)
+    const {focusedAnnotation, clickedCallback} = useContext(AnnotationContext)
     const focused = focusedAnnotation;
 
     const offset = 3;
