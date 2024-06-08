@@ -1,19 +1,28 @@
-import React, {useContext, useEffect} from "react";
+import {useContext} from "react";
 import {Box, Button, Text, VStack} from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
-    setEditMode: React.Dispatch<React.SetStateAction<boolean>>,
+    setEditMode: (enabled: boolean) => void,
     setFocusedAnnotation: (id: number) => void
 }) {
 
     const {editMode, annotations, focusedAnnotation} = useContext(AnnotationContext)
 
+    //TODO: add functionality to buttons
+    //TODO: add inputs to change other data of annotation
     const editModeLayout = <>
         <Box h="100%">
             <Text>Bearbeiten eine Vorhandenen oder erstellen einer neuen Annotation</Text>
-            <Button onClick={() => setEditMode(false)}>Zurück</Button>
+            <Button onClick={() => {
+                //TODO: fix, doesnt work completely yet
+                if(window.confirm("Wollen Sie die Änderungen verwerfen?")) {
+                    setEditMode(false);
+                    setFocusedAnnotation(null);
+                }
+            }}>Zurück</Button>
+            <Button onClick={() => {setEditMode(false); setFocusedAnnotation(null)}}>Speichern</Button>
         </Box>
     </>
 
@@ -27,7 +36,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                 ))}
 
             </VStack>
-            <Button mt="auto" onClick={() => setEditMode(true)}>Neue Annotation</Button>
+            <Button mt="auto" onClick={() => {setEditMode(true); setFocusedAnnotation(-1)}}>Neue Annotation</Button>
         </Box>
     </>
 

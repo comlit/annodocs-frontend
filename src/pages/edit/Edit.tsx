@@ -1,5 +1,5 @@
 import Annotator from "./annotation/Annotator.tsx";
-import {Box, Grid, GridItem, useQuery} from "@chakra-ui/react";
+import {Box, Grid, GridItem} from "@chakra-ui/react";
 import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
@@ -7,15 +7,22 @@ import AnnotationContext from "./AnnotationContext.ts";
 function Edit() {
 
     //TODO: embed everything (editMode, focusedAnnotation, etc.) in the URL or maybe not bc of tabbing
-
     //TODO: fetch annotations here and distribute them to the annotator components
+    //TODO: pull up annotations the user made up to here
+    //TODO: user confirmation for leaving edit mode without saving
 
     const [focusedAnnotation, setFocusedAnnotation] = useState<number | null>(null)
     const [editMode, setEditMode] = useState<boolean>(false)
     const [annotations, setAnnotations] = useState<{id: number, start: number, end: number, name: string, color: string}[]>([])
 
     const clickedCallback = (id: number) => {
+        if(editMode)
+            return
         setFocusedAnnotation(prevState => prevState == id ? null : id)
+    }
+
+    const changeEditMode = (enabled: boolean) => {
+        setEditMode(enabled)
     }
 
     useEffect(() => {
@@ -38,7 +45,7 @@ function Edit() {
                         <Annotator clickedCallback={clickedCallback}/>
                     </GridItem>
                     <GridItem>
-                        <AnnotatorSidebar setEditMode={setEditMode} setFocusedAnnotation={clickedCallback}/>
+                        <AnnotatorSidebar setEditMode={changeEditMode} setFocusedAnnotation={clickedCallback}/>
                     </GridItem>
                 </Grid>
             </Box>
