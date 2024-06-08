@@ -1,5 +1,5 @@
 import './Annotator.css'
-import SingleStringAnnotator from "./SingleStringAnnotator.tsx";
+import SingleStringAnnotator, {AnnotationSplit, TextSplit} from "./SingleStringAnnotator.tsx";
 import {useEffect, useState} from "react";
 
 
@@ -12,8 +12,10 @@ function Annotator({clickedCallback}: { clickedCallback: (id: number) => void })
     const [annotationIDs, setAnnotationIDs] = useState<string[]>(["1", "2", "3"])
     const [finishedAnnotations, setFinishedAnnotations] = useState<string[]>([])
 
-    const finishedCallback = (id: string) => {
+    const finishedCallback = (id: string, splits: (AnnotationSplit | TextSplit)[]) => {
         setFinishedAnnotations(prevState => [...prevState, id])
+
+        //TODO: do shit with splits and callback to parent
     }
 
     useEffect(() => {

@@ -1,14 +1,15 @@
 import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import Mark from "./Mark.tsx";
 import ForeignMark from "./ForeignMark.tsx";
+import AnnotationContext from "../AnnotationContext.ts";
 
-type AnnotationSplit = {
+export type AnnotationSplit = {
     start: number,
     end: number,
     color: string
     content: string
 }
-type TextSplit = {
+export type TextSplit = {
     start: number,
     end: number,
     content: string
@@ -34,12 +35,13 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
     id: string,
     text: string,
     existingAnnotations: Mark[],
-    finishedCallback: (id: string) => void,
+    finishedCallback: (id: string, splits: (AnnotationSplit | TextSplit)[]) => void,
     clickedCallback: (id: number) => void
 }) {
-    const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
 
+    const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
     const ref = useRef<HTMLElement>(null);
+    const {editMode} = useContext(AnnotationContext);
 
     useEffect(() => {
         const intitialsplit: TextSplit = {start: 0, end: text.length, content: text}
@@ -71,7 +73,7 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
             if (range.compareBoundaryPoints(Range.START_TO_END, nodeRange) > 0 && range.compareBoundaryPoints(Range.END_TO_START, nodeRange) < 0) {
                 return {start: 0, end: text.length}
             } else {
-                finishedCallback(id)
+                finishedCallback(id, splits)
                 return null;
             }
         }
@@ -121,7 +123,7 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
         //something went very wrong if this happens
         if (isNaN(start) || isNaN(end)) {
             //document.getSelection()?.empty();
-            finishedCallback(id)
+            finishedCallback(id, splits)
             return null;
         }
 
@@ -132,6 +134,8 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
      * Handle the mouseup event
      */
     const mouseUp = useCallback(() => {
+        if(!editMode)
+            return
         const selection = getSelection();
         if (!selection)
             return
@@ -145,7 +149,7 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
             if (!affected || (affected as AnnotationSplit).color) {
                 console.log("no affected split or affected split is annotation");
                 //document.getSelection()?.empty();
-                finishedCallback(id)
+                finishedCallback(id, splits)
                 return;
             }
             const splitstart = affected.start
@@ -190,7 +194,7 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
             if (affectedsplits.length == 0) {
                 console.log("no affected splits");
                 //document.getSelection()?.empty();
-                finishedCallback(id)
+                finishedCallback(id, splits)
                 return;
             }
             let markstart = start;
@@ -247,9 +251,9 @@ function SingleStringAnnotator({id, text, existingAnnotations, finishedCallback,
             });
         }
         
-        finishedCallback(id)
+        finishedCallback(id, splits)
         //dont add the suggested things to tha dependency array. it will break shit
-    }, [splits, text]);
+    }, [splits, text, editMode]);
 
     useEffect(() => {
         // Fügen Sie den globalen Mouseup-Listener hinzu
