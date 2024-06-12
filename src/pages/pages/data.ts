@@ -3,5 +3,5 @@ export const dummyData = [
     { id: 2, name: 'HGB' },
     { id: 3, name: 'Verfassung' },
     { id: 4, name: 'Bundesreisekostengesetz' },
-    { id: 5, name: 'Elderberry' },
+    { id: 5, name: 'Testgesetz' },
   ];
