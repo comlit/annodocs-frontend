@@ -31,7 +31,6 @@ function Annotator({textList}: {textList: (list | textpart | listitem)[]}) {
             return
         //deep copy the selection object
         const selectionCopy = copySelection(selection)
-        //console.log(selectionCopy);
         eventEmitter.emit('annotatormouseup', selectionCopy);
         //clear the selection
         document.getSelection()?.empty()

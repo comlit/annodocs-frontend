@@ -3,6 +3,7 @@ import Mark from "./Mark.tsx";
 import ForeignMark from "./ForeignMark.tsx";
 import AnnotationContext from "../AnnotationContext.ts";
 import eventEmitter from "../EventEmitter.ts";
+import {AnnotationPart} from "../Edit.tsx";
 
 export type AnnotationSplit = {
     start: number,
@@ -18,6 +19,7 @@ export type TextSplit = {
 
 interface Mark {
     id: number;
+    annotationID: number;
     start: number;
     end: number;
     name: string;
@@ -28,7 +30,7 @@ interface Mark {
 interface SplitMark {
     start: number;
     end: number;
-    levelsInfo: { level: number, color: string, name: string, id: number }[];
+    levelsInfo: { level: number, color: string, name: string, id: number, annotationID: number }[];
 }
 
 
@@ -40,15 +42,16 @@ function SingleStringAnnotator({id, text}: {
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
     const [existingAnnotations, setExistingAnnotations] = useState<Mark[]>([]);
     const ref = useRef<HTMLDivElement>(null);
-    const {editMode, annotations} = useContext(AnnotationContext);
+    const {editMode, annotations, focusedAnnotation, selectionChangeCallback} = useContext(AnnotationContext);
 
     useEffect(() => {
         const newAnnotations: Mark[] = [];
-        for(const annotation of annotations) {
-            for(const part of annotation.parts) {
-                if(part.textID === parseInt(id)) {
+        for (const annotation of annotations) {
+            for (const part of annotation.parts) {
+                if (part.textID === parseInt(id)) {
                     newAnnotations.push({
-                        id: annotation.id,
+                        id: part.id,
+                        annotationID: annotation.id,
                         start: part.start,
                         end: part.end,
                         name: annotation.name,
@@ -62,9 +65,69 @@ function SingleStringAnnotator({id, text}: {
 
 
     useEffect(() => {
+        resetSplits();
+    }, [text]);
+
+    useEffect(() => {
+        const returnSplits: AnnotationPart[] = splits.filter(split => (split as AnnotationSplit).color).map(split => {
+            return {
+                start: split.start,
+                end: split.end,
+                textID: parseInt(id),
+                id: Math.ceil(Math.random()*100000000),
+            }
+        })
+        if(returnSplits.length > 0) {
+            selectionChangeCallback(returnSplits);
+        }
+    }, [splits]);
+
+    useEffect(() => {
+        if(editMode && focusedAnnotation && focusedAnnotation != -1) {
+            const annotation = existingAnnotations.find(annotation => annotation.annotationID === focusedAnnotation);
+            if (!annotation)
+                return;
+            const newSplits: (AnnotationSplit | TextSplit)[] = [];
+            for (const split of splits) {
+                if (split.start >= annotation.start && split.end <= annotation.end) {
+                    newSplits.push({
+                        start: split.start,
+                        end: split.end,
+                        color: annotation.color,
+                        content: text.slice(split.start, split.end)
+                    });
+                } else if (split.start < annotation.start && split.end > annotation.end) {
+                    newSplits.push({
+                        start: split.start,
+                        end: annotation.start,
+                        content: text.slice(split.start, annotation.start)
+                    });
+                    newSplits.push({
+                        start: annotation.start,
+                        end: annotation.end,
+                        color: annotation.color,
+                        content: text.slice(annotation.start, annotation.end)
+                    });
+                    newSplits.push({
+                        start: annotation.end,
+                        end: split.end,
+                        content: text.slice(annotation.end, split.end)
+                    });
+                } else {
+                    newSplits.push(split);
+                }
+            }
+            setSplits(newSplits);
+        } else {
+            resetSplits();
+        }
+        //dont add the suggested things to tha dependency array. it will break shit
+    }, [editMode, existingAnnotations, focusedAnnotation, text]);
+
+    const resetSplits = () => {
         const intitialsplit: TextSplit = {start: 0, end: text.length, content: text}
         setSplits([intitialsplit]);
-    }, [text]);
+    }
 
 
     /**
@@ -83,17 +146,17 @@ function SingleStringAnnotator({id, text}: {
             const range = selection.getRangeAt(0);
             const nodeRange = document.createRange();
             nodeRange.selectNodeContents(ref.current);
-            if (range.compareBoundaryPoints(Range.START_TO_END, nodeRange) > 0 && range.compareBoundaryPoints(Range.END_TO_START, nodeRange) < 0) {
+            if (range.compareBoundaryPoints(Range.START_TO_END, nodeRange) > 0 && range.compareBoundaryPoints(Range.END_TO_START, nodeRange) < 0)
                 return {start: 0, end: text.length}
-            } else {
-                finishedCallback(id, splits)
+            else
                 return null;
-            }
         }
 
         const anchorNodeStart = parseInt(selection?.anchorNode?.parentElement?.getAttribute('data-start') ?? "", 10);
         const focusNodeStart = parseInt(selection?.focusNode?.parentElement?.getAttribute('data-start') ?? "", 10);
 
+
+        //I scrapped the backwards selection detection, bc the copying the selection object seems to make it always forward
 
         //get absolute start and end of selection
         let start = 0
@@ -103,46 +166,24 @@ function SingleStringAnnotator({id, text}: {
             const splitoffset = anchorNodeStart;
             start = selection.anchorOffset + splitoffset
             end = selection.focusOffset + splitoffset
-            if (start > end) {
-                [start, end] = [end, start];
-            }
         } else {
-            //selection is in multiple nodes
-            if (!isSelectionBackwards(selection)) {
-                if (ref.current.contains(selection.anchorNode) && ref.current.contains(selection.focusNode)) {
-                    start = anchorNodeStart + selection.anchorOffset
-                    end = anchorNodeStart + selection.focusOffset
-                } else {
-                    if (ref.current.contains(selection.anchorNode)) {
-                        start = anchorNodeStart + selection.anchorOffset
-                        end = text.length
-                    } else if (ref.current.contains(selection.focusNode)) {
-                        start = 0
-                        end = focusNodeStart + selection.focusOffset
-                    }
-                }
+            if (ref.current.contains(selection.anchorNode) && ref.current.contains(selection.focusNode)) {
+                start = anchorNodeStart + selection.anchorOffset
+                end = focusNodeStart + selection.focusOffset
             } else {
-                if (ref.current && ref.current.contains(selection.anchorNode) && ref.current.contains(selection.focusNode)) {
-                    start = focusNodeStart + selection.focusOffset
-                    end = anchorNodeStart + selection.anchorOffset
-                } else {
-                    if (ref.current.contains(selection.anchorNode)) {
-                        start = 0
-                        end = anchorNodeStart + selection.anchorOffset
-                    } else if (ref.current.contains(selection.focusNode)) {
-                        start = focusNodeStart + selection.focusOffset
-                        end = text.length
-                    }
+                if (ref.current.contains(selection.anchorNode)) {
+                    start = anchorNodeStart + selection.anchorOffset
+                    end = text.length
+                } else if (ref.current.contains(selection.focusNode)) {
+                    start = 0
+                    end = focusNodeStart + selection.focusOffset
                 }
             }
         }
 
         //something went very wrong if this happens
-        if (isNaN(start) || isNaN(end) || start === end) {
-            //document.getSelection()?.empty();
-            finishedCallback(id, splits)
+        if (isNaN(start) || isNaN(end) || start === end)
             return null;
-        }
 
         return {start, end}
     }
@@ -161,12 +202,9 @@ function SingleStringAnnotator({id, text}: {
             const affected = splits.find((split) => {
                 return split.start <= start && split.end >= end;
             })
-            if (!affected || (affected as AnnotationSplit).color) {
-                console.log("no affected split or affected split is annotation");
-                //document.getSelection()?.empty();
-                finishedCallback(id, splits)
-                return;
-            }
+            if (!affected || (affected as AnnotationSplit).color)
+                return
+
             const splitstart = affected.start
             const splitend = affected.end
 
@@ -206,12 +244,9 @@ function SingleStringAnnotator({id, text}: {
                 return (split.start >= start && split.end <= end) || (split.start <= end && split.end >= end) || (split.start <= start && split.end >= start)
             })
             //if this is true something went extremely wrong
-            if (affectedsplits.length == 0) {
-                console.log("no affected splits");
-                //document.getSelection()?.empty();
-                finishedCallback(id, splits)
-                return;
-            }
+            if (affectedsplits.length == 0)
+                return
+
             let markstart = start;
             let markend = end;
             const newsplits: (AnnotationSplit | TextSplit)[] = [];
@@ -265,8 +300,6 @@ function SingleStringAnnotator({id, text}: {
                 return splits;
             });
         }
-        
-        finishedCallback(id, splits)
         //dont add the suggested things to tha dependency array. it will break shit
     }, [editMode, id, splits, text]);
 
@@ -279,17 +312,6 @@ function SingleStringAnnotator({id, text}: {
             eventEmitter.off('annotatormouseup', handleSelectionEvent);
         };
     }, [handleSelectionEvent]);
-
-    const isSelectionBackwards = (selection: Selection) => {
-        if(selection && selection.anchorNode && selection.focusNode)
-            return selection?.anchorNode.compareDocumentPosition(selection.focusNode) === Node.DOCUMENT_POSITION_PRECEDING
-        else
-            return false
-    }
-
-    const finishedCallback = (id: string, splits: (AnnotationSplit | TextSplit)[]) => {
-        console.log(id, splits)
-    }
 
     /**
      * Split marks for easy rendering
@@ -330,7 +352,8 @@ function SingleStringAnnotator({id, text}: {
                         level: markLevels[activeMark.id],
                         color: activeMark.color,
                         name: activeMark.name,
-                        id: activeMark.id
+                        id: activeMark.id,
+                        annotationID: activeMark.annotationID
                     });
                 }
 
@@ -411,7 +434,7 @@ function SingleStringAnnotator({id, text}: {
             const annotations = foreignAnnotations.filter((annotation) => {
                 return annotation.start >= split.start && annotation.end <= split.end
             })
-            //console.log(annotations)
+
             if (annotations.length == 0) {
                 //no annotation in this split -> render normally as text or mark
                 if (!(split as AnnotationSplit).color)

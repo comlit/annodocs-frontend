@@ -5,7 +5,7 @@ export interface MarkProps {
     content: string | ReactNode | ReactNode[]
     start: number
     end: number
-    marks: { level: number, color: string, name: string, id: number }[];
+    marks: Mark[];
 }
 
 export interface Mark {
@@ -13,12 +13,19 @@ export interface Mark {
     color: string;
     name: string;
     id: number;
+    annotationID: number;
 }
 
 function ForeignMark({content, start, end, marks}: MarkProps) {
 
-    const {focusedAnnotation, clickedCallback} = useContext(AnnotationContext)
-    const focused = focusedAnnotation;
+    const {focusedAnnotation, clickedCallback, editMode} = useContext(AnnotationContext)
+
+    //hacky fix for not displaying marks in edit mode
+    const focused = () => {
+        if (editMode)
+            return -1;
+        return focusedAnnotation;
+    }
 
     const offset = 3;
 
@@ -61,7 +68,7 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
      * @param marks
      */
     const constructMarkFocus = (marks: Mark[]) => {
-        const focussedMark = marks.find(mark => mark.id === focused);
+        const focussedMark = marks.find(mark => mark.annotationID === focused());
         if (focussedMark)
             return <mark
                 style={{
@@ -89,14 +96,14 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
     }
 
     const constructMark = (marks: Mark[]) => {
-        if (!focused)
+        if (!focused())
             return constructMarkNoFocus(marks)
         else
             return constructMarkFocus(marks)
     }
 
     const constructNameNoFocus = (marks: Mark[]) => {
-        const focusedMark = marks.find(mark => mark.id === focused);
+        const focusedMark = marks.find(mark => mark.annotationID === focused());
         if(focusedMark)
             return <span
                 className={'mark-name'}
@@ -116,7 +123,7 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
                     color: getContrastColor(focusedMark.color),
                 }}
                 title={focusedMark.name}
-                onClick={() => clickedCallback(focusedMark.id)}
+                onClick={() => clickedCallback(focusedMark.annotationID)}
             >
                 {focusedMark.name}
             </span>
@@ -149,7 +156,7 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
                     color: getContrastColor(filteredMarks[i].color),
                 }}
                 title={filteredMarks[i].name}
-                onClick={() => clickedCallback(filteredMarks[i].id)}
+                onClick={() => clickedCallback(filteredMarks[i].annotationID)}
             >
                     {filteredMarks[i].name}
                 </span>)
@@ -159,7 +166,7 @@ function ForeignMark({content, start, end, marks}: MarkProps) {
 
     const constructName = (marks: Mark[]) => {
 
-        if (!focused)
+        if (!focused())
             return constructNameFocus(marks)
         else
             return constructNameNoFocus(marks)

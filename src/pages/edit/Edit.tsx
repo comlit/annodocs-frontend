@@ -28,6 +28,7 @@ function Edit() {
     const [editMode, setEditMode] = useState<boolean>(false)
     const [annotations, setAnnotations] = useState<Annotation[]>([])
     const [textList, setTextList] = useState<any[]>([])
+    const [newAnnotation, setNewAnnotation] = useState<Annotation>({id: -1, name: "", color: "", parts: []})
 
     const clickedCallback = (id: number | null) => {
         if (editMode)
@@ -37,6 +38,34 @@ function Edit() {
 
     const changeEditMode = (enabled: boolean) => {
         setEditMode(enabled)
+    }
+
+    const exitEditMode = (data: any) => {
+        if(!data) {
+            setEditMode(false)
+            setFocusedAnnotation(null)
+        } else {
+            setEditMode(false)
+            setFocusedAnnotation(null)
+            const annotation: Annotation = {id: data.id, name: data.name, color: data.color, parts: newAnnotation.parts}
+
+            if(annotations.find(annotation => annotation.id === data.id))
+                setAnnotations(prevState => {
+                    const filtered = prevState.filter(annotation => annotation.id !== data.id)
+                    return [...filtered, annotation]
+                })
+            else
+                setAnnotations(prevState => [...prevState, annotation])
+            setNewAnnotation({id: -1, name: "", color: "", parts: []})
+        }
+    }
+
+    const selectionChangeCallback = (parts: AnnotationPart[]) => {
+        setNewAnnotation(prevState => {
+            const textID = parts[0].textID
+            const prevParts = prevState.parts.filter(part => part.textID !== textID)
+            return {id: prevState.id, name: prevState.name, color: prevState.color, parts: [...prevParts, ...parts]}
+        })
     }
 
     useEffect(() => {
@@ -178,9 +207,9 @@ function Edit() {
                 color: "#ffcaca",
                 parts:
                     [
-                        {id: 1, textID: 1, start: 90, end: 170},
-                        {id: 2, textID: 2, start: 30, end: 59},
-                        {id: 3, textID: 7, start: 20, end: 50},
+                        {id: 4561, textID: 1, start: 90, end: 170},
+                        {id: 2456, textID: 1, start: 30, end: 59},
+                        {id: 4563, textID: 7, start: 20, end: 50},
                     ]
             },
             {
@@ -188,8 +217,8 @@ function Edit() {
                 name: "Schäfer",
                 color: "#0000FF",
                 parts: [
-                    {id: 3, textID: 13, start: 45, end: 120},
-                    {id: 4, textID: 7, start: 10, end: 40},
+                    {id: 2843, textID: 13, start: 45, end: 120},
+                    {id: 4640, textID: 7, start: 10, end: 40},
                 ]
             },
         ]
@@ -199,7 +228,7 @@ function Edit() {
     }, []);
 
     return (
-        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback}}>
+        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback}}>
             <Box m='50px'>
                 <Grid
                     templateColumns="5fr 1fr"
