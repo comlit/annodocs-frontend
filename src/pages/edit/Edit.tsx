@@ -221,6 +221,16 @@ function Edit() {
                     {id: 4640, textID: 7, start: 10, end: 40},
                 ]
             },
+            {
+                id: 3,
+                name: "Mayer",
+                color: "#00FF00",
+                parts: [
+                    {id: 34, textID: 1, start: 50, end: 150},
+                    {id: 53, textID: 4, start: 30, end: 54},
+                    {id: 75, textID: 10, start: 1, end: 13},
+                ]
+            }
         ]
         //fetch annotations
         setAnnotations(exampleAnnotations)
