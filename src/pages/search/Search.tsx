@@ -1,19 +1,36 @@
-
+// src/Search.tsx
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, List, ListItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { dummyData } from './data';
+import { dummyData1 } from './data';
 import Filter from './Filter';
 import styles from './Search.module.css'; // Import the CSS module
 
-let states = ["BW","BY","BE","BB","HB","HH","HE","MV","NI","NW","RP","SL","SN","ST","SH","TH"];
-
+// List of German states
+const germanStates = [
+  "Baden-Württemberg",
+  "Bayern",
+  "Berlin",
+  "Brandenburg",
+  "Bremen",
+  "Hamburg",
+  "Hessen",
+  "Mecklenburg-Vorpommern",
+  "Niedersachsen",
+  "Nordrhein-Westfalen",
+  "Rheinland-Pfalz",
+  "Saarland",
+  "Sachsen",
+  "Sachsen-Anhalt",
+  "Schleswig-Holstein",
+  "Thüringen"
+];
 
 function Search() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState(dummyData);
-  const [selectedType, setSelectedType] = useState('all');
+  const [results, setResults] = useState(dummyData1);
+  const [selectedType, setSelectedType] = useState('alle');
   const [selectedState, setSelectedState] = useState('');
   const [cart, setCart] = useState<any[]>([]);
 
@@ -29,7 +46,7 @@ function Search() {
 
   const handleFilterChange = (type: string) => {
     setSelectedType(type);
-    setSelectedState(''); 
+    setSelectedState(''); // Reset state filter when changing law type
     filterResults(query, type, '');
   };
 
@@ -39,13 +56,13 @@ function Search() {
   };
 
   const filterResults = (searchQuery: string, lawType: string, state: string) => {
-    let filteredResults = dummyData;
+    let filteredResults = dummyData1;
 
-    if (lawType !== 'all') {
+    if (lawType !== 'alle') {
       filteredResults = filteredResults.filter(item => item.type === lawType);
     }
 
-    if (lawType === 'state' && state) {
+    if (lawType === 'land' && state) {
       filteredResults = filteredResults.filter(item => item.state === state);
     }
 
@@ -86,19 +103,19 @@ function Search() {
     <Box className={styles.container}>
       <Box className={styles.innerContainer}>
         <h1>Suche</h1>
-        <p>Hier Gesetze suchen</p>
+        <p>Hier Gesetze Suchen</p>
         <Input
-          placeholder="Suche..."
+          placeholder="Suchen..."
           value={query}
           onChange={handleSearch}
-          className={styles.inputField}
+          className={styles.inputField} // Apply the CSS class
         />
         <Filter
           selectedType={selectedType}
           onFilterChange={handleFilterChange}
           selectedState={selectedState}
           onStateChange={handleStateChange}
-          states={states}
+          states={germanStates} // Use the German states array here
         />
       </Box>
       <Box className={styles.innerContainer}>
@@ -110,7 +127,7 @@ function Search() {
                   {item.name}
                 </Button>
                 <Button size="sm" onClick={() => handleAddToCart(item)}>
-                  zum Korb hinzufügen
+                  Zum Korb hinzufugen
                 </Button>
               </Box>
             </ListItem>
@@ -125,7 +142,7 @@ function Search() {
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 {item.name}
                 <Button size="sm" onClick={() => handleRemoveFromCart(item.id)}>
-                  aus Korb entfernen
+                  Entfernen
                 </Button>
               </Box>
             </ListItem>

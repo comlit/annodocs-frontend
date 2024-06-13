@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Box, Radio, RadioGroup, Stack, Select } from "@chakra-ui/react";
 
@@ -21,14 +20,14 @@ const Filter: React.FC<FilterProps> = ({
     <Box mb={4}>
       <RadioGroup onChange={onFilterChange} value={selectedType}>
         <Stack direction="row" spacing={4}>
-          <Radio value="all">Alle</Radio>
-          <Radio value="bund">Bundesgesetz</Radio>
-          <Radio value="land">Landesgesetz</Radio>
-          <Radio value="kommunal">Kommunalgesetz</Radio>
+          <Radio value="alle">Alle</Radio>
+          <Radio value="bund">Bundesgesetze</Radio>
+          <Radio value="land">Landesgesetze</Radio>
+          <Radio value="kommunal">Kommunalgesetze</Radio>
         </Stack>
       </RadioGroup>
       {selectedType === 'land' && (
-        <Select mt={4} placeholder="Land auswahlen" value={selectedState} onChange={(e) => onStateChange(e.target.value)}>
+        <Select mt={4} placeholder="Select state" value={selectedState} onChange={(e) => onStateChange(e.target.value)}>
           {states.map((state) => (
             <option key={state} value={state}>
               {state}
