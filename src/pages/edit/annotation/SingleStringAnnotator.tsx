@@ -83,15 +83,13 @@ function SingleStringAnnotator({id, text}: {
                 id: Math.ceil(Math.random() * 100000000),
             }
         })
-        if (returnSplits.length > 0) {
-            selectionChangeCallback(returnSplits);
-        }
+        selectionChangeCallback({parts: returnSplits, textID: parseInt(id)});
     }, [splits]);
 
     useEffect(() => {
         if (editMode && focusedAnnotation && focusedAnnotation != -1) {
             const annotation = existingAnnotations.filter(annotation => annotation.annotationID === focusedAnnotation);
-            console.log(annotation)
+
             if (annotation.length === 0)
                 return;
             const newSplits: (AnnotationSplit | TextSplit)[] = [];
@@ -199,112 +197,74 @@ function SingleStringAnnotator({id, text}: {
             return;
         const {start, end} = selection;
 
-        //get splits that are fully or partially inside the selection
-        const affectedsplits = splits.filter((split) => {
-            //split is completely inside selection || split end is inside selection || split start is inside selection
-            return (split.start >= start && split.end <= end) || (split.start <= end && split.end >= end) || (split.start <= start && split.end >= start)
+        let events: {time: number, type: "mark" | "text"}[] = [];
+
+        //push split start events
+        for (const split of splits) {
+            const type = (split as AnnotationSplit)?.color ? "mark" : "text";
+            events.push({time: split.start, type: type});
+        }
+        events.sort((a, b) => a.time - b.time);
+
+        //find the last start event in the selection or the last start event before the selection
+        let lastStartInSelection = events.findLast((event) => event.time >= start && event.time <= end);
+        if(!lastStartInSelection)
+            lastStartInSelection = events.findLast((event) => event.time < start);
+
+        //remove all events in the selection
+        events = events.filter((event) => event.time < start || event.time > end)
+
+        //add new event for the selection
+        events.push({time: start, type: deleteMode ? "text" : "mark"});
+
+        //add new event for the end of the selection
+        if(end+1 < text.length && !events.some((event) => event.time === end+1))
+            events.push({time: end+1, type: lastStartInSelection?.type ?? "text"});
+
+        events.sort((a, b) => a.time - b.time);
+
+
+        //remove marks that are the same as the one before
+        let lastType = "";
+        events = events.filter((event) => {
+            if(event.type === lastType)
+                return false;
+            lastType = event.type;
+            return true;
         })
 
-        //only one split is affected
-        if (affectedsplits.length == 1) {
-            const affected = affectedsplits[0]
+        //create new splits from events
+        const newSplits: (AnnotationSplit | TextSplit)[] = [];
 
-            if (!affected || (affected as AnnotationSplit).color)
-                return
-
-            const splitstart = affected.start
-            const splitend = affected.end
-
-            const newsplits: (AnnotationSplit | TextSplit)[] = []
-            if (splitstart != start) {
-                newsplits.push({
-                    start: splitstart,
-                    end: start,
-                    content: text.slice(splitstart, start)
-                })
+        for (let i = 1; i < events.length; i++) {
+            const event = events[i-1];
+            const nextEvent = events[i];
+            if(event.type === "text") {
+                newSplits.push({
+                    start: event.time,
+                    end: nextEvent.time,
+                    content: text.slice(event.time, nextEvent.time)
+                });
+            } else {
+                newSplits.push({
+                    start: event.time,
+                    end: nextEvent.time,
+                    color: "red",
+                    content: text.slice(event.time, nextEvent.time)
+                });
             }
-            newsplits.push({
-                start: start,
-                end: end,
-                color: "red",
-                content: text.slice(start, end)
-            })
-            if (splitend != end) {
-                newsplits.push({
-                    start: end,
-                    end: splitend,
-                    content: text.slice(end, splitend)
-                })
-            }
-
-            setSplits((prevState) => {
-                //replace affected split with 3 new splits
-                const index = prevState.indexOf(affected);
-                const splits = [...prevState];
-                splits.splice(index, 1, ...newsplits);
-                return splits;
-            });
-        } else {
-            //more than one split is affected
-            //if this is true something went extremely wrong
-            if (affectedsplits.length == 0)
-                return
-
-            let markstart = start;
-            let markend = end;
-            const newsplits: (AnnotationSplit | TextSplit)[] = [];
-            for (const split of affectedsplits) {
-                //selection starts in split and ends in another split
-                if (split.start <= start && split.end >= start) {
-                    if ((split as AnnotationSplit).color) {
-                        markstart = split.start;
-                    } else {
-                        //text before selection
-                        if (split.start != start)
-                            newsplits.push({
-                                start: split.start,
-                                end: start,
-                                content: text.slice(split.start, start)
-                            })
-                    }
-                }
-                //selection starts in another split and ends in split
-                if (split.start <= end && split.end >= end) {
-                    if ((split as AnnotationSplit).color) {
-                        markend = split.end;
-                    } else {
-                        //text after selection
-                        if (split.end != end)
-                            newsplits.push({
-                                start: end,
-                                end: split.end,
-                                content: text.slice(end, split.end)
-                            })
-                    }
-                }
-            }
-            //mark text between start and end
-            newsplits.push({
-                start: markstart,
-                end: markend,
-                color: "red",
-                content: text.slice(markstart, markend)
-            })
-
-            newsplits.sort((a, b) => {
-                return a.start - b.start;
-            })
-
-            setSplits((prevState) => {
-                //replace affected splits with new splits
-                const index = prevState.indexOf(affectedsplits[0]);
-                const splits = [...prevState];
-                splits.splice(index, affectedsplits.length, ...newsplits);
-                return splits;
-            });
         }
+        newSplits.push({
+            start: events[events.length-1].time,
+            end: text.length,
+            color: events[events.length-1].type === "mark" ? "red" : undefined,
+            content: text.slice(events[events.length-1].time, text.length)
+        });
+
+        setSplits(newSplits);
+
         //dont add the suggested things to tha dependency array. it will break shit
-    }, [editMode, id, splits, text]);
+    }, [editMode, id, splits, text, deleteMode]);
 
     useEffect(() => {
         // Subscribe to the event

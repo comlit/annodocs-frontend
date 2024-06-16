@@ -62,11 +62,12 @@ function Edit() {
         }
     }
 
-    const selectionChangeCallback = (parts: AnnotationPart[]) => {
+    const selectionChangeCallback = (parts: {parts: AnnotationPart[], textID: number}) => {
         setNewAnnotation(prevState => {
-            const textID = parts[0].textID
-            const prevParts = prevState.parts.filter(part => part.textID !== textID)
-            return {id: prevState.id, name: prevState.name, color: prevState.color, parts: [...prevParts, ...parts]}
+            console.log(parts)
+            console.log(prevState)
+            const prevParts = prevState.parts.filter(part => part.textID !== parts.textID)
+            return {id: prevState.id, name: prevState.name, color: prevState.color, parts: [...prevParts, ...parts.parts]}
         })
     }
 
