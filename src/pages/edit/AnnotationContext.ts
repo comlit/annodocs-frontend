@@ -8,6 +8,7 @@ interface AnnotationContext {
     clickedCallback: (id: number) => void;
     exitEditMode: (data: any) => void;
     selectionChangeCallback: (parts: AnnotationPart[]) => void;
+    deleteMode: boolean;
 }
 
 const AnnotationContext = createContext({} as AnnotationContext);

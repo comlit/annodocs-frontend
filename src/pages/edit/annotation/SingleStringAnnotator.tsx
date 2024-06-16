@@ -42,7 +42,13 @@ function SingleStringAnnotator({id, text}: {
     const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
     const [existingAnnotations, setExistingAnnotations] = useState<Mark[]>([]);
     const ref = useRef<HTMLDivElement>(null);
-    const {editMode, annotations, focusedAnnotation, selectionChangeCallback} = useContext(AnnotationContext);
+    const {
+        editMode,
+        annotations,
+        focusedAnnotation,
+        selectionChangeCallback,
+        deleteMode
+    } = useContext(AnnotationContext);
 
     useEffect(() => {
         const newAnnotations: Mark[] = [];
@@ -74,48 +80,44 @@ function SingleStringAnnotator({id, text}: {
                 start: split.start,
                 end: split.end,
                 textID: parseInt(id),
-                id: Math.ceil(Math.random()*100000000),
+                id: Math.ceil(Math.random() * 100000000),
             }
         })
-        if(returnSplits.length > 0) {
+        if (returnSplits.length > 0) {
             selectionChangeCallback(returnSplits);
         }
     }, [splits]);
 
     useEffect(() => {
-        if(editMode && focusedAnnotation && focusedAnnotation != -1) {
-            const annotation = existingAnnotations.find(annotation => annotation.annotationID === focusedAnnotation);
-            if (!annotation)
+        if (editMode && focusedAnnotation && focusedAnnotation != -1) {
+            const annotation = existingAnnotations.filter(annotation => annotation.annotationID === focusedAnnotation);
+            console.log(annotation)
+            if (annotation.length === 0)
                 return;
             const newSplits: (AnnotationSplit | TextSplit)[] = [];
-            for (const split of splits) {
-                if (split.start >= annotation.start && split.end <= annotation.end) {
+            let start = 0;
+            for (const part of annotation) {
+                if (part.start != start) {
                     newSplits.push({
-                        start: split.start,
-                        end: split.end,
-                        color: annotation.color,
-                        content: text.slice(split.start, split.end)
+                        start: start,
+                        end: part.start,
+                        content: text.slice(start, part.start)
                     });
-                } else if (split.start < annotation.start && split.end > annotation.end) {
-                    newSplits.push({
-                        start: split.start,
-                        end: annotation.start,
-                        content: text.slice(split.start, annotation.start)
-                    });
-                    newSplits.push({
-                        start: annotation.start,
-                        end: annotation.end,
-                        color: annotation.color,
-                        content: text.slice(annotation.start, annotation.end)
-                    });
-                    newSplits.push({
-                        start: annotation.end,
-                        end: split.end,
-                        content: text.slice(annotation.end, split.end)
-                    });
-                } else {
-                    newSplits.push(split);
                 }
+                newSplits.push({
+                    start: part.start,
+                    end: part.end,
+                    color: part.color,
+                    content: text.slice(part.start, part.end)
+                });
+                start = part.end;
+            }
+            if (start != text.length) {
+                newSplits.push({
+                    start: start,
+                    end: text.length,
+                    content: text.slice(start, text.length)
+                });
             }
             setSplits(newSplits);
         } else {
@@ -197,11 +199,16 @@ function SingleStringAnnotator({id, text}: {
             return;
         const {start, end} = selection;
 
+        //get splits that are fully or partially inside the selection
+        const affectedsplits = splits.filter((split) => {
+            //split is completely inside selection || split end is inside selection || split start is inside selection
+            return (split.start >= start && split.end <= end) || (split.start <= end && split.end >= end) || (split.start <= start && split.end >= start)
+        })
+
         //only one split is affected
-        if (splits.find(e => e.start <= start && e.end >= end)) {
-            const affected = splits.find((split) => {
-                return split.start <= start && split.end >= end;
-            })
+        if (affectedsplits.length == 1) {
+            const affected = affectedsplits[0]
+
             if (!affected || (affected as AnnotationSplit).color)
                 return
 
@@ -239,10 +246,6 @@ function SingleStringAnnotator({id, text}: {
             });
         } else {
             //more than one split is affected
-            const affectedsplits = splits.filter((split) => {
-                //split is completely inside selection || split end is inside selection || split start is inside selection
-                return (split.start >= start && split.end <= end) || (split.start <= end && split.end >= end) || (split.start <= start && split.end >= start)
-            })
             //if this is true something went extremely wrong
             if (affectedsplits.length == 0)
                 return

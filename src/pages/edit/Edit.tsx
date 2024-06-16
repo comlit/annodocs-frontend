@@ -1,5 +1,5 @@
 import Annotator from "./annotation/Annotator.tsx";
-import {Box, Grid, GridItem} from "@chakra-ui/react";
+import {Box, Button, Grid, GridItem} from "@chakra-ui/react";
 import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
@@ -29,6 +29,8 @@ function Edit() {
     const [annotations, setAnnotations] = useState<Annotation[]>([])
     const [textList, setTextList] = useState<any[]>([])
     const [newAnnotation, setNewAnnotation] = useState<Annotation>({id: -1, name: "", color: "", parts: []})
+
+    const [deleteMode, setDeleteMode] = useState<boolean>(false)
 
     const clickedCallback = (id: number | null) => {
         if (editMode)
@@ -238,7 +240,7 @@ function Edit() {
     }, []);
 
     return (
-        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback}}>
+        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback, deleteMode}}>
             <Box m='50px'>
                 <Grid
                     templateColumns="5fr 1fr"
@@ -250,6 +252,7 @@ function Edit() {
                         <AnnotatorSidebar setEditMode={changeEditMode} setFocusedAnnotation={clickedCallback}/>
                     </GridItem>
                 </Grid>
+                <Button onClick={() => setDeleteMode(prevState => !prevState)}>switch mode</Button>
             </Box>
         </AnnotationContext.Provider>
     );
