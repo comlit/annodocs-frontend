@@ -11,9 +11,6 @@
 div.jnhtml {
     font-family: Arial;
     font-size: 100%;
-    border-color: aqua;
-    border-width: 1px;
-    border-style: solid;
 }
 
 /* CR10912 CellPadding Tabellen 26.6.2013 */
@@ -72,51 +69,6 @@ div.jnhtml {
 
 .jnhtml dl dd {
     margin-left: 3.5em;
-}
-
-.jnhtml h1 {
-    margin-top: 18pt;
-    margin-bottom: 9pt
-}
-
-.jnhtml h2 {
-    margin-top: 15pt;
-    margin-bottom: 7pt
-}
-
-.jnhtml h3 {
-    margin-top: 12pt;
-    margin-bottom: 6pt
-}
-
-.jnhtml h4 {
-    margin-top: 10pt;
-    margin-bottom: 5pt
-}
-
-.jnhtml h5 {
-    margin-top: 8pt;
-    margin-bottom: 4pt
-}
-
-.jnhtml h6 {
-    margin-top: 4pt;
-    margin-bottom: 2pt
-}
-
-.jnhtml h7 {
-    margin-top: 1pt;
-    margin-bottom: 1pt
-}
-
-.jnhtml h8 {
-    margin-top: 1pt;
-    margin-bottom: 1pt
-}
-
-.jnhtml h9 {
-    margin-top: 1pt;
-    margin-bottom: 1pt
 }
 
 .jnhtml .Section0 {

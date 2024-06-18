@@ -3,6 +3,7 @@ import SingleStringAnnotator from "./SingleStringAnnotator.tsx";
 import {ReactElement, useContext} from "react";
 import eventEmitter from "../EventEmitter.ts";
 import AnnotationContext from "../AnnotationContext.ts";
+import {Box, Heading} from "@chakra-ui/react";
 
 type textpart = {
     id: number,
@@ -18,12 +19,12 @@ type listitem = {
     content: (list | textpart | listitem)[] | list | textpart | listitem
 }
 
-function Annotator({textList}: {textList: (list | textpart | listitem)[]}) {
+function Annotator({textList}: { textList: (list | textpart | listitem)[] }) {
 
     const {editMode} = useContext(AnnotationContext);
 
     const emitMouseUp = () => {
-        if(!editMode)
+        if (!editMode)
             return
 
         const selection = document.getSelection();
@@ -47,7 +48,7 @@ function Annotator({textList}: {textList: (list | textpart | listitem)[]}) {
     //TODO: check types. I mean it works but idk this can't be right
     const renderParagraph = (content: (list | textpart | listitem | (list | textpart | listitem)[])[] | list | textpart | listitem): ReactElement => {
         //content is text
-        if ((content as textpart)?.text){
+        if ((content as textpart)?.text) {
             //setAnnotationIDs(prevState => [...prevState, (content as textpart).id.toString()])
             return <SingleStringAnnotator
                 id={(content as textpart).id.toString()}
@@ -63,7 +64,7 @@ function Annotator({textList}: {textList: (list | textpart | listitem)[]}) {
             </>
 
         //content is list
-        if((content as list)?.list)
+        if ((content as list)?.list)
             return <>
                 <dl>
                     {(content as list).list.map((item) => renderParagraph(item))}
@@ -77,16 +78,20 @@ function Annotator({textList}: {textList: (list | textpart | listitem)[]}) {
     }
 
     return (
-        <div className="jnhtml" onMouseUp={emitMouseUp}>
-            <div>
-                {textList.map((item, index) =>
-                    <div className='jurAbsatz' key={index}>
-                        {renderParagraph(item)}
-                    </div>
-                )}
-            </div>
-
-        </div>
+        <Box className="jnhtml"
+             onMouseUp={emitMouseUp}
+             border='1px'
+             borderColor='gray.200'
+             borderRadius='8px'
+             px='10px'
+        >
+            <Heading size="md" w='100%' textAlign='center' mb='20px' mt='10px'>§ Gesetztitel-Platzhalter</Heading>
+            {textList.map((item, index) =>
+                <div className='jurAbsatz' key={index}>
+                    {renderParagraph(item)}
+                </div>
+            )}
+        </Box>
     );
 }
 

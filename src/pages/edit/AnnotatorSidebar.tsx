@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {Box, Button, Heading, Input, Text, VStack} from "@chakra-ui/react";
+import {Box, Button, Heading, Icon, Input, Text, VStack} from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 import {Annotation} from "./Edit.tsx";
@@ -43,7 +43,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                 {
                     id: focused?.id ?? Math.round(Math.random() * 100000),
                     name: name,
-                    color: focused?.color ?? "#009500",
+                    color: focused?.color ?? getRandomPastelColor(),
                 }
             )}>Speichern</Button>
         </Box>
@@ -51,8 +51,8 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     //list with all annotations
     const viewModeLayout = <>
-        <Box h="100%" mt={"10px"} maxH={{ base: '50vh', md: '70vh', lg: '80vh' }}  overflowY="scroll">
-            <VStack mx="10px" >
+        <Box h="100%" maxH={{ base: '50vh', md: '70vh', lg: '80vh' }}  overflowY="scroll">
+            <VStack m="10px" >
                 <Heading size="md">Annotationen</Heading>
                 {annotations.map(annotation => (
                     <AnnotationListItem annotation={annotation} key={annotation.id}
@@ -78,12 +78,31 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         </Box>
     </>
 
+    const getRandomPastelColor = (): string => {
+        // Funktion zur Generierung einer zufälligen Zahl im Bereich [128, 255]
+        const randomChannelValue = (): number => Math.floor(Math.random() * 128 + 110);
+
+        // Generierung der RGB-Werte
+        const r = randomChannelValue();
+        const g = randomChannelValue();
+        const b = randomChannelValue();
+
+        // Konvertierung der RGB-Werte in einen Hex-String
+        const toHex = (value: number): string => {
+            const hex = value.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+
+        // Zusammenfügen der Hex-Werte in einen Farbcode
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    };
+
     return (
-        <div className="annotator-sidebar" style={{borderColor: "aqua", borderWidth: "1px", height: "100%"}}>
+        <Box className="annotator-sidebar" border='1px' borderColor='gray.200' borderRadius='8px'>
             <div className="annotator-sidebar__content">
                 {editMode ? editModeLayout : focusedAnnotation ? detailModeLayout : viewModeLayout}
             </div>
-        </div>
+        </Box>
     );
 }
 

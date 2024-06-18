@@ -1,4 +1,4 @@
-import {Button, Card, CardBody, CardFooter, CardHeader, Heading, Icon} from "@chakra-ui/react";
+import {Button, Card, CardBody, CardFooter, Heading, Icon} from "@chakra-ui/react";
 import {Annotation} from "./Edit.tsx";
 
 function AnnotationListItem({annotation, clicked}: { annotation: Annotation, clicked: any }) {

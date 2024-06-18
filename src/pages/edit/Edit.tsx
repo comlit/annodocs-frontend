@@ -64,8 +64,6 @@ function Edit() {
 
     const selectionChangeCallback = (parts: {parts: AnnotationPart[], textID: number}) => {
         setNewAnnotation(prevState => {
-            console.log(parts)
-            console.log(prevState)
             const prevParts = prevState.parts.filter(part => part.textID !== parts.textID)
             return {id: prevState.id, name: prevState.name, color: prevState.color, parts: [...prevParts, ...parts.parts]}
         })
@@ -207,7 +205,7 @@ function Edit() {
             {
                 id: 1,
                 name: "Müller",
-                color: "#ffcaca",
+                color: "#d1e797",
                 parts:
                     [
                         {id: 4561, textID: 1, start: 90, end: 170},
@@ -218,7 +216,7 @@ function Edit() {
             {
                 id: 2,
                 name: "Schäfer",
-                color: "#0000FF",
+                color: "#d794c7",
                 parts: [
                     {id: 2843, textID: 13, start: 45, end: 120},
                     {id: 4640, textID: 7, start: 10, end: 40},
@@ -227,7 +225,7 @@ function Edit() {
             {
                 id: 3,
                 name: "Mayer",
-                color: "#00FF00",
+                color: "#c0afd5",
                 parts: [
                     {id: 34, textID: 1, start: 50, end: 150},
                     {id: 53, textID: 4, start: 30, end: 54},
