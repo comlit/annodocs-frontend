@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {Box, Button, Input, Text, VStack} from "@chakra-ui/react";
+import {Box, Button, Heading, Input, Text, VStack} from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 import {Annotation} from "./Edit.tsx";
@@ -51,20 +51,20 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     //list with all annotations
     const viewModeLayout = <>
-        <Box h="100%">
-            <Text>Alle Anontationen in diesem Text</Text>
-            <VStack mx="10px">
+        <Box h="100%" mt={"10px"} maxH={{ base: '50vh', md: '70vh', lg: '80vh' }}  overflowY="scroll">
+            <VStack mx="10px" >
+                <Heading size="md">Annotationen</Heading>
                 {annotations.map(annotation => (
                     <AnnotationListItem annotation={annotation} key={annotation.id}
                                         clicked={() => setFocusedAnnotation(annotation.id)}/>
                 ))}
 
             </VStack>
-            <Button mt="auto" onClick={() => {
-                setEditMode(true);
-                setFocusedAnnotation(-1)
-            }}>Neue Annotation</Button>
         </Box>
+        <Button mt="auto" onClick={() => {
+            setEditMode(true);
+            setFocusedAnnotation(-1)
+        }}>Neue Annotation</Button>
     </>
 
     const detailModeLayout = <>
@@ -80,9 +80,6 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     return (
         <div className="annotator-sidebar" style={{borderColor: "aqua", borderWidth: "1px", height: "100%"}}>
-            <div className="annotator-sidebar__header">
-                <h2>Annotations</h2>
-            </div>
             <div className="annotator-sidebar__content">
                 {editMode ? editModeLayout : focusedAnnotation ? detailModeLayout : viewModeLayout}
             </div>

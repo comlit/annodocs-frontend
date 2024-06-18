@@ -244,7 +244,7 @@ function Edit() {
         <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback, deleteMode}}>
             <Box m='50px'>
                 <Grid
-                    templateColumns="5fr 1fr"
+                    templateColumns="12fr 3fr"
                     gap="10px">
                     <GridItem>
                         <Annotator textList={textList}/>
