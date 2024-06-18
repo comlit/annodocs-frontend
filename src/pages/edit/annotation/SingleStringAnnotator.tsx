@@ -5,16 +5,11 @@ import AnnotationContext from "../AnnotationContext.ts";
 import eventEmitter from "../EventEmitter.ts";
 import {AnnotationPart} from "../Edit.tsx";
 
-export type AnnotationSplit = {
+export type Split = {
     start: number,
     end: number,
-    color: string
-    content: string
-}
-export type TextSplit = {
-    start: number,
-    end: number,
-    content: string
+    content: string,
+    type: "annotation" | "text"
 }
 
 interface Mark {
@@ -39,7 +34,7 @@ function SingleStringAnnotator({id, text}: {
     text: string,
 }) {
 
-    const [splits, setSplits] = useState<(AnnotationSplit | TextSplit)[]>([]);
+    const [splits, setSplits] = useState<Split[]>([]);
     const [existingAnnotations, setExistingAnnotations] = useState<Mark[]>([]);
     const ref = useRef<HTMLDivElement>(null);
     const {
@@ -75,7 +70,7 @@ function SingleStringAnnotator({id, text}: {
     }, [text]);
 
     useEffect(() => {
-        const returnSplits: AnnotationPart[] = splits.filter(split => (split as AnnotationSplit).color).map(split => {
+        const returnSplits: AnnotationPart[] = splits.filter(split => split.type === "annotation").map(split => {
             return {
                 start: split.start,
                 end: split.end,
@@ -92,21 +87,22 @@ function SingleStringAnnotator({id, text}: {
 
             if (annotation.length === 0)
                 return;
-            const newSplits: (AnnotationSplit | TextSplit)[] = [];
+            const newSplits: Split[] = [];
             let start = 0;
             for (const part of annotation) {
                 if (part.start != start) {
                     newSplits.push({
                         start: start,
                         end: part.start,
-                        content: text.slice(start, part.start)
+                        content: text.slice(start, part.start),
+                        type: "text"
                     });
                 }
                 newSplits.push({
                     start: part.start,
                     end: part.end,
-                    color: part.color,
-                    content: text.slice(part.start, part.end)
+                    content: text.slice(part.start, part.end),
+                    type: "annotation"
                 });
                 start = part.end;
             }
@@ -114,7 +110,8 @@ function SingleStringAnnotator({id, text}: {
                 newSplits.push({
                     start: start,
                     end: text.length,
-                    content: text.slice(start, text.length)
+                    content: text.slice(start, text.length),
+                    type: "text"
                 });
             }
             setSplits(newSplits);
@@ -125,7 +122,7 @@ function SingleStringAnnotator({id, text}: {
     }, [editMode, existingAnnotations, focusedAnnotation, text]);
 
     const resetSplits = () => {
-        const intitialsplit: TextSplit = {start: 0, end: text.length, content: text}
+        const intitialsplit: Split = {start: 0, end: text.length, content: text, type: "text"}
         setSplits([intitialsplit]);
     }
 
@@ -201,7 +198,7 @@ function SingleStringAnnotator({id, text}: {
 
         //push split start events
         for (const split of splits) {
-            const type = (split as AnnotationSplit)?.color ? "mark" : "text";
+            const type = split.type === "annotation" ? "mark" : "text";
             events.push({time: split.start, type: type});
         }
         events.sort((a, b) => a.time - b.time);
@@ -234,7 +231,7 @@ function SingleStringAnnotator({id, text}: {
         })
 
         //create new splits from events
-        const newSplits: (AnnotationSplit | TextSplit)[] = [];
+        const newSplits: Split[] = [];
 
         for (let i = 1; i < events.length; i++) {
             const event = events[i-1];
@@ -243,22 +240,23 @@ function SingleStringAnnotator({id, text}: {
                 newSplits.push({
                     start: event.time,
                     end: nextEvent.time,
-                    content: text.slice(event.time, nextEvent.time)
+                    content: text.slice(event.time, nextEvent.time),
+                    type: "text"
                 });
             } else {
                 newSplits.push({
                     start: event.time,
                     end: nextEvent.time,
-                    color: "red",
-                    content: text.slice(event.time, nextEvent.time)
+                    content: text.slice(event.time, nextEvent.time),
+                    type: "annotation"
                 });
             }
         }
         newSplits.push({
             start: events[events.length-1].time,
             end: text.length,
-            color: events[events.length-1].type === "mark" ? "red" : undefined,
-            content: text.slice(events[events.length-1].time, text.length)
+            content: text.slice(events[events.length-1].time, text.length),
+            type: events[events.length-1].type === "mark" ? "annotation" : "text"
         });
 
         setSplits(newSplits);
@@ -400,9 +398,9 @@ function SingleStringAnnotator({id, text}: {
 
             if (annotations.length == 0) {
                 //no annotation in this split -> render normally as text or mark
-                if (!(split as AnnotationSplit).color)
+                if (split.type === "text")
                     return <span key={index} data-start={split.start}
-                                 data-end={split.end}>{(split as TextSplit).content}</span>
+                                 data-end={split.end}>{split.content}</span>
                 else
                     return <Mark key={index} content={split.content} start={split.start} end={split.end} tag="SIE"/>
             }
@@ -429,7 +427,7 @@ function SingleStringAnnotator({id, text}: {
                 elements.push(<span key={index} data-start={start}
                                     data-end={split.end}>{text.slice(start, split.end)}</span>)
             }
-            if (!(split as AnnotationSplit).color)
+            if (split.type === "text")
                 return elements
             else
                 return <Mark key={index} content={elements} start={split.start} end={split.end} tag="SIE"/>
