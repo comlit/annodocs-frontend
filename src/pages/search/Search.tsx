@@ -1,12 +1,10 @@
-// src/Search.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Button, Input, List, ListItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { dummyData1 } from './data';
 import Filter from './Filter';
-import styles from './Search.module.css'; // Import the CSS module
+import styles from './Search.module.css';
 
-// List of German states
 const germanStates = [
   "Baden-Württemberg",
   "Bayern",
@@ -28,34 +26,55 @@ const germanStates = [
 
 function Search() {
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState(dummyData1);
-  const [selectedType, setSelectedType] = useState('alle');
-  const [selectedState, setSelectedState] = useState('');
-  const [cart, setCart] = useState<any[]>([]);
+  const [query, setQuery] = React.useState('');
+  const [results, setResults] = React.useState(dummyData1);
+  const [selectedType, setSelectedType] = React.useState('alle');
+  const [selectedState, setSelectedState] = React.useState('');
+  const [selectedKommune, setSelectedKommune] = React.useState('');
+  const [cart, setCart] = React.useState<any[]>([]);
+  const [communes, setCommunes] = React.useState<string[]>([]);
 
-  useEffect(() => {
-    filterResults(query, selectedType, selectedState);
+  React.useEffect(() => {
+    filterResults(query, selectedType, selectedState, selectedKommune);
   }, [cart]);
+
+  React.useEffect(() => {
+    if (selectedType === 'kommunal' && selectedState) {
+      const filteredCommunes = [...new Set(dummyData1
+        .filter(item => item.type === 'kommunal' && item.state === selectedState)
+        .map(item => item.kommune)
+      )].filter(Boolean) as string[]; // Ensure the filtered list contains only strings
+      setCommunes(filteredCommunes);
+    } else {
+      setCommunes([]);
+    }
+  }, [selectedState, selectedType]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setQuery(value);
-    filterResults(value, selectedType, selectedState);
+    filterResults(value, selectedType, selectedState, selectedKommune);
   };
 
   const handleFilterChange = (type: string) => {
     setSelectedType(type);
-    setSelectedState(''); // Reset state filter when changing law type
-    filterResults(query, type, '');
+    setSelectedState('');
+    setSelectedKommune('');
+    filterResults(query, type, '', '');
   };
 
   const handleStateChange = (state: string) => {
     setSelectedState(state);
-    filterResults(query, selectedType, state);
+    setSelectedKommune('');
+    filterResults(query, selectedType, state, '');
   };
 
-  const filterResults = (searchQuery: string, lawType: string, state: string) => {
+  const handleKommuneChange = (kommune: string) => {
+    setSelectedKommune(kommune);
+    filterResults(query, selectedType, selectedState, kommune);
+  };
+
+  const filterResults = (searchQuery: string, lawType: string, state: string, kommune: string) => {
     let filteredResults = dummyData1;
 
     if (lawType !== 'alle') {
@@ -64,6 +83,13 @@ function Search() {
 
     if (lawType === 'land' && state) {
       filteredResults = filteredResults.filter(item => item.state === state);
+    }
+
+    if (lawType === 'kommunal' && state) {
+      filteredResults = filteredResults.filter(item => item.state === state);
+      if (kommune) {
+        filteredResults = filteredResults.filter(item => item.kommune === kommune);
+      }
     }
 
     if (searchQuery) {
@@ -96,65 +122,91 @@ function Search() {
   };
 
   const handleNavigateToEdit = () => {
-    navigate('/edit/');
+    // Iterate over each item in the cart
+    cart.forEach((item, index) => {
+      // Construct the URL for each item
+      const url = `/edit/${item.id}`;
+  
+      // Open a new tab with the constructed URL
+      const newTab = window.open(url, `_blank_${index}`); // Use a unique name for each tab
+    
+      // Focus the new tab (optional)
+      if (newTab) {
+        newTab.focus();
+      } else {
+        console.error(`Failed to open tab for item ID: ${item.id}`);
+      }
+    });
   };
+  
 
   return (
     <Box className={styles.container}>
       <Box className={styles.innerContainer}>
-        <h1>Suche</h1>
-        <p>Hier Gesetze Suchen</p>
+        <h1 className={styles.title}>Suche</h1>
+        <p className={styles.subtitle}>Hier können Sie nach Gesetzen suchen</p>
         <Input
           placeholder="Suchen..."
           value={query}
           onChange={handleSearch}
-          className={styles.inputField} // Apply the CSS class
+          className={styles.inputField}
         />
         <Filter
           selectedType={selectedType}
           onFilterChange={handleFilterChange}
           selectedState={selectedState}
           onStateChange={handleStateChange}
-          states={germanStates} // Use the German states array here
+          selectedKommune={selectedKommune}
+          onKommuneChange={handleKommuneChange}
+          states={germanStates}
+          communes={communes}
         />
       </Box>
       <Box className={styles.innerContainer}>
-        <List spacing={3}>
+        <List spacing={3} className={styles.list}>
           {results.map(item => (
-            <ListItem key={item.id}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Button variant="link" onClick={() => handleResultClick(item.id)}>
-                  {item.name}
-                </Button>
-                <Button size="sm" onClick={() => handleAddToCart(item)}>
-                  Zum Korb hinzufugen
-                </Button>
+            <ListItem key={item.id} className={styles.listItem}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                <Box flex="1">
+                  <Button variant="link" onClick={() => handleResultClick(item.id)}>
+                    {item.name}
+                  </Button>
+                </Box>
+                <Box>
+                  <Button size="sm" className={styles.button} onClick={() => handleAddToCart(item)}>
+                    Zum Korb hinzufügen
+                  </Button>
+                </Box>
               </Box>
             </ListItem>
           ))}
         </List>
       </Box>
       <Box className={styles.innerContainer} mt={8}>
-        <h2>Korb</h2>
-        <List spacing={3}>
+        <h2 className={styles.subtitle}>Korb</h2>
+        <List spacing={3} className={styles.list}>
           {cart.map(item => (
-            <ListItem key={item.id}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                {item.name}
-                <Button size="sm" onClick={() => handleRemoveFromCart(item.id)}>
-                  Entfernen
-                </Button>
+            <ListItem key={item.id} className={styles.listItem}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                <Box flex="1">
+                  {item.name}
+                </Box>
+                <Box>
+                  <Button size="sm" className={styles.button} onClick={() => handleRemoveFromCart(item.id)}>
+                    Entfernen
+                  </Button>
+                </Box>
               </Box>
             </ListItem>
           ))}
         </List>
         {cart.length > 0 && (
           <>
-            <Button mt={4} onClick={handleEmptyCart}>
+            <Button mt={4} className={styles.button} onClick={handleEmptyCart}>
               Korb leeren
             </Button>
-            <Button mt={4} ml={4} onClick={handleNavigateToEdit}>
-              Gesetze anzeigen
+            <Button mt={4} ml={4} className={styles.button} onClick={handleNavigateToEdit}>
+              Bearbeiten
             </Button>
           </>
         )}

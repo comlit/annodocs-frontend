@@ -1,3 +1,4 @@
+// src/Filter.tsx
 import React from 'react';
 import { Box, Radio, RadioGroup, Stack, Select } from "@chakra-ui/react";
 
@@ -6,7 +7,10 @@ interface FilterProps {
   onFilterChange: (type: string) => void;
   selectedState: string;
   onStateChange: (state: string) => void;
+  selectedKommune: string;
+  onKommuneChange: (kommune: string) => void;
   states: string[];
+  communes: string[];
 }
 
 const Filter: React.FC<FilterProps> = ({
@@ -14,7 +18,10 @@ const Filter: React.FC<FilterProps> = ({
   onFilterChange,
   selectedState,
   onStateChange,
-  states
+  selectedKommune,
+  onKommuneChange,
+  states,
+  communes
 }) => {
   return (
     <Box mb={4}>
@@ -26,11 +33,20 @@ const Filter: React.FC<FilterProps> = ({
           <Radio value="kommunal">Kommunalgesetze</Radio>
         </Stack>
       </RadioGroup>
-      {selectedType === 'land' && (
-        <Select mt={4} placeholder="Select state" value={selectedState} onChange={(e) => onStateChange(e.target.value)}>
+      {(selectedType === 'land' || selectedType === 'kommunal') && (
+        <Select mt={4} placeholder="Bundesland auswählen" value={selectedState} onChange={(e) => onStateChange(e.target.value)}>
           {states.map((state) => (
             <option key={state} value={state}>
               {state}
+            </option>
+          ))}
+        </Select>
+      )}
+      {selectedType === 'kommunal' && selectedState && (
+        <Select mt={4} placeholder="Kommune auswählen" value={selectedKommune} onChange={(e) => onKommuneChange(e.target.value)}>
+          {communes.map((kommune) => (
+            <option key={kommune} value={kommune}>
+              {kommune}
             </option>
           ))}
         </Select>
