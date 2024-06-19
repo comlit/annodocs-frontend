@@ -1,3 +1,28 @@
+/* Customize the entire scrollbar */
+.annotator-sidebar ::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+    height: 8px; /* Height for horizontal scrollbar */
+}
+
+/* Customize the draggable part of the scrollbar */
+.annotator-sidebar ::-webkit-scrollbar-thumb {
+    background-color: #bbb; /* Lighter color of the scrollbar thumb */
+    border-radius: 10px; /* Roundness of the scrollbar thumb */
+}
+
+/* Customize the track of the scrollbar */
+.annotator-sidebar ::-webkit-scrollbar-track {
+    background-color: #e0e0e0; /* Base color of the scrollbar track */
+    border-radius: 10px; /* Roundness of the scrollbar track */
+    margin: 4px; /* Add margin inside the track to create space */
+}
+
+/* Customize the hover effect on the scrollbar thumb */
+.annotator-sidebar ::-webkit-scrollbar-thumb:hover {
+    background-color: #999; /* Darker color when hovered */
+}
+
+
 .mark-name:hover {
     z-index: 1000;
     cursor: pointer;
