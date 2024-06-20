@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {Box, Button, Divider, Heading, Input, Text, VStack} from "@chakra-ui/react";
+import {Box, Button, Divider, Heading, Input, Select, Text, VStack} from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 import {Annotation} from "./Edit.tsx";
@@ -28,12 +28,17 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         }
     }, [focusedAnnotation]);
 
-    //TODO: add functionality to buttons
     //TODO: add inputs to change other data of annotation
     const editModeLayout = <>
         <Box h="100%">
             <Text>Bearbeiten eine Vorhandenen oder erstellen einer neuen Annotation</Text>
             <Input onChange={handleNameChange} value={name} placeholder="Name der Annotation"/>
+            <Select placeholder='Typ auswählen'>
+                <option value='option1'>Entscheidungsbaum</option>
+                <option value='option2'>Prozessmodell</option>
+                <option value='option3'>Formular</option>
+            </Select>
+
             <Button onClick={() => {
                 if (window.confirm("Wollen Sie die Änderungen verwerfen?")) {
                     exitEditMode(null);
@@ -49,7 +54,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         </Box>
     </>
 
-    //list with all annotations
+    //TODO: add ability to filter
     const viewModeLayout =
         <>
             <Box h="100%" maxH={{base: '50vh', md: '70vh', lg: '80vh'}} overflowY="scroll">
@@ -64,7 +69,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
             </Box>
 
             <Box w="100%" display="flex" justifyContent="center" alignItems="center" py="8px" flexDir="column">
-                <Divider mb="8px"/>
+                <Divider mb="8px" mx="4px"/>
                 <Button w="90%" onClick={() => {
                     setEditMode(true);
                     setFocusedAnnotation(-1)
