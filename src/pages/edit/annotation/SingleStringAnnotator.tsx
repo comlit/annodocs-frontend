@@ -274,6 +274,15 @@ function SingleStringAnnotator({id, text}: {
         };
     }, [handleSelectionEvent]);
 
+    useEffect(() => {
+        eventEmitter.on('deleteAnnotations', resetSplits)
+
+        return () => {
+            eventEmitter.off('deleteAnnotations', resetSplits)
+        }
+
+    }, [resetSplits]);
+
     /**
      * Split marks for easy rendering
      * @param marks

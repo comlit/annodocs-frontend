@@ -1,5 +1,5 @@
 import Annotator from "./annotation/Annotator.tsx";
-import {Box, Button, Grid, GridItem} from "@chakra-ui/react";
+import {Box, Grid, GridItem} from "@chakra-ui/react";
 import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
