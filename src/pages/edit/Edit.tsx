@@ -42,6 +42,10 @@ function Edit() {
         setEditMode(enabled)
     }
 
+    const toggleDeleteMode = () => {
+        setDeleteMode(prevState => !prevState)
+    }
+
     const exitEditMode = (data: any) => {
         if(!data) {
             setEditMode(false)
@@ -239,7 +243,7 @@ function Edit() {
     }, []);
 
     return (
-        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback, deleteMode}}>
+        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback, deleteMode, toggleDeleteMode}}>
             <Box m='50px'>
                 <Grid
                     templateColumns="12fr 3fr"
@@ -251,7 +255,6 @@ function Edit() {
                         <AnnotatorSidebar setEditMode={changeEditMode} setFocusedAnnotation={clickedCallback}/>
                     </GridItem>
                 </Grid>
-                <Button onClick={() => setDeleteMode(prevState => !prevState)}>switch mode</Button>
             </Box>
         </AnnotationContext.Provider>
     );

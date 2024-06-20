@@ -4,6 +4,7 @@ import {ReactElement, useContext} from "react";
 import eventEmitter from "../EventEmitter.ts";
 import AnnotationContext from "../AnnotationContext.ts";
 import {Box, Heading} from "@chakra-ui/react";
+import Toolbar from "../Toolbar.tsx";
 
 type textpart = {
     id: number,
@@ -84,8 +85,10 @@ function Annotator({textList}: { textList: (list | textpart | listitem)[] }) {
              borderColor='gray.200'
              borderRadius='8px'
              px='10px'
+             pos="relative"
         >
             <Heading size="md" w='100%' textAlign='center' mb='20px' mt='10px'>§ Gesetztitel-Platzhalter</Heading>
+            {editMode ? <Toolbar/> : null}
             {textList.map((item, index) =>
                 <div className='jurAbsatz' key={index}>
                     {renderParagraph(item)}

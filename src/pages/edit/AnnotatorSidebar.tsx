@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {Box, Button, Heading, Icon, Input, Text, VStack} from "@chakra-ui/react";
+import {Box, Button, Divider, Heading, Input, Text, VStack} from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 import {Annotation} from "./Edit.tsx";
@@ -50,22 +50,27 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     </>
 
     //list with all annotations
-    const viewModeLayout = <>
-        <Box h="100%" maxH={{ base: '50vh', md: '70vh', lg: '80vh' }}  overflowY="scroll">
-            <VStack m="10px" >
-                <Heading size="md">Annotationen</Heading>
-                {annotations.map(annotation => (
-                    <AnnotationListItem annotation={annotation} key={annotation.id}
-                                        clicked={() => setFocusedAnnotation(annotation.id)}/>
-                ))}
+    const viewModeLayout =
+        <>
+            <Box h="100%" maxH={{base: '50vh', md: '70vh', lg: '80vh'}} overflowY="scroll">
+                <VStack m="10px">
+                    <Heading size="md">Annotationen</Heading>
+                    {annotations.map(annotation => (
+                        <AnnotationListItem annotation={annotation} key={annotation.id}
+                                            clicked={() => setFocusedAnnotation(annotation.id)}/>
+                    ))}
 
-            </VStack>
-        </Box>
-        <Button mt="auto" onClick={() => {
-            setEditMode(true);
-            setFocusedAnnotation(-1)
-        }}>Neue Annotation</Button>
-    </>
+                </VStack>
+            </Box>
+
+            <Box w="100%" display="flex" justifyContent="center" alignItems="center" py="8px" flexDir="column">
+                <Divider mb="8px"/>
+                <Button w="90%" onClick={() => {
+                    setEditMode(true);
+                    setFocusedAnnotation(-1)
+                }}>Neue Annotation</Button>
+            </Box>
+        </>
 
     const detailModeLayout = <>
         <Box h="100%">

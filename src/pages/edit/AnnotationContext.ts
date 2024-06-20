@@ -9,6 +9,7 @@ interface AnnotationContext {
     exitEditMode: (data: any) => void;
     selectionChangeCallback: (parts: {parts: AnnotationPart[], textID: number}) => void;
     deleteMode: boolean;
+    toggleDeleteMode: () => void;
 }
 
 const AnnotationContext = createContext({} as AnnotationContext);
