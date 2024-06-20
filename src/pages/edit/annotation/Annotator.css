@@ -14,7 +14,6 @@
 .annotator-sidebar ::-webkit-scrollbar-track {
     background-color: #e0e0e0; /* Base color of the scrollbar track */
     border-radius: 10px; /* Roundness of the scrollbar track */
-    margin: 4px; /* Add margin inside the track to create space */
 }
 
 /* Customize the hover effect on the scrollbar thumb */
