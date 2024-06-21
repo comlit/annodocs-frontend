@@ -1,8 +1,21 @@
 import {useContext, useEffect, useState} from "react";
-import {Box, Button, Divider, Heading, Input, Select, Text, VStack} from "@chakra-ui/react";
+import {
+    Box,
+    Button,
+    Checkbox,
+    CheckboxGroup,
+    Divider,
+    Heading,
+    Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
+    Select,
+    Text,
+    useDisclosure,
+    VStack
+} from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 import {Annotation} from "./Edit.tsx";
+import Process from "./modeltypes/Process.tsx";
 
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     setEditMode: (enabled: boolean) => void,
@@ -13,6 +26,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     const [name, setName] = useState<string>("")
     const [focused, setFocused] = useState<Annotation | null>(null)
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value)
@@ -33,11 +47,34 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         <Box h="100%">
             <Text>Bearbeiten eine Vorhandenen oder erstellen einer neuen Annotation</Text>
             <Input onChange={handleNameChange} value={name} placeholder="Name der Annotation"/>
-            <Select placeholder='Typ auswählen'>
-                <option value='option1'>Entscheidungsbaum</option>
-                <option value='option2'>Prozessmodell</option>
-                <option value='option3'>Formular</option>
-            </Select>
+
+            <CheckboxGroup>
+                <VStack alignItems='start'>
+                    <Checkbox value='tree'>Entscheidungsbaum</Checkbox>
+                    <Checkbox value='model'>Prozessmodell</Checkbox>
+                    <Checkbox value='form'>Formular</Checkbox>
+                </VStack>
+            </CheckboxGroup>
+
+            <Process/>
+
+            <Button onClick={() => {onOpen()}}>
+                Modelle Bearbeiten
+            </Button>
+
+            <Modal onClose={onClose} size='6xl' isOpen={isOpen}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody h='80vh'>
+
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button onClick={onClose}>Close</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
             <Button onClick={() => {
                 if (window.confirm("Wollen Sie die Änderungen verwerfen?")) {
