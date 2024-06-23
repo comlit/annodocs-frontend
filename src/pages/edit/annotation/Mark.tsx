@@ -30,7 +30,6 @@ function Mark({content, start, end, tag}: MarkProps) {
             <mark
                 style={{
                     borderRadius: 4,
-                    cursor: 'pointer',
                     borderBottom: `2px solid rgba(255, 0, 0, 0.5)`,
                     backgroundColor: 'rgba(255, 0, 0, 0)'
                 }}
