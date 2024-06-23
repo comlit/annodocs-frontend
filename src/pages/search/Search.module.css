@@ -1,19 +1,26 @@
 .container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
   padding: 20px;
-  background: linear-gradient(to bottom right, rgba(255, 95, 87, 0.501) 0%, rgba(255, 153, 0, 0.453) 25%, rgba(54, 209, 220, 0.415) 50%, rgba(69, 173, 168, 0.401) 75%, rgb(255, 255, 255) 100%);
+  background: linear-gradient(to top left, #ffcc0052, #ff669948, #cc66ff59, #66ccff40, #66ff663e);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 10px auto;
   color: black;
-  margin-bottom: 20px; /* Add margin to create space from the footer */
+}
+
+.leftContainer {
+  flex: 2;
+  margin-right: 20px;
+}
+
+.rightContainer {
+  flex: 1; /* Adjusted flex to make it wider */
+  max-width: 400px;
 }
 
 .innerContainer {
-  width: 100%;
   margin-bottom: 20px;
   background: rgb(255, 255, 255);
   padding: 15px;
@@ -30,15 +37,24 @@
 
 .list {
   width: 100%;
-  max-height: 300px;
+  max-height: 390px; /* Adjust height to fit 5 items approximately */
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 10px; /* To make space for scrollbar */
+}
+
+.list2{
+  width: 100%;
+  max-height: 523px; /* Adjust height to fit 5 items approximately */
+  overflow-y: auto;
+  padding-right: 10px; /* To make space for scrollbar */
 }
 
 .listItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 540px;
+  overflow-x: auto;
   padding: 10px;
   border-bottom: 1px solid #eee;
   background: rgba(255, 255, 255, 0.9);
@@ -55,6 +71,16 @@
   color: white;
   border: none;
   background: blue;
+}
+
+.korbContainer {
+  width: 400px; /* Fixed width */
+  height: 665px; /* Fixed height */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .button:hover {
@@ -74,6 +100,12 @@
   margin-bottom: 10px;
   text-align: center;
   color: #6c757d;
+}
+
+.warning{
+  font-size: 16px;
+  text-align: left;
+  color:rgba(255, 0, 0, 0.468)
 }
 
 @media (max-width: 1000px) {
