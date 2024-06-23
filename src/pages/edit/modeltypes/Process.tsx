@@ -1,6 +1,7 @@
 import {Box, FormControl, Heading, IconButton, Input, Select} from "@chakra-ui/react";
 import {useState} from "react";
 import {AddIcon} from "@chakra-ui/icons";
+import {ranID} from "../util.ts";
 
 type Activity = {
     id: number,
@@ -12,16 +13,18 @@ type Activity = {
 
 function Process() {
 
+    const [pID, setPID] = useState<number>(ranID())
+
     const [activities, setActivities] = useState<Activity[]>([{
-        id: 0,
-        processId: 0,
+        id: ranID(),
+        processId: pID,
         name: '',
         predecessor: '',
         successor: ''
     }])
 
     const addEmptyActivity = () => {
-        setActivities([...activities, {id: activities.length, processId: 0, name: '', predecessor: '', successor: ''}])
+        setActivities([...activities, {id: activities.length, processId: pID, name: '', predecessor: '', successor: ''}])
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
