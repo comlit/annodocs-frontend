@@ -1,5 +1,6 @@
 import {useContext, useEffect, useState} from "react";
 import {
+    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel,
     Box,
     Button,
     Checkbox,
@@ -16,6 +17,8 @@ import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
 import {Annotation} from "./Edit.tsx";
 import Process from "./modeltypes/Process.tsx";
+import Tree from "./modeltypes/Tree.tsx";
+import Formular from "./modeltypes/Formular.tsx";
 
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     setEditMode: (enabled: boolean) => void,
@@ -26,7 +29,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     const [name, setName] = useState<string>("")
     const [focused, setFocused] = useState<Annotation | null>(null)
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [checked, setChecked] = useState<boolean[]>([false, false, false])
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value)
@@ -42,6 +45,14 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         }
     }, [focusedAnnotation]);
 
+    const checkBoxChanged = (event: any, id: number) => {
+        setChecked(prevState => {
+            const newState = [...prevState]
+            newState[id] = event.target.checked
+            return newState
+        })
+    }
+
     //TODO: add inputs to change other data of annotation
     const editModeLayout = <>
         <Box h="100%">
@@ -50,31 +61,63 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
             <CheckboxGroup>
                 <VStack alignItems='start'>
-                    <Checkbox value='tree'>Entscheidungsbaum</Checkbox>
-                    <Checkbox value='model'>Prozessmodell</Checkbox>
-                    <Checkbox value='form'>Formular</Checkbox>
+                    <Checkbox value='tree' onChange={(e) => {
+                        checkBoxChanged(e, 0)
+                    }}>Entscheidungsbaum</Checkbox>
+                    <Checkbox value='model' onChange={(e) => {
+                        checkBoxChanged(e, 1)
+                    }}>Prozessmodell</Checkbox>
+                    <Checkbox value='form' onChange={(e) => {
+                        checkBoxChanged(e, 2)
+                    }}>Formular</Checkbox>
                 </VStack>
             </CheckboxGroup>
 
-            <Process/>
+            <Accordion defaultIndex={[0]} allowMultiple>
+                {checked[0] ?
+                    <AccordionItem>
+                        <h2>
+                            <AccordionButton>
+                                <Box as='span' flex='1' textAlign='left'>
+                                    Entscheidungsbaum
+                                </Box>
+                                <AccordionIcon/>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <Tree/>
+                        </AccordionPanel>
+                    </AccordionItem> : null}
+                {checked[1] ?
+                    <AccordionItem>
+                        <h2>
+                            <AccordionButton>
+                                <Box as='span' flex='1' textAlign='left'>
+                                    Prozessmodell
+                                </Box>
+                                <AccordionIcon/>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <Process/>
+                        </AccordionPanel>
+                    </AccordionItem> : null}
+                {checked[2] ?
+                    <AccordionItem>
+                        <h2>
+                            <AccordionButton>
+                                <Box as='span' flex='1' textAlign='left'>
+                                    Formular
+                                </Box>
+                                <AccordionIcon/>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <Formular/>
+                        </AccordionPanel>
+                    </AccordionItem> : null}
+            </Accordion>
 
-            <Button onClick={() => {onOpen()}}>
-                Modelle Bearbeiten
-            </Button>
-
-            <Modal onClose={onClose} size='6xl' isOpen={isOpen}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody h='80vh'>
-
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button onClick={onClose}>Close</Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
 
             <Button onClick={() => {
                 if (window.confirm("Wollen Sie die Änderungen verwerfen?")) {
