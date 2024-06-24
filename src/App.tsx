@@ -8,6 +8,8 @@ import Dashboard from "./pages/dashboard/Dashboard.tsx";
 import Search from "./pages/search/Search.tsx";
 import Create from "./pages/create/Create.tsx";
 import Edit from "./pages/edit/Edit.tsx";
+import UploadLaw from './pages/upload/UploadLaw.tsx';
+
 import {useDispatch} from "react-redux";
 import {useEffect} from "react";
 import {refreshToken} from "./auth/thunks.ts";
@@ -32,6 +34,7 @@ function App() {
                                 <Route path='/search/*' element={<Search/>}/>
                                 <Route path='/create/*' element={<Create/>}/>
                                 <Route path='/edit/*' element={<Edit/>}/>
+                                <Route path="/upload" element={<UploadLaw />} />
                             </Routes>
                         </Flex>
                         <Footer/>
