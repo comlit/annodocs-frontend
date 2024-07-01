@@ -25,7 +25,7 @@ function App() {
                 <BrowserRouter>
                     <Flex id='layout' minH='100vh' direction='column'>
                         <Header/>
-                        <Flex pb='65px' width='100%'>
+                        <Flex pb='65px' width='100%' height='100%'>
                             <Routes>
                                 <Route index element={<Landing/>}/>
                                 <Route path='/dashboard/*' element={<Dashboard/>}/>

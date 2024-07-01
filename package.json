@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bpmn-io/form-js": "^1.9.0",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@reduxjs/toolkit": "^2.2.3",
+    "bpmn-js": "^17.9.0",
     "events": "^3.3.0",
     "formik": "^2.4.6",
     "framer-motion": "^11.1.7",

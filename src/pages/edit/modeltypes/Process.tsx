@@ -1,86 +1,55 @@
-import {Box, FormControl, Heading, IconButton, Input, Select} from "@chakra-ui/react";
-import {useState} from "react";
-import {AddIcon} from "@chakra-ui/icons";
-import {ranID} from "../util.ts";
+import {useEffect, useRef, useState} from "react";
+import BpmnModeler from "bpmn-js/lib/Modeler";
+import "bpmn-js/dist/assets/diagram-js.css";
+import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
+import "bpmn-js/dist/assets/bpmn-js.css"
+import {Box} from "@chakra-ui/react";
 
-type Activity = {
-    id: number,
-    processId: number,
-    name: string,
-    predecessor: string,
-    successor: string,
-}
+const initialxml = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:process id="Process_1" isExecutable="false">
+    <bpmn2:startEvent id="StartEvent_1"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds height="36.0" width="36.0" x="412.0" y="240.0"/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
+`
+
 
 function Process() {
+    const ref = useRef();
+    const [xml, setXml] = useState("")
 
-    const [pID, setPID] = useState<number>(ranID())
+    useEffect(() => {
+        const modeler = new BpmnModeler({
+            container: ref.current
+        });
+        modeler.importXML(initialxml);
 
-    const [activities, setActivities] = useState<Activity[]>([{
-        id: ranID(),
-        processId: pID,
-        name: '',
-        predecessor: '',
-        successor: ''
-    }])
+        modeler.on('commandStack.changed', () => {
+            //save xml to state
+            modeler.saveXML().then(({xml}) => {
+                if(xml)
+                    setXml(xml)
+            });
+        });
 
-    const addEmptyActivity = () => {
-        setActivities([...activities, {id: activities.length, processId: pID, name: '', predecessor: '', successor: ''}])
-    }
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = event.target
-        const [id, field] = name.split(';')
-        const newActivities = activities.map(activity => {
-            if (activity.id.toString() === id) {
-                return {...activity, [field]: value}
-            }
-            return activity
-        })
-        setActivities(newActivities)
-    }
+        return () => {
+            modeler.destroy();
+        }
+    }, []);
 
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const {name, value} = event.target
-        const [id, field] = name.split(';')
-        const newActivities = activities.map(activity => {
-            if (activity.id.toString() === id) {
-                return {...activity, [field]: value}
-            }
-            return activity
-        })
-        setActivities(newActivities)
-    }
-
-    const renderActivities = () => {
-        return activities.map((activity, index) => {
-            return <Box key={index} border='1px' borderColor='gray.200' borderRadius='8px' padding='4px' margin='4px'>
-                <Heading size='m' w='100%' textAlign='center'>Aktivität</Heading>
-                <FormControl>
-                    <Input name={`${activity.id};name`} type='text' placeholder='Name des Elements'
-                           value={activity.name} onChange={handleInputChange}/>
-                    <Select name={`${activity.id};predecessor`} placeholder='Vorgänger' onChange={handleSelectChange}>
-                        {activities.filter(activity => activity.name).map((activity) => <option key={activity.id}
-                                                                                                value={activity.id}>{activity.name}</option>)}
-                    </Select>
-                    <Select name={`${activity.id};successor`} placeholder='Nachfolger' onChange={handleSelectChange}>
-                        {activities.filter(activity => activity.name).map((activity) => <option key={activity.id}
-                                                                                                value={activity.id}>{activity.name}</option>)}
-                    </Select>
-                </FormControl>
-            </Box>
-        })
-    }
-
-    return <>
-        <Box border='1px' borderColor='gray.200' borderRadius='8px' padding='4px' margin='4px'>
-            <Heading size='m' w='100%' textAlign='center'>Prozess</Heading>
-            <Input name='process' type='text' placeholder='Prozess'/>
-            {renderActivities()}
-            <IconButton aria-label='Add' icon={<AddIcon/>} onClick={() => {
-                addEmptyActivity()
-            }}/>
-        </Box>
-    </>;
+    return (
+        <>
+            <Box ref={ref} w='100%' h='500px' border='1px' borderColor='gray.200' borderRadius='8px'/>
+        </>
+    )
 }
 
 export default Process;
