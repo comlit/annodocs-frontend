@@ -1,20 +1,121 @@
-/* UploadLaw.module.css */
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  input[type="file"] {
-    border: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(to top left, #ffcc0052, #ff669948, #cc66ff59, #66ccff40, #66ff663e);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 10px auto;
+  color: black;
+}
+
+.formContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formRow {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.formColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.inputLabel {
+  margin-bottom: 15px;
+  background: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.uploadBox {
+  width: 600px;
+  height: 718px;
+  background: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fullSizeTextArea {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  resize: none;
+}
+
+.button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  border: none;
+  background: blue;
+  background-position: 0;
+  background-size: 200% 100%;
+  transition: background-position 0.5s ease;
+}
+
+.button:hover {
+  background-position: 100% 0;
+  transition: background-position 0.5s ease;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.warning {
+  font-size: 16px;
+  text-align: left;
+  color: rgba(255, 0, 0, 0.468);
+}
+
+@media (max-width: 1000px) {
+  .container {
     padding: 10px;
-    border-radius: 4px;
   }
-  
-  button {
-    margin-top: 20px;
+
+  .title {
+    font-size: 20px;
   }
-  
+
+  .subtitle {
+    font-size: 14px;
+  }
+}

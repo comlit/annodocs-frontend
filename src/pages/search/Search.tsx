@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, List, ListItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { dummyData1 } from './data';
@@ -25,26 +25,31 @@ const germanStates = [
 ];
 
 const federalLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
-const stateLawTypes = ["Verfassungen", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
+const stateLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
 const municipalLawTypes = ["Satzungen", "Verwaltungsvorschriften", "sonstige"];
+
+const mockUser = {
+  commune: "Unna" // Mock user data for demonstration
+};
 
 function Search() {
   const navigate = useNavigate();
-  const [query, setQuery] = React.useState('');
-  const [results, setResults] = React.useState(dummyData1);
-  const [selectedType, setSelectedType] = React.useState('alle');
-  const [selectedState, setSelectedState] = React.useState('');
-  const [selectedKommune, setSelectedKommune] = React.useState('');
-  const [selectedLawType, setSelectedLawType] = React.useState('');
-  const [cart, setCart] = React.useState<any[]>([]);
-  const [communes, setCommunes] = React.useState<string[]>([]);
-  const [lawTypes, setLawTypes] = React.useState<string[]>([]);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState(dummyData1);
+  const [selectedType, setSelectedType] = useState('alle');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedKommune, setSelectedKommune] = useState('');
+  const [selectedLawType, setSelectedLawType] = useState('');
+  const [cart, setCart] = useState<any[]>([]);
+  const [communes, setCommunes] = useState<string[]>([]);
+  const [lawTypes, setLawTypes] = useState<string[]>([]);
+  const [useOwnCommune, setUseOwnCommune] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     filterResults(query, selectedType, selectedState, selectedKommune, selectedLawType);
-  }, [cart]);
+  }, [cart, selectedKommune]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedType === 'kommunal' && selectedState) {
       const filteredCommunes = [...new Set(dummyData1
         .filter(item => item.type === 'kommunal' && item.state === selectedState)
@@ -56,7 +61,7 @@ function Search() {
     }
   }, [selectedState, selectedType]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedType === 'bund') {
       setLawTypes(federalLawTypes);
     } else if (selectedType === 'land') {
@@ -78,7 +83,7 @@ function Search() {
     setSelectedType(type);
     setSelectedState('');
     setSelectedKommune('');
-    setSelectedLawType('');
+    setUseOwnCommune(false);
     filterResults(query, type, '', '', '');
   };
 
@@ -96,6 +101,16 @@ function Search() {
   const handleLawTypeChange = (lawType: string) => {
     setSelectedLawType(lawType);
     filterResults(query, selectedType, selectedState, selectedKommune, lawType);
+  };
+
+  const handleOwnCommuneChange = (value: boolean) => {
+    setUseOwnCommune(value);
+    if (value) {
+      setSelectedKommune(mockUser.commune);
+    } else {
+      setSelectedKommune('');
+    }
+    filterResults(query, selectedType, selectedState, value ? mockUser.commune : '', selectedLawType);
   };
 
   const filterResults = (searchQuery: string, lawType: string, state: string, kommune: string, lawCategory: string) => {
@@ -185,6 +200,8 @@ function Search() {
             states={germanStates}
             communes={communes}
             lawTypes={lawTypes}
+            useOwnCommune={useOwnCommune}
+            onOwnCommuneChange={handleOwnCommuneChange}
           />
         </Box>
         <Box className={styles.innerContainer}>
@@ -212,7 +229,10 @@ function Search() {
         <Box className={styles.korbContainer}>
           <h2 className={styles.subtitle}>Auswahlliste</h2>
           {cart.length === 0 ? (
-            <><p className={styles.warning}> Um mehrere Gesetze gleichzeitig zu öffnen, müssen Sie Pop-ups in Ihrem Browser zulassen.</p><p>Ihre Auswahlliste ist leer</p></>
+            <>
+              <p className={styles.warning}>Hinweis: Um mehrere Gesetze gleichzeitig zu öffnen, müssen Sie Pop-ups in Ihrem Browser zulassen.</p>
+              <p>Ihre Auswahlliste ist leer</p>
+            </>
           ) : (
             <>
               <List spacing={3} className={styles.list}>
@@ -230,7 +250,6 @@ function Search() {
                     </Box>
                   </ListItem>
                 ))}
-          
               </List>
               <Button className={styles.button} onClick={handleEmptyCart}>
                 Auswahlliste leeren
@@ -240,7 +259,6 @@ function Search() {
               </Button>
             </>
           )}
-          
         </Box>
       </Box>
     </Box>

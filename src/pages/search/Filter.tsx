@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Radio, RadioGroup, Stack, Select } from "@chakra-ui/react";
+import { Box, Radio, RadioGroup, Stack, Select, Input } from "@chakra-ui/react";
 
 interface FilterProps {
   selectedType: string;
@@ -13,6 +13,8 @@ interface FilterProps {
   states: string[];
   communes: string[];
   lawTypes: string[];
+  useOwnCommune: boolean;
+  onOwnCommuneChange: (value: boolean) => void;
 }
 
 const Filter: React.FC<FilterProps> = ({
@@ -25,8 +27,9 @@ const Filter: React.FC<FilterProps> = ({
   selectedLawType,
   onLawTypeChange,
   states,
-  communes,
-  lawTypes
+  lawTypes,
+  useOwnCommune,
+  onOwnCommuneChange
 }) => {
   return (
     <Box mb={4}>
@@ -48,13 +51,22 @@ const Filter: React.FC<FilterProps> = ({
         </Select>
       )}
       {selectedType === 'kommunal' && selectedState && (
-        <Select mt={4} placeholder="Kommune auswählen" value={selectedKommune} onChange={(e) => onKommuneChange(e.target.value)}>
-          {communes.map((kommune) => (
-            <option key={kommune} value={kommune}>
-              {kommune}
-            </option>
-          ))}
-        </Select>
+        <>
+          <RadioGroup mt={4} value={useOwnCommune ? 'own' : 'other'} onChange={(e) => onOwnCommuneChange(e === 'own')}>
+            <Stack direction="row" spacing={4}>
+              <Radio value="own">Meine Kommune</Radio>
+              <Radio value="other">Andere Kommune</Radio>
+            </Stack>
+          </RadioGroup>
+          {!useOwnCommune && (
+            <Input
+              mt={4}
+              placeholder="Kommune suchen"
+              value={selectedKommune}
+              onChange={(e) => onKommuneChange(e.target.value)}
+            />
+          )}
+        </>
       )}
       {selectedType !== 'alle' && (
         <Select mt={4} placeholder="Art des Gesetzes auswählen" value={selectedLawType} onChange={(e) => onLawTypeChange(e.target.value)}>

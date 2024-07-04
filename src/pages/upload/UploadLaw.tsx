@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Button, Input, Select, FormControl, FormLabel } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Box, Button, Input, Select, FormControl, FormLabel, Radio, RadioGroup, Stack, Textarea } from "@chakra-ui/react";
 import styles from './UploadLaw.module.css';
-import { dummyData1 } from './data';
 
 const germanStates = [
   "Baden-Württemberg",
@@ -27,16 +25,17 @@ const federalLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwa
 const stateLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
 const municipalLawTypes = ["Satzung", "Verwaltungsvorschrift", "sonstige"];
 
-const UploadLaw = () => {
+const UploadLaw: React.FC = () => {
   const [selectedType, setSelectedType] = useState('bund');
   const [selectedState, setSelectedState] = useState('');
   const [selectedKommune, setSelectedKommune] = useState('');
+  const [kommuneMethod, setKommuneMethod] = useState('predefined');
   const [selectedLawType, setSelectedLawType] = useState('');
   const [lawName, setLawName] = useState('');
-  const [file, setFile] = useState(null);
-  const [communes, setCommunes] = useState<string[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [lawText, setLawText] = useState('');
+  const [importMethod, setImportMethod] = useState('file');
   const [lawTypes, setLawTypes] = useState<string[]>(federalLawTypes);
-  const navigate = useNavigate();
 
   const handleTypeChange = (type: string) => {
     setSelectedType(type);
@@ -55,14 +54,6 @@ const UploadLaw = () => {
   const handleStateChange = (state: string) => {
     setSelectedState(state);
     setSelectedKommune('');
-    if (selectedType === 'kommunal') {
-      // Update the communes list based on the selected state
-      const filteredCommunes = [...new Set(dummyData1
-        .filter(item => item.type === 'kommunal' && item.state === state)
-        .map(item => item.kommune)
-      )].filter(Boolean) as string[]; // Ensure the filtered list contains only strings
-      setCommunes(filteredCommunes);
-    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,97 +64,138 @@ const UploadLaw = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle file upload and form submission logic here
-    console.log({
-      lawName,
-      selectedType,
-      selectedState,
-      selectedKommune,
-      selectedLawType,
-      file
-    });
+    const content = importMethod === 'file' && file ? `File uploaded: ${file.name}` : lawText;
+    const newLaw = {
+      name: lawName,
+      type: selectedType,
+      state: selectedState,
+      kommune: kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune',
+      lawType: selectedLawType,
+      content: content
+    };
+    console.log(newLaw);
   };
 
   return (
     <Box className={styles.container}>
-      <form onSubmit={handleSubmit}>
-        <FormControl id="law-name" mb={4}>
-          <FormLabel>Name des Gesetzes</FormLabel>
-          <Input 
-            placeholder="Name des Gesetzes" 
-            value={lawName} 
-            onChange={(e) => setLawName(e.target.value)} 
-          />
-        </FormControl>
-        <FormControl id="law-type" mb={4}>
-          <FormLabel>Art des Gesetzes</FormLabel>
-          <Select 
-            value={selectedType} 
-            onChange={(e) => handleTypeChange(e.target.value)}
-          >
-            <option value="bund">Bundesgesetze</option>
-            <option value="land">Landesgesetze</option>
-            <option value="kommunal">Kommunalgesetze</option>
-          </Select>
-        </FormControl>
-        {(selectedType === 'land' || selectedType === 'kommunal') && (
-          <FormControl id="state" mb={4}>
-            <FormLabel>Bundesland</FormLabel>
-            <Select 
-              placeholder="Bundesland auswählen" 
-              value={selectedState} 
-              onChange={(e) => handleStateChange(e.target.value)}
-            >
-              {germanStates.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-        {selectedType === 'kommunal' && selectedState && (
-          <FormControl id="kommune" mb={4}>
-            <FormLabel>Kommune</FormLabel>
-            <Select 
-              placeholder="Kommune auswählen" 
-              value={selectedKommune} 
-              onChange={(e) => setSelectedKommune(e.target.value)}
-            >
-              {communes.map((kommune) => (
-                <option key={kommune} value={kommune}>
-                  {kommune}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-        {selectedType !== 'alle' && (
-          <FormControl id="law-category" mb={4}>
-            <FormLabel>Kategorie des Gesetzes</FormLabel>
-            <Select 
-              placeholder="Kategorie auswählen" 
-              value={selectedLawType} 
-              onChange={(e) => setSelectedLawType(e.target.value)}
-            >
-              {lawTypes.map((lawType) => (
-                <option key={lawType} value={lawType}>
-                  {lawType}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-        <FormControl id="file-upload" mb={4}>
-          <FormLabel>Gesetz als PDF hochladen</FormLabel>
-          <Input 
-            type="file" 
-            accept=".pdf" 
-            onChange={handleFileChange} 
-          />
-        </FormControl>
-        <Button type="submit" colorScheme="blue">Hochladen</Button>
-      </form>
+      <Box className={styles.formContainer}>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formRow}>
+            <div className={styles.formColumn}>
+              <FormControl id="law-name" className={styles.inputLabel}>
+                <FormLabel>Name des Gesetzes</FormLabel>
+                <Input 
+                  placeholder="Name des Gesetzes" 
+                  value={lawName} 
+                  onChange={(e) => setLawName(e.target.value)}
+                  className={styles.inputField} 
+                />
+              </FormControl>
+              <FormControl id="law-type" className={styles.inputLabel}>
+                <FormLabel>Art des Gesetzes</FormLabel>
+                <Select 
+                  value={selectedType} 
+                  onChange={(e) => handleTypeChange(e.target.value)}
+                  className={styles.inputField}
+                >
+                  <option value="bund">Bundesgesetze</option>
+                  <option value="land">Landesgesetze</option>
+                  <option value="kommunal">Kommunalgesetze</option>
+                </Select>
+              </FormControl>
+              {(selectedType === 'land' || selectedType === 'kommunal') && (
+                <FormControl id="state" className={styles.inputLabel}>
+                  <FormLabel>Bundesland</FormLabel>
+                  <Select 
+                    placeholder="Bundesland auswählen" 
+                    value={selectedState} 
+                    onChange={(e) => handleStateChange(e.target.value)}
+                    className={styles.inputField}
+                  >
+                    {germanStates.map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              {selectedType === 'kommunal' && selectedState && (
+                <>
+                  <FormControl id="kommune-method" className={styles.inputLabel}>
+                    <FormLabel>Gemeindemethode</FormLabel>
+                    <RadioGroup onChange={(value) => setKommuneMethod(value)} value={kommuneMethod}>
+                      <Stack direction="column">
+                        <Radio value="predefined">Andere Kommunen</Radio>
+                        <Radio value="custom">Eigene Kommune</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </FormControl>
+                  {kommuneMethod === 'predefined' && (
+                    <FormControl id="kommune" className={styles.inputLabel}>
+                      <FormLabel>Kommune</FormLabel>
+                      <Input
+                        placeholder="Name der Kommune eingeben"
+                        value={selectedKommune}
+                        onChange={(e) => setSelectedKommune(e.target.value)}
+                        className={styles.inputField}
+                      />
+                    </FormControl>
+                  )}
+                </>
+              )}
+              {selectedType !== 'alle' && (
+                <FormControl id="law-category" className={styles.inputLabel}>
+                  <FormLabel>Kategorie des Gesetzes</FormLabel>
+                  <Select 
+                    placeholder="Kategorie auswählen" 
+                    value={selectedLawType} 
+                    onChange={(e) => setSelectedLawType(e.target.value)}
+                    className={styles.inputField}
+                  >
+                    {lawTypes.map((lawType) => (
+                      <option key={lawType} value={lawType}>
+                        {lawType}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            </div>
+            <div className={styles.uploadBox}>
+              <FormControl id="import-method" className={styles.inputLabel}>
+                <FormLabel>Importmethode</FormLabel>
+                <RadioGroup onChange={(value) => setImportMethod(value)} value={importMethod}>
+                  <Stack direction="row">
+                    <Radio value="file">Datei</Radio>
+                    <Radio value="text">Text</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+              {importMethod === 'file' ? (
+                <FormControl id="file-upload">
+                  <Input 
+                    type="file" 
+                    accept=".pdf" 
+                    onChange={handleFileChange}
+                    className={styles.inputField}
+                  />
+                </FormControl>
+              ) : (
+                <FormControl id="law-text" className={styles.fullSizeTextArea}>
+                  <Textarea
+                    placeholder="Gesetzestext eingeben"
+                    value={lawText}
+                    onChange={(e) => setLawText(e.target.value)}
+                    className={styles.fullSizeTextArea}
+                  />
+                </FormControl>
+              )}
+            </div>
+          </div>
+          <Button type="submit" colorScheme="blue" className={styles.button}>Hochladen</Button>
+        </form>
+      </Box>
     </Box>
   );
 };
