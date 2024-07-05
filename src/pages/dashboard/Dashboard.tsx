@@ -2,8 +2,7 @@ import {
     Box, 
     Button, 
     Flex, 
-    Heading, 
-    Spinner, 
+    Heading,
     Stack, 
     Text,
     IconProps,
@@ -12,7 +11,7 @@ import {
     HStack,
     useColorModeValue,
     Tooltip,
-    Drawer} from "@chakra-ui/react";
+    } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { userMockData, annotationsMockData, recommendedMockData, lastVisitedMockData, favoritesMockData, } from "./dummydata.ts"; 
@@ -34,6 +33,7 @@ function Dashboard() {
             setEmail(userMockData.email);
             setName(userMockData.name);
             setTitel(userMockData.titel);
+            //
             setLoading(false);
         }, 1000);
 
@@ -48,9 +48,9 @@ function Dashboard() {
     const bg = useColorModeValue('gray.100', 'gray.700');
 
     return (
-        <Box h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="flex-end" bg={bg}>
+        <Box marginTop = "20px" h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="flex-end" bg={bg}>
             <Box p={8} maxW="6xl" w="full" >
-                <HStack spacing = {4}>
+                <HStack spacing = {4} alignItems="flex-start">
                 
                 <Stack spacing={2}>
                     <Heading as="h1" size="xl" textAlign="center">
@@ -67,19 +67,19 @@ function Dashboard() {
                         </Button>
                     </Flex>
                     //eigene Annotationen
-                    <Box mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
+                    <Box  height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
                         <Heading as="h2" size="md" mb={4}>
                             Eigene Annotationen
                         </Heading>
                         {annotations.length > 0 ? (
-                            <Box maxH="150px" overflowY="auto">
+                            <Box maxH="150px" overflowY="auto" >
                                 <Stack spacing={3}>//HStack law idx; annotation
                                     {annotations.map((annotation, index) => (
                                     <Tooltip key={index} label={annotation.text} hasArrow>
                                         <Box 
                                             key={index} 
                                             p={3} 
-                                            bg="gray.50" 
+                                            bg="gray.50"
                                             borderRadius="md" 
                                             cursor="pointer"
                                             maxH="30"
@@ -103,7 +103,7 @@ function Dashboard() {
                         )}
                     </Box>
                     //Vorgeschlagene Gesetze;
-                    <Box mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
+                    <Box height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
                     <Heading as="h2" size="md" mb={4}>
                             Vorgeschlagene Gesetze
                         </Heading>
@@ -142,7 +142,7 @@ function Dashboard() {
                 </Stack>
                 //Favoriten-Box;
                 <Stack spacing={1} maxW="350px" >
-                    <Box mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
+                    <Box height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
                         <Heading as="h2" size="md" mb={4}>
                                     Favoriten
                                 </Heading>
@@ -152,7 +152,7 @@ function Dashboard() {
                                             {favorites.map((favorites, index) => (
                                                 <Tooltip key={index} label={favorites.text} hasArrow placement='bottom'>
                                                     <Box 
-                                                    textAlign="start"
+                                                    textAlign="center"
                                                     display="flex"
                                                     alignItems="center"
                                                     key={index} 
@@ -161,10 +161,11 @@ function Dashboard() {
                                                     borderRadius="md" 
                                                     cursor="pointer"
                                                     maxH = "30"
+                                                    
                                                     _hover={{ bg: "gray.100" }} 
                                                     onClick={() => navigate(`/search?lawIndex=${favorites.lawIndex}`)}
                                                 >
-                                                    <Text color = "gray.700">
+                                                    <Text  color = "gray.700">
                                                         {favorites.text.length > 30 ? favorites.text.substring(0, 30) + '...' : favorites.text}
                                                     </Text>
 
@@ -180,12 +181,12 @@ function Dashboard() {
                                 )}
                     </Box>
                     //Zuletzt Besucht Box;
-                    <Box mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center" minH="400px">
+                    <Box height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center" minH="400px">
                         <Heading as="h2" size="md" mb={4}>
                                     Zuletzt besucht
                                 </Heading>
                                 {lastvisited.length > 0 ? (
-                                    <Box maxH="300px" overflowY="auto">
+                                    <Box maxH = "320" overflowY="auto">
                                         <Stack spacing={3}>
                                             {lastvisited.map((lastvisited, index) => (
                                                 <Tooltip key={index} label={lastvisited.text} hasArrow>
@@ -193,7 +194,7 @@ function Dashboard() {
                                                     key={index} 
                                                     p={3} 
                                                     bg="gray.50"
-                                                    textAlign="start"
+                                                    textAlign="center"
                                                     display="flex"
                                                     alignItems="center"
                                                     borderRadius="md" 
