@@ -13,6 +13,8 @@ interface FilterProps {
   states: string[];
   communes: string[];
   lawTypes: string[];
+  useOwnState: boolean;
+  onOwnStateChange: (value: boolean) => void;
   useOwnCommune: boolean;
   onOwnCommuneChange: (value: boolean) => void;
 }
@@ -27,7 +29,10 @@ const Filter: React.FC<FilterProps> = ({
   selectedLawType,
   onLawTypeChange,
   states,
+  communes,
   lawTypes,
+  useOwnState,
+  onOwnStateChange,
   useOwnCommune,
   onOwnCommuneChange
 }) => {
@@ -36,19 +41,29 @@ const Filter: React.FC<FilterProps> = ({
       <RadioGroup onChange={onFilterChange} value={selectedType}>
         <Stack direction="row" spacing={4}>
           <Radio value="alle">Alle</Radio>
-          <Radio value="bund">Bundesgesetze</Radio>
-          <Radio value="land">Landesgesetze</Radio>
-          <Radio value="kommunal">Gesetze für Kommunen</Radio>
+          <Radio value="bund">Bundesebene</Radio>
+          <Radio value="land">Landesebene</Radio>
+          <Radio value="kommunal">Kommunalebene</Radio>
         </Stack>
       </RadioGroup>
       {(selectedType === 'land' || selectedType === 'kommunal') && (
-        <Select mt={4} placeholder="Bundesland auswählen" value={selectedState} onChange={(e) => onStateChange(e.target.value)}>
-          {states.map((state) => (
-            <option key={state} value={state}>
-              {state}
-            </option>
-          ))}
-        </Select>
+        <>
+          <RadioGroup mt={4} value={useOwnState ? 'own' : 'other'} onChange={(e) => onOwnStateChange(e === 'own')}>
+            <Stack direction="row" spacing={4}>
+              <Radio value="own">Mein Bundesland</Radio>
+              <Radio value="other">Anderes Bundesland</Radio>
+            </Stack>
+          </RadioGroup>
+          {!useOwnState && (
+            <Select mt={4} placeholder="Bundesland auswählen" value={selectedState} onChange={(e) => onStateChange(e.target.value)}>
+              {states.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </Select>
+          )}
+        </>
       )}
       {selectedType === 'kommunal' && selectedState && (
         <>
@@ -69,7 +84,7 @@ const Filter: React.FC<FilterProps> = ({
         </>
       )}
       {selectedType !== 'alle' && (
-        <Select mt={4} placeholder="Art des Gesetzes auswählen" value={selectedLawType} onChange={(e) => onLawTypeChange(e.target.value)}>
+        <Select mt={4} placeholder="Art auswählen" value={selectedLawType} onChange={(e) => onLawTypeChange(e.target.value)}>
           {lawTypes.map((lawType) => (
             <option key={lawType} value={lawType}>
               {lawType}

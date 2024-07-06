@@ -29,6 +29,7 @@ const stateLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwalt
 const municipalLawTypes = ["Satzungen", "Verwaltungsvorschriften", "sonstige"];
 
 const mockUser = {
+  state: "Nordrhein-Westfalen",
   commune: "Unna" // Mock user data for demonstration
 };
 
@@ -43,6 +44,7 @@ function Search() {
   const [cart, setCart] = useState<any[]>([]);
   const [communes, setCommunes] = useState<string[]>([]);
   const [lawTypes, setLawTypes] = useState<string[]>([]);
+  const [useOwnState, setUseOwnState] = useState(false);
   const [useOwnCommune, setUseOwnCommune] = useState(false);
 
   useEffect(() => {
@@ -83,6 +85,7 @@ function Search() {
     setSelectedType(type);
     setSelectedState('');
     setSelectedKommune('');
+    setUseOwnState(false);
     setUseOwnCommune(false);
     filterResults(query, type, '', '', '');
   };
@@ -101,6 +104,16 @@ function Search() {
   const handleLawTypeChange = (lawType: string) => {
     setSelectedLawType(lawType);
     filterResults(query, selectedType, selectedState, selectedKommune, lawType);
+  };
+
+  const handleOwnStateChange = (value: boolean) => {
+    setUseOwnState(value);
+    if (value) {
+      setSelectedState(mockUser.state);
+    } else {
+      setSelectedState('');
+    }
+    filterResults(query, selectedType, value ? mockUser.state : '', selectedKommune, selectedLawType);
   };
 
   const handleOwnCommuneChange = (value: boolean) => {
@@ -181,7 +194,7 @@ function Search() {
       <Box className={styles.leftContainer}>
         <Box className={styles.innerContainer}>
           <h1 className={styles.title}>Suche</h1>
-          <p className={styles.subtitle}>Hier können Sie nach Gesetzen suchen</p>
+          <p className={styles.subtitle}>Hier können Sie nach Rechtsnormen suchen</p>
           <Input
             placeholder="Suchen..."
             value={query}
@@ -200,6 +213,8 @@ function Search() {
             states={germanStates}
             communes={communes}
             lawTypes={lawTypes}
+            useOwnState={useOwnState}
+            onOwnStateChange={handleOwnStateChange}
             useOwnCommune={useOwnCommune}
             onOwnCommuneChange={handleOwnCommuneChange}
           />

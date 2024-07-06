@@ -64,7 +64,7 @@ const UploadLaw: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    const content = importMethod === 'file' && file ? `File uploaded: ${file.name}` : lawText;
+    const content = importMethod === 'file' && file ? `Datei hochgeladen: ${file.name}` : lawText;
     const newLaw = {
       name: lawName,
       type: selectedType,
@@ -135,7 +135,7 @@ const UploadLaw: React.FC = () => {
                     <FormControl id="kommune" className={styles.inputLabel}>
                       <FormLabel>Kommune</FormLabel>
                       <Input
-                        placeholder="Name der Kommune eingeben"
+                        placeholder="Name eingeben"
                         value={selectedKommune}
                         onChange={(e) => setSelectedKommune(e.target.value)}
                         className={styles.inputField}
@@ -144,6 +144,8 @@ const UploadLaw: React.FC = () => {
                   )}
                 </>
               )}
+            </div>
+            <div className={styles.formColumn}>
               {selectedType !== 'alle' && (
                 <FormControl id="law-category" className={styles.inputLabel}>
                   <FormLabel>Kategorie des Gesetzes</FormLabel>
@@ -161,8 +163,6 @@ const UploadLaw: React.FC = () => {
                   </Select>
                 </FormControl>
               )}
-            </div>
-            <div className={styles.uploadBox}>
               <FormControl id="import-method" className={styles.inputLabel}>
                 <FormLabel>Importmethode</FormLabel>
                 <RadioGroup onChange={(value) => setImportMethod(value)} value={importMethod}>
@@ -172,22 +172,25 @@ const UploadLaw: React.FC = () => {
                   </Stack>
                 </RadioGroup>
               </FormControl>
-              {importMethod === 'file' ? (
-                <FormControl id="file-upload">
+              {importMethod === 'file' && (
+                <FormControl id="file-upload" className={styles.inputLabel}>
+                  <FormLabel>Datei auswählen</FormLabel>
                   <Input 
                     type="file" 
                     accept=".pdf" 
                     onChange={handleFileChange}
                     className={styles.inputField}
                   />
+                  {file && <span className="fileName">{file.name}</span>}
                 </FormControl>
-              ) : (
-                <FormControl id="law-text" className={styles.fullSizeTextArea}>
+              )}
+              {importMethod === 'text' && (
+                <FormControl id="law-text" className={styles.wideTextAreaContainer}>
                   <Textarea
                     placeholder="Gesetzestext eingeben"
                     value={lawText}
                     onChange={(e) => setLawText(e.target.value)}
-                    className={styles.fullSizeTextArea}
+                    className={styles.wideTextArea}
                   />
                 </FormControl>
               )}
