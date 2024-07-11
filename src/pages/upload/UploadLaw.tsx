@@ -98,9 +98,9 @@ const UploadLaw: React.FC = () => {
                   onChange={(e) => handleTypeChange(e.target.value)}
                   className={styles.inputField}
                 >
-                  <option value="bund">Bundesgesetze</option>
-                  <option value="land">Landesgesetze</option>
-                  <option value="kommunal">Kommunalgesetze</option>
+                  <option value="bund">Bundesebene</option>
+                  <option value="land">Landesebene</option>
+                  <option value="kommunal">Kommunalebene</option>
                 </Select>
               </FormControl>
               {(selectedType === 'land' || selectedType === 'kommunal') && (
@@ -148,7 +148,7 @@ const UploadLaw: React.FC = () => {
             <div className={styles.formColumn}>
               {selectedType !== 'alle' && (
                 <FormControl id="law-category" className={styles.inputLabel}>
-                  <FormLabel>Kategorie des Gesetzes</FormLabel>
+                  <FormLabel>Kategorie</FormLabel>
                   <Select 
                     placeholder="Kategorie auswählen" 
                     value={selectedLawType} 
@@ -185,14 +185,14 @@ const UploadLaw: React.FC = () => {
                 </FormControl>
               )}
               {importMethod === 'text' && (
-                <FormControl id="law-text" className={styles.wideTextAreaContainer}>
+                
                   <Textarea
                     placeholder="Gesetzestext eingeben"
                     value={lawText}
                     onChange={(e) => setLawText(e.target.value)}
-                    className={styles.wideTextArea}
+                    className={styles.fullSizeTextArea}
                   />
-                </FormControl>
+                
               )}
             </div>
           </div>

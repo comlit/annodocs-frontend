@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, List, ListItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { dummyData1 } from './data';
+import { fetchGesetze } from './api';  // Import the API function
 import Filter from './Filter';
 import styles from './Search.module.css';
 
@@ -243,9 +244,10 @@ function Search() {
       <Box className={styles.rightContainer}>
         <Box className={styles.korbContainer}>
           <h2 className={styles.subtitle}>Auswahlliste</h2>
+          <p className={styles.warning}>Hinweis: Um mehrere Gesetze gleichzeitig zu öffnen, müssen Sie Pop-ups in Ihrem Browser zulassen.</p>
           {cart.length === 0 ? (
             <>
-              <p className={styles.warning}>Hinweis: Um mehrere Gesetze gleichzeitig zu öffnen, müssen Sie Pop-ups in Ihrem Browser zulassen.</p>
+              
               <p>Ihre Auswahlliste ist leer</p>
             </>
           ) : (
