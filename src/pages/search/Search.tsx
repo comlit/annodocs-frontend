@@ -244,10 +244,9 @@ function Search() {
       <Box className={styles.rightContainer}>
         <Box className={styles.korbContainer}>
           <h2 className={styles.subtitle}>Auswahlliste</h2>
-          <p className={styles.warning}>Hinweis: Um mehrere Gesetze gleichzeitig zu öffnen, müssen Sie Pop-ups in Ihrem Browser zulassen.</p>
+          <p className={styles.warning}>Hinweis: Um mehrere Rechtsnormen gleichzeitig zu öffnen, müssen Sie Pop-ups in Ihrem Browser zulassen.</p>
           {cart.length === 0 ? (
-            <>
-              
+            <> 
               <p>Ihre Auswahlliste ist leer</p>
             </>
           ) : (

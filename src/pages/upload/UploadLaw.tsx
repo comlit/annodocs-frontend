@@ -83,16 +83,16 @@ const UploadLaw: React.FC = () => {
           <div className={styles.formRow}>
             <div className={styles.formColumn}>
               <FormControl id="law-name" className={styles.inputLabel}>
-                <FormLabel>Name des Gesetzes</FormLabel>
+                <FormLabel>Name der Rechtsnorm</FormLabel>
                 <Input 
-                  placeholder="Name des Gesetzes" 
+                  placeholder="Name der Rechtsnorm" 
                   value={lawName} 
                   onChange={(e) => setLawName(e.target.value)}
                   className={styles.inputField} 
                 />
               </FormControl>
               <FormControl id="law-type" className={styles.inputLabel}>
-                <FormLabel>Art des Gesetzes</FormLabel>
+                <FormLabel>Ebene</FormLabel>
                 <Select 
                   value={selectedType} 
                   onChange={(e) => handleTypeChange(e.target.value)}
@@ -123,7 +123,7 @@ const UploadLaw: React.FC = () => {
               {selectedType === 'kommunal' && selectedState && (
                 <>
                   <FormControl id="kommune-method" className={styles.inputLabel}>
-                    <FormLabel>Gemeindemethode</FormLabel>
+                    <FormLabel>Kommune</FormLabel>
                     <RadioGroup onChange={(value) => setKommuneMethod(value)} value={kommuneMethod}>
                       <Stack direction="column">
                         <Radio value="predefined">Andere Kommunen</Radio>
@@ -187,7 +187,7 @@ const UploadLaw: React.FC = () => {
               {importMethod === 'text' && (
                 
                   <Textarea
-                    placeholder="Gesetzestext eingeben"
+                    placeholder="Rechtsnormtext eingeben"
                     value={lawText}
                     onChange={(e) => setLawText(e.target.value)}
                     className={styles.fullSizeTextArea}
