@@ -36,6 +36,7 @@ const UploadLaw: React.FC = () => {
   const [lawText, setLawText] = useState('');
   const [importMethod, setImportMethod] = useState('file');
   const [lawTypes, setLawTypes] = useState<string[]>(federalLawTypes);
+  const [lawFormat, setLawFormat] = useState('paragraph'); // New state for law format
 
   const handleTypeChange = (type: string) => {
     setSelectedType(type);
@@ -71,6 +72,7 @@ const UploadLaw: React.FC = () => {
       state: selectedState,
       kommune: kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune',
       lawType: selectedLawType,
+      lawFormat: lawFormat, // Include law format in the submission data
       content: content
     };
     console.log(newLaw);
@@ -126,8 +128,8 @@ const UploadLaw: React.FC = () => {
                     <FormLabel>Kommune</FormLabel>
                     <RadioGroup onChange={(value) => setKommuneMethod(value)} value={kommuneMethod}>
                       <Stack direction="column">
-                        <Radio value="predefined">Andere Kommunen</Radio>
                         <Radio value="custom">Eigene Kommune</Radio>
+                        <Radio value="predefined">Andere Kommunen</Radio>                        
                       </Stack>
                     </RadioGroup>
                   </FormControl>
@@ -163,6 +165,15 @@ const UploadLaw: React.FC = () => {
                   </Select>
                 </FormControl>
               )}
+              <FormControl id="law-format" className={styles.inputLabel}>
+                <FormLabel>Format</FormLabel>
+                <RadioGroup onChange={(value) => setLawFormat(value)} value={lawFormat}>
+                  <Stack direction="row">
+                    <Radio value="paragraph">Paragraphstruktur</Radio>
+                    <Radio value="artikel">Artikelstruktur</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
               <FormControl id="import-method" className={styles.inputLabel}>
                 <FormLabel>Importmethode</FormLabel>
                 <RadioGroup onChange={(value) => setImportMethod(value)} value={importMethod}>

@@ -47,6 +47,9 @@ function Search() {
   const [lawTypes, setLawTypes] = useState<string[]>([]);
   const [useOwnState, setUseOwnState] = useState(false);
   const [useOwnCommune, setUseOwnCommune] = useState(false);
+  const [communeInput, setCommuneInput] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     filterResults(query, selectedType, selectedState, selectedKommune, selectedLawType);
@@ -99,6 +102,8 @@ function Search() {
 
   const handleKommuneChange = (kommune: string) => {
     setSelectedKommune(kommune);
+    setCommuneInput(kommune);
+    setShowSuggestions(false);
     filterResults(query, selectedType, selectedState, kommune, selectedLawType);
   };
 
@@ -190,6 +195,25 @@ function Search() {
     });
   };
 
+  const handleCommuneInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setCommuneInput(value);
+    if (value) {
+      const filteredSuggestions = communes.filter(commune =>
+        commune.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filteredSuggestions);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (commune: string) => {
+    handleKommuneChange(commune);
+  };
+
   return (
     <Box className={styles.container}>
       <Box className={styles.leftContainer}>
@@ -219,6 +243,40 @@ function Search() {
             useOwnCommune={useOwnCommune}
             onOwnCommuneChange={handleOwnCommuneChange}
           />
+          {selectedType === 'kommunal' && selectedState && !useOwnCommune && (
+            <Box mt={4} position="relative">
+              <Input
+                placeholder="Kommune suchen"
+                value={communeInput}
+                onChange={handleCommuneInputChange}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <Box
+                  position="absolute"
+                  top="100%"
+                  left={0}
+                  right={0}
+                  bg="white"
+                  border="1px solid #ccc"
+                  zIndex={10}
+                >
+                  <List>
+                    {suggestions.map((suggestion, index) => (
+                      <ListItem
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        cursor="pointer"
+                        p={2}
+                        _hover={{ backgroundColor: "#f0f0f0" }}
+                      >
+                        {suggestion}
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
+            </Box>
+          )}
         </Box>
         <Box className={styles.innerContainer}>
           <List spacing={3} className={styles.list}>

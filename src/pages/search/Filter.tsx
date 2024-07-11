@@ -73,14 +73,6 @@ const Filter: React.FC<FilterProps> = ({
               <Radio value="other">Andere Kommune</Radio>
             </Stack>
           </RadioGroup>
-          {!useOwnCommune && (
-            <Input
-              mt={4}
-              placeholder="Kommune suchen"
-              value={selectedKommune}
-              onChange={(e) => onKommuneChange(e.target.value)}
-            />
-          )}
         </>
       )}
       {selectedType !== 'alle' && (
