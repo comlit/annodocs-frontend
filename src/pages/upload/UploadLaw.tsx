@@ -165,15 +165,7 @@ const UploadLaw: React.FC = () => {
                   </Select>
                 </FormControl>
               )}
-              <FormControl id="law-format" className={styles.inputLabel}>
-                <FormLabel>Format</FormLabel>
-                <RadioGroup onChange={(value) => setLawFormat(value)} value={lawFormat}>
-                  <Stack direction="row">
-                    <Radio value="paragraph">Paragraphstruktur</Radio>
-                    <Radio value="artikel">Artikelstruktur</Radio>
-                  </Stack>
-                </RadioGroup>
-              </FormControl>
+              
               <FormControl id="import-method" className={styles.inputLabel}>
                 <FormLabel>Importmethode</FormLabel>
                 <RadioGroup onChange={(value) => setImportMethod(value)} value={importMethod}>
@@ -183,6 +175,17 @@ const UploadLaw: React.FC = () => {
                   </Stack>
                 </RadioGroup>
               </FormControl>
+              {importMethod=='file' && (
+                <FormControl id="law-format" className={styles.inputLabel}>
+                <FormLabel>Format</FormLabel>
+                <RadioGroup onChange={(value) => setLawFormat(value)} value={lawFormat}>
+                  <Stack direction="row">
+                    <Radio value="paragraph">Paragraphstruktur</Radio>
+                    <Radio value="artikel">Artikelstruktur</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+              )}
               {importMethod === 'file' && (
                 <FormControl id="file-upload" className={styles.inputLabel}>
                   <FormLabel>Datei auswählen</FormLabel>
@@ -194,7 +197,9 @@ const UploadLaw: React.FC = () => {
                   />
                   {file && <span className="fileName">{file.name}</span>}
                 </FormControl>
-              )}
+            ) 
+              }
+              
               {importMethod === 'text' && (
                 
                   <Textarea
