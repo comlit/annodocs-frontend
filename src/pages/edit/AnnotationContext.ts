@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import {Annotation, AnnotationPart} from "./Edit.tsx";
+import {Annotation, AnnotationPart, Paragraph} from "./Edit.tsx";
 
 interface AnnotationContext {
     focusedAnnotation: number | null;
@@ -10,6 +10,7 @@ interface AnnotationContext {
     selectionChangeCallback: (parts: {parts: AnnotationPart[], textID: number}) => void;
     deleteMode: boolean;
     toggleDeleteMode: () => void;
+    paragraph: Paragraph;
 }
 
 const AnnotationContext = createContext({} as AnnotationContext);

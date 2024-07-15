@@ -22,7 +22,7 @@ type listitem = {
 
 function Annotator({textList}: { textList: (list | textpart | listitem)[] }) {
 
-    const {editMode} = useContext(AnnotationContext);
+    const {editMode, paragraph} = useContext(AnnotationContext);
 
     const emitMouseUp = () => {
         if (!editMode)
@@ -87,7 +87,7 @@ function Annotator({textList}: { textList: (list | textpart | listitem)[] }) {
              px='10px'
              pos="relative"
         >
-            <Heading size="md" w='100%' textAlign='center' mb='20px' mt='10px'>§ Gesetztitel-Platzhalter</Heading>
+            <Heading size="md" w='100%' textAlign='center' mb='30px' mt='10px'>{`${paragraph.number} ${paragraph.title}`}</Heading>
             {editMode ? <Toolbar/> : null}
             {textList.map((item, index) =>
                 <div className='jurAbsatz' key={index}>

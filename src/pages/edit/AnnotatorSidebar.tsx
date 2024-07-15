@@ -107,11 +107,12 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
             <Box h="100%" maxH={{base: '50vh', md: '70vh', lg: '80vh'}} overflowY="scroll">
                 <VStack m="10px">
                     <Heading size="md">Annotationen</Heading>
-                    {annotations.map(annotation => (
+                    {annotations.length != 0 ? annotations.map(annotation => (
                         <AnnotationListItem annotation={annotation} key={annotation.id}
                                             clicked={() => setFocusedAnnotation(annotation.id)}/>
-                    ))}
-
+                    )):
+                        <Text>Es sind noch keine Annotationen vorhanden</Text>
+                    }
                 </VStack>
             </Box>
 
