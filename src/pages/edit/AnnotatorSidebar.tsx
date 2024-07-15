@@ -15,6 +15,7 @@ import {Annotation} from "./Edit.tsx";
 import Process from "./modeltypes/Process.tsx";
 import Formular from "./modeltypes/Formular.tsx";
 import Tree from "./modeltypes/Tree.tsx";
+import FreeText from "./modeltypes/FreeText.tsx";
 
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     setEditMode: (enabled: boolean) => void,
@@ -28,7 +29,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     const [currentModelType, setCurrentModelType] = useState<string>(null)
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const {isOpen, onOpen, onClose} = useDisclosure()
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value)
@@ -53,10 +54,10 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
             <Button onClick={onOpen}>Modelle Bearbeiten</Button>
 
             <Modal isOpen={isOpen} onClose={onClose} size='6xl' isCentered>
-                <ModalOverlay />
+                <ModalOverlay/>
                 <ModalContent minHeight='80vh'>
                     <ModalHeader>Modelle Bearbeiten</ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton/>
                     <ModalBody>
                         <Select
                             placeholder="Wählen Sie ein Modell"
@@ -68,12 +69,15 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                             <option value="process">Prozess</option>
                             <option value="form">Formular</option>
                             <option value="tree">Entscheidungsbaum</option>
+                            <option value="freeText">Freitext</option>
                         </Select>
                         {
                             currentModelType === "process" ? <Process/> :
                                 currentModelType === "form" ? <Formular/> :
                                     currentModelType === "tree" ? <Tree/> :
-                                    <Text>Wählen Sie ein Modell aus um es zu bearbeiten (hier Erklärung einfügen)</Text>
+                                        currentModelType === "freeText" ? <FreeText/> :
+                                            <Text>Wählen Sie ein Modell aus um es zu bearbeiten (hier Erklärung
+                                                einfügen)</Text>
                         }
                     </ModalBody>
                     <ModalFooter>
