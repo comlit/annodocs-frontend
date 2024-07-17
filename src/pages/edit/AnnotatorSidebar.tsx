@@ -11,11 +11,27 @@ import {
 } from "@chakra-ui/react";
 import AnnotationContext from "./AnnotationContext.ts";
 import AnnotationListItem from "./AnnotationListItem.tsx";
-import {Annotation} from "./Edit.tsx";
+import {Annotation, Models} from "./Edit.tsx";
 import Process from "./modeltypes/Process.tsx";
 import Formular from "./modeltypes/Formular.tsx";
 import Tree from "./modeltypes/Tree.tsx";
 import FreeText from "./modeltypes/FreeText.tsx";
+import {getRandomPastelColor} from "./util.ts";
+
+const initialxml = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:process id="Process_1" isExecutable="false">
+    <bpmn2:startEvent id="StartEvent_1"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds height="36.0" width="36.0" x="412.0" y="240.0"/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
+`
 
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     setEditMode: (enabled: boolean) => void,
@@ -28,6 +44,8 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     const [focused, setFocused] = useState<Annotation | null>(null)
 
     const [currentModelType, setCurrentModelType] = useState<string>(null)
+
+    const [models, setModels] = useState<Models>({process: initialxml})
 
     const {isOpen, onOpen, onClose} = useDisclosure()
 
@@ -42,8 +60,18 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         } else {
             setName(annotations.find(annotation => annotation.id === focusedAnnotation)?.name ?? "")
             setFocused(annotations.find(annotation => annotation.id === focusedAnnotation) ?? null)
+            setModels(annotations.find(annotation => annotation.id === focusedAnnotation)?.models ?? {process: initialxml})
         }
     }, [focusedAnnotation]);
+
+    const handleModelChange = (type: string, data: any) => {
+        setModels(prevState => {
+            return {
+                ...prevState,
+                [type]: data
+            }
+        })
+    }
 
     //TODO: add inputs to change other data of annotation
     const editModeLayout = <>
@@ -72,7 +100,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                             <option value="freeText">Freitext</option>
                         </Select>
                         {
-                            currentModelType === "process" ? <Process/> :
+                            currentModelType === "process" ? <Process xml={models.process} changedCallback={handleModelChange}/> :
                                 currentModelType === "form" ? <Formular/> :
                                     currentModelType === "tree" ? <Tree/> :
                                         currentModelType === "freeText" ? <FreeText/> :
@@ -96,6 +124,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                     id: focused?.id ?? Math.round(Math.random() * 100000),
                     name: name,
                     color: focused?.color ?? getRandomPastelColor(),
+                    models: models
                 }
             )}>Speichern</Button>
         </Box>
@@ -135,25 +164,6 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
             <Button mt="auto" onClick={() => setEditMode(true)}>Annotation Bearbeiten</Button>
         </Box>
     </>
-
-    const getRandomPastelColor = (): string => {
-        // Funktion zur Generierung einer zufälligen Zahl im Bereich [128, 255]
-        const randomChannelValue = (): number => Math.floor(Math.random() * 128 + 110);
-
-        // Generierung der RGB-Werte
-        const r = randomChannelValue();
-        const g = randomChannelValue();
-        const b = randomChannelValue();
-
-        // Konvertierung der RGB-Werte in einen Hex-String
-        const toHex = (value: number): string => {
-            const hex = value.toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-        };
-
-        // Zusammenfügen der Hex-Werte in einen Farbcode
-        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    };
 
     return (
         <Box className="annotator-sidebar" border='1px' borderColor='gray.200' borderRadius='8px'>

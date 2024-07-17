@@ -21,21 +21,20 @@ const initialxml = `<?xml version="1.0" encoding="UTF-8"?>
 `
 
 
-function Process() {
+function Process({xml, changedCallback}) {
     const ref = useRef();
-    const [xml, setXml] = useState("")
 
     useEffect(() => {
         const modeler = new BpmnModeler({
             container: ref.current
         });
-        modeler.importXML(initialxml);
+        modeler.importXML(xml);
 
         modeler.on('commandStack.changed', () => {
             //save xml to state
             modeler.saveXML().then(({xml}) => {
                 if(xml)
-                    setXml(xml)
+                    changedCallback("process", xml)
             });
         });
 
