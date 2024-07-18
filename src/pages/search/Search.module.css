@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: linear-gradient(to top left, #ffcc0052, #ff669948, #cc66ff59, #66ccff40, #66ff663e);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 10px auto;
+  color: black;
+}
+
+.leftContainer {
+  flex: 2;
+  margin-right: 20px;
+}
+
+.rightContainer {
+  flex: 1; /* Adjusted flex to make it wider */
+  max-width: 400px;
+}
+
+.innerContainer {
+  margin-bottom: 20px;
+  background: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.list {
+  width: 100%;
+  max-height: 390px; /* Adjust height to fit 5 items approximately */
+  overflow-y: auto;
+  padding-right: 10px; /* To make space for scrollbar */
+}
+
+.list2{
+  width: 100%;
+  max-height: 523px; /* Adjust height to fit 5 items approximately */
+  overflow-y: auto;
+  padding-right: 10px; /* To make space for scrollbar */
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 540px;
+  overflow-x: auto;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.button {
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  border: none;
+  background: blue;
+}
+
+.korbContainer {
+  width: 400px; /* Fixed width */
+  height: 665px; /* Fixed height */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover {
+  background-position: 100% 0;
+  transition: background-position 0.5s ease;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.warning{
+  font-size: 16px;
+  text-align: left;
+  color:rgba(255, 0, 0, 0.468)
+}
+
+@media (max-width: 1000px) {
+  .container {
+    padding: 10px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+}
