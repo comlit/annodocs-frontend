@@ -60,10 +60,10 @@ function Dashboard() {
 
                     <Flex justify="center" gap={4} height="12vh">
                         <Button className = "dashboard-gesetze-suchen" boxShadow="md" fontSize="xl" w="50%" height="full" colorScheme="blue" onClick={() => navigate('/search')}>
-                            Gesetze suchen
+                            <u>R</u>echtsnormen suchen
                         </Button>
                         <Button className="dashboard-annotation-erstellen" boxShadow="md" fontSize="xl" w="50%" height="full" colorScheme="teal" onClick={() => navigate('/create')}>
-                            Annotation erstellen
+                            <u>A</u>nnotation erstellen
                         </Button>
                     </Flex>
                     //eigene Annotationen

@@ -32,8 +32,16 @@ const steps: Step[] = [
     content: 'Klicken Sie jetzt auf diesen Button, um die Gesetzessuche zu starten',
   },
   {
+    target: `.${cx('inputField')}`,
+    content: 'Geben Sie hier den Namen oder ein Stichwort aus dem Titel der gesuchten Rechtsnorm ein. Sie können die Suche durch Angabe der Domäne und Auswahl der Art von Rechtsnorm einschränken.',
+  },
+  {
+    target: `.${cx('list')}`,
+    content: 'Hier werden sämtliche Rechtsnormen angezeigt, die zu Ihrer Auswahl passen. Sie können nun beliebig viele Rechtsnormen Ihrer Auswahl hinzufügen. ',
+  },
+  {
     target: `.${cx('korbContainer')}`,
-    content: 'test',
+    content: 'Hier wird Ihre bisherige Auswahl angezeigt. Wenn Sie auf "Alle öffnen" klicken, werden die Rechtsnormen in neuen Browsertabs geöffnet. Dort können Sie Annotationen einsehen oder selbst tätigen',
   },
   
 

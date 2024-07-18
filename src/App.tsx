@@ -38,7 +38,7 @@ function App() {
     const pages = [
       { name: "Anmeldung", path: "/" },
       { name: "Dashboard", path: "/dashboard" },
-      { name: "Gesetze suchen", path: "/search" },
+      { name: "Rechtsnormen suchen", path: "/search" },
       { name: "Annotationen editieren", path: "/editor" },
       { name: "Gesetze hinzufügen", path: "/upload" }
     ];
