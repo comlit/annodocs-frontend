@@ -36,7 +36,7 @@ const UploadLaw: React.FC = () => {
   const [lawText, setLawText] = useState('');
   const [importMethod, setImportMethod] = useState('file');
   const [lawTypes, setLawTypes] = useState<string[]>(federalLawTypes);
-  const [lawFormat, setLawFormat] = useState('paragraph'); // New state for law format
+  const [lawFormat, setLawFormat] = useState('paragraph'); 
 
   const handleTypeChange = (type: string) => {
     setSelectedType(type);
@@ -72,7 +72,7 @@ const UploadLaw: React.FC = () => {
       state: selectedState,
       kommune: kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune',
       lawType: selectedLawType,
-      lawFormat: lawFormat, // Include law format in the submission data
+      lawFormat: lawFormat,
       content: content
     };
     console.log(newLaw);
@@ -201,14 +201,12 @@ const UploadLaw: React.FC = () => {
               }
               
               {importMethod === 'text' && (
-                
                   <Textarea
                     placeholder="Rechtsnormtext eingeben"
                     value={lawText}
                     onChange={(e) => setLawText(e.target.value)}
                     className={styles.fullSizeTextArea}
                   />
-                
               )}
             </div>
           </div>

@@ -16,7 +16,7 @@
 }
 
 .rightContainer {
-  flex: 1; /* Adjusted flex to make it wider */
+  flex: 1; 
   max-width: 400px;
 }
 
@@ -37,16 +37,16 @@
 
 .list {
   width: 100%;
-  max-height: 390px; /* Adjust height to fit 5 items approximately */
+  max-height: 460px; 
   overflow-y: auto;
-  padding-right: 10px; /* To make space for scrollbar */
+  padding-right: 10px;
 }
 
 .list2{
   width: 100%;
-  max-height: 523px; /* Adjust height to fit 5 items approximately */
+  max-height: 523px; 
   overflow-y: auto;
-  padding-right: 10px; /* To make space for scrollbar */
+  padding-right: 10px; 
 }
 
 .listItem {
@@ -74,9 +74,9 @@
 }
 
 .korbContainer {
-  width: 400px; /* Fixed width */
-  height: 665px; /* Fixed height */
-  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  width: 400px; 
+  height: 718px; 
+  overflow-y: auto; 
   padding: 15px;
   background: white;
   border-radius: 8px;

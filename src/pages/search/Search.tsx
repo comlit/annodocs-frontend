@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, List, ListItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { dummyData1 } from './data';
-import { fetchGesetze } from './api';  // Import the API function
 import Filter from './Filter';
 import styles from './Search.module.css';
 
@@ -31,7 +30,7 @@ const municipalLawTypes = ["Satzungen", "Verwaltungsvorschriften", "sonstige"];
 
 const mockUser = {
   state: "Nordrhein-Westfalen",
-  commune: "Unna" // Mock user data for demonstration
+  commune: "Unna" 
 };
 
 function Search() {
@@ -60,7 +59,7 @@ function Search() {
       const filteredCommunes = [...new Set(dummyData1
         .filter(item => item.type === 'kommunal' && item.state === selectedState)
         .map(item => item.kommune)
-      )].filter(Boolean) as string[]; // Ensure the filtered list contains only strings
+      )].filter(Boolean) as string[]; 
       setCommunes(filteredCommunes);
     } else {
       setCommunes([]);
@@ -89,6 +88,7 @@ function Search() {
     setSelectedType(type);
     setSelectedState('');
     setSelectedKommune('');
+    setSelectedLawType('')
     setUseOwnState(false);
     setUseOwnCommune(false);
     filterResults(query, type, '', '', '');
@@ -96,7 +96,6 @@ function Search() {
 
   const handleStateChange = (state: string) => {
     setSelectedState(state);
-    setSelectedKommune('');
     filterResults(query, selectedType, state, '', selectedLawType);
   };
 

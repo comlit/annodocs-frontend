@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Radio, RadioGroup, Stack, Select, Input } from "@chakra-ui/react";
+import { Box, Radio, RadioGroup, Stack, Select } from "@chakra-ui/react";
 
 interface FilterProps {
   selectedType: string;
@@ -24,12 +24,9 @@ const Filter: React.FC<FilterProps> = ({
   onFilterChange,
   selectedState,
   onStateChange,
-  selectedKommune,
-  onKommuneChange,
   selectedLawType,
   onLawTypeChange,
   states,
-  communes,
   lawTypes,
   useOwnState,
   onOwnStateChange,
