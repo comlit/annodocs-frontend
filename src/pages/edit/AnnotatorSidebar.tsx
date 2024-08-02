@@ -3,7 +3,7 @@ import {
     Box,
     Button,
     Divider,
-    Heading,
+    Heading, HStack,
     Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select,
     Text,
     useDisclosure,
@@ -33,6 +33,16 @@ const initialxml = `<?xml version="1.0" encoding="UTF-8"?>
 </bpmn2:definitions>
 `
 
+const initialSchema = {
+    "schemaVersion": 1,
+    "exporter": {
+        "name": "form-js",
+        "version": "0.1.0"
+    },
+    "components": [],
+    "type": "default"
+}
+
 function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
     setEditMode: (enabled: boolean) => void,
     setFocusedAnnotation: (id: number | null) => void
@@ -45,7 +55,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     const [currentModelType, setCurrentModelType] = useState<string>(null)
 
-    const [models, setModels] = useState<Models>({process: initialxml})
+    const [models, setModels] = useState<Models>({process: initialxml, formular: initialSchema, freeText: ""})
 
     const {isOpen, onOpen, onClose} = useDisclosure()
 
@@ -60,7 +70,11 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         } else {
             setName(annotations.find(annotation => annotation.id === focusedAnnotation)?.name ?? "")
             setFocused(annotations.find(annotation => annotation.id === focusedAnnotation) ?? null)
-            setModels(annotations.find(annotation => annotation.id === focusedAnnotation)?.models ?? {process: initialxml})
+            setModels(annotations.find(annotation => annotation.id === focusedAnnotation)?.models ?? {
+                process: initialxml,
+                formular: initialSchema,
+                freeText: ""
+            })
         }
     }, [focusedAnnotation]);
 
@@ -75,59 +89,65 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
 
     //TODO: add inputs to change other data of annotation
     const editModeLayout = <>
-        <Box h="100%">
+        <Box h="100%" p="10px">
             <Text>Bearbeiten eine Vorhandenen oder erstellen einer neuen Annotation</Text>
             <Input onChange={handleNameChange} value={name} placeholder="Name der Annotation"/>
 
             <Button onClick={onOpen}>Modelle Bearbeiten</Button>
 
-            <Modal isOpen={isOpen} onClose={onClose} size='6xl' isCentered>
-                <ModalOverlay/>
-                <ModalContent minHeight='80vh'>
-                    <ModalHeader>Modelle Bearbeiten</ModalHeader>
-                    <ModalCloseButton/>
-                    <ModalBody>
-                        <Select
-                            placeholder="Wählen Sie ein Modell"
-                            size='md'
-                            mb='8px'
-                            onChange={(e) => setCurrentModelType(e.target.value)}
-                            value={currentModelType}
-                        >
-                            <option value="process">Prozess</option>
-                            <option value="form">Formular</option>
-                            <option value="tree">Entscheidungsbaum</option>
-                            <option value="freeText">Freitext</option>
-                        </Select>
-                        {
-                            currentModelType === "process" ? <Process xml={models.process} changedCallback={handleModelChange}/> :
-                                currentModelType === "form" ? <Formular/> :
-                                    currentModelType === "tree" ? <Tree/> :
-                                        currentModelType === "freeText" ? <FreeText/> :
-                                            <Text>Wählen Sie ein Modell aus um es zu bearbeiten (hier Erklärung
-                                                einfügen)</Text>
-                        }
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button colorScheme='blue'>Änderungen Speichern</Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-
-            <Button onClick={() => {
-                if (window.confirm("Wollen Sie die Änderungen verwerfen?")) {
-                    exitEditMode(null);
-                }
-            }}>Zurück</Button>
-            <Button onClick={() => exitEditMode(
-                {
-                    id: focused?.id ?? Math.round(Math.random() * 100000),
-                    name: name,
-                    color: focused?.color ?? getRandomPastelColor(),
-                    models: models
-                }
-            )}>Speichern</Button>
+            <Divider my="10px"/>
+            <HStack>
+                <Button onClick={() => {
+                    if (window.confirm("Wollen Sie die Änderungen verwerfen?")) {
+                        exitEditMode(null);
+                    }
+                }}>Zurück</Button>
+                <Button onClick={() => exitEditMode(
+                    {
+                        id: focused?.id ?? Math.round(Math.random() * 100000),
+                        name: name,
+                        color: focused?.color ?? getRandomPastelColor(),
+                        models: models
+                    }
+                )}>Speichern</Button>
+            </HStack>
         </Box>
+
+        <Modal isOpen={isOpen} onClose={onClose} size='6xl' isCentered>
+            <ModalOverlay/>
+            <ModalContent minHeight='80vh'>
+                <ModalHeader>Modelle Bearbeiten</ModalHeader>
+                <ModalCloseButton/>
+                <ModalBody>
+                    <Select
+                        placeholder="Wählen Sie ein Modell"
+                        size='md'
+                        mb='8px'
+                        onChange={(e) => setCurrentModelType(e.target.value)}
+                        value={currentModelType}
+                    >
+                        <option value="process">Prozess</option>
+                        <option value="form">Formular</option>
+                        <option value="tree">Entscheidungsbaum</option>
+                        <option value="freeText">Freitext</option>
+                    </Select>
+                    {
+                        currentModelType === "process" ?
+                            <Process xml={models.process} changedCallback={handleModelChange}/> :
+                            currentModelType === "form" ?
+                                <Formular schema={models.formular} changedCallback={handleModelChange}/> :
+                                currentModelType === "tree" ? <Tree/> :
+                                    currentModelType === "freeText" ?
+                                        <FreeText text={models.freeText} changedCallback={handleModelChange}/> :
+                                        <Text>Wählen Sie ein Modell aus um es zu bearbeiten (hier Erklärung
+                                            einfügen)</Text>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button colorScheme='blue' onClick={onClose}>Änderungen Speichern</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     </>
 
     //TODO: add ability to filter
@@ -137,9 +157,9 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                 <VStack m="10px">
                     <Heading size="md">Annotationen</Heading>
                     {annotations.length != 0 ? annotations.map(annotation => (
-                        <AnnotationListItem annotation={annotation} key={annotation.id}
-                                            clicked={() => setFocusedAnnotation(annotation.id)}/>
-                    )):
+                            <AnnotationListItem annotation={annotation} key={annotation.id}
+                                                clicked={() => setFocusedAnnotation(annotation.id)}/>
+                        )) :
                         <Text>Es sind noch keine Annotationen vorhanden</Text>
                     }
                 </VStack>
@@ -155,18 +175,20 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
         </>
 
     const detailModeLayout = <>
-        <Box h="100%">
-            <Text>Details der ausgewählten Annotation</Text>
-            <Text>Name: {focused?.name}</Text>
-            <Text>Farbe: {focused?.color}</Text>
-            <Text>Teile: {JSON.stringify(focused?.parts)}</Text>
-            <Button onClick={() => setFocusedAnnotation(null)}>Zurück</Button>
-            <Button mt="auto" onClick={() => setEditMode(true)}>Annotation Bearbeiten</Button>
+        <Box h="100%" p="10px">
+            <Heading size="md" w='100%' textAlign='center'>{focused?.name ?? "Details"}</Heading>
+            <Text>Ersteller: {focused?.author}</Text>
+            <Text>Zuletzt geändert am: {focused?.lastEdit}</Text>
+            <Divider my="10px"/>
+            <HStack>
+                <Button onClick={() => setFocusedAnnotation(null)}>Zurück</Button>
+                <Button mt="auto" onClick={() => setEditMode(true)}>Annotation Bearbeiten</Button>
+            </HStack>
         </Box>
     </>
 
     return (
-        <Box className="annotator-sidebar" border='1px' borderColor='gray.200' borderRadius='8px'>
+        <Box className="annotator-sidebar" border='1px' borderColor='gray.200' borderRadius='8px' width='20vw'>
             <div className="annotator-sidebar__content">
                 {editMode ? editModeLayout : focusedAnnotation ? detailModeLayout : viewModeLayout}
             </div>

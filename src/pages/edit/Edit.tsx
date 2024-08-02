@@ -1,5 +1,5 @@
 import Annotator from "./annotation/Annotator.tsx";
-import {Box, Grid, GridItem} from "@chakra-ui/react";
+import {Box, Center, Grid, GridItem} from "@chakra-ui/react";
 import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
@@ -9,13 +9,15 @@ export type Annotation = {
     id: number,
     name: string,
     color: string,
+    author: string,
+    lastEdit: string,
     parts: AnnotationPart[],
     models?: Models
 }
 
 export type Models = {
     process?: string,
-    formular?: string,
+    formular?: object,
     tree?: string,
     freeText?: string
 }
@@ -72,7 +74,7 @@ function Edit() {
         } else {
             setEditMode(false)
             setFocusedAnnotation(null)
-            const annotation: Annotation = {id: data.id, name: data.name, color: data.color, parts: parts, models: data.models}
+            const annotation: Annotation = {id: data.id, name: data.name, author: data.author, lastEdit: data.lastEdit, color: data.color, parts: parts, models: data.models}
 
             const body = {
                 name: annotation.name,
@@ -88,7 +90,7 @@ function Edit() {
                     }
                 }),
                 treeNodes: annotation?.models?.tree,
-                formGroups: annotation?.models?.formular,
+                form: JSON.stringify(annotation?.models?.formular),
                 bpmnXml: annotation?.models?.process,
                 freitext: annotation?.models?.freeText
             }
@@ -99,7 +101,7 @@ function Edit() {
                     return [...filtered, annotation]
                 })
 
-                fetchWrapper.post(`api/annotations/${annotation.id}`, body, false).then((data) => {
+                fetchWrapper.put(`api/annotations/${annotation.id}`, body, false).then((data) => {
                     console.log(data)
                 })
             }
@@ -130,6 +132,8 @@ function Edit() {
                     id: annotation.id,
                     name: annotation.name,
                     color: annotation.color,
+                    author: annotation.ersteller,
+                    lastEdit: annotation.datum,
                     parts: annotation.annotationAbschnitte.map((part: any) => {
                         return {
                             id: part.id,
@@ -140,7 +144,7 @@ function Edit() {
                     }),
                     models: {
                         process: annotation.bpmnXml,
-                        formular: annotation.formGroups,
+                        formular: JSON.parse(annotation.form),
                         tree: annotation.treeNodes,
                         freeText: annotation.freitext
                     }

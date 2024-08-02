@@ -85,15 +85,20 @@ function Annotator({textList}: { textList: (list | textpart | listitem)[] }) {
              borderColor='gray.200'
              borderRadius='8px'
              px='10px'
+
              pos="relative"
         >
             <Heading size="md" w='100%' textAlign='center' mb='30px' mt='10px'>{`${paragraph.number} ${paragraph.title}`}</Heading>
             {editMode ? <Toolbar/> : null}
-            {textList.map((item, index) =>
-                <div className='jurAbsatz' key={index}>
-                    {renderParagraph(item)}
-                </div>
-            )}
+            <Box
+                paddingEnd={editMode ? '80px' : '10px'}
+            >
+                {textList.map((item, index) =>
+                    <div className='jurAbsatz' key={index}>
+                        {renderParagraph(item)}
+                    </div>
+                )}
+            </Box>
         </Box>
     );
 }

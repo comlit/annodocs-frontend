@@ -1,4 +1,4 @@
-import {Button, Card, CardBody, CardFooter, Heading, Icon} from "@chakra-ui/react";
+import {Button, Card, CardBody, CardFooter, Heading, Icon, Text} from "@chakra-ui/react";
 import {Annotation} from "./Edit.tsx";
 
 function AnnotationListItem({annotation, clicked}: { annotation: Annotation, clicked: any }) {
@@ -14,10 +14,11 @@ function AnnotationListItem({annotation, clicked}: { annotation: Annotation, cli
 
     return (
         <Card className="annotation-list-item" w={"100%"} variant={"outline"}>
-            <CardBody>
-                <Heading size="md">{annotation.name}</Heading>
-                <div className="annotation-list-item__end">Teile: {JSON.stringify(annotation.parts)}</div>
+            <CardBody paddingEnd={"60px"}>
+                <Heading size="md" pb='10px'>{annotation.name}</Heading>
                 <CircleIcon w={7} h={7} color={annotation.color} position={"absolute"} top={"5"} right={"5"}/>
+                <Text>Ersteller: {annotation.author}</Text>
+                <Text>Zuletzt geändert am: {annotation.lastEdit}</Text>
 
             </CardBody>
             <CardFooter>
