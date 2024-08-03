@@ -1,15 +1,15 @@
 import { 
-    Box, 
-    Button, 
-    Flex, 
+    Box,
+    Button,
+    Flex,
     Heading,
-    Stack, 
+    Stack,
     Text,
     IconProps,
     useBreakpointValue,
     Icon,
     HStack,
-    useColorModeValue,
+    useColorModeValue, 
     Tooltip,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
@@ -98,7 +98,7 @@ function Dashboard() {
                                             <Tooltip key={index} label={annotation.text} hasArrow>
                                                 <Box 
                                                     className={styles.tooltipBox}
-                                                    onClick={() => navigate(`/search?lawIndex=${annotation.lawIndex}`)}
+                                                    onClick={() => navigate(`/search?id=${annotation.id}`)}
                                                 >
                                                     <Text className={styles.noData}>
                                                         {annotation.text.length > 70 ? annotation.text.substring(0, 70) + '...' : annotation.text}
@@ -124,7 +124,7 @@ function Dashboard() {
                                             <Tooltip key={index} label={recommendation.text} hasArrow>
                                                 <Box 
                                                     className={styles.tooltipBox}
-                                                    onClick={() => navigate(`/search?lawIndex=${recommendation.lawIndex}`)}
+                                                    onClick={() => navigate(`/search?id=${recommendation.id}`)}
                                                 >
                                                     <Text className={styles.noData}>
                                                         {recommendation.text.length > 50 ? recommendation.text.substring(0, 50) + '...' : recommendation.text}
@@ -152,7 +152,7 @@ function Dashboard() {
                                             <Tooltip key={index} label={favorite.text} hasArrow placement='bottom'>
                                                 <Box 
                                                     className={styles.tooltipBox}
-                                                    onClick={() => navigate(`/search?lawIndex=${favorite.lawIndex}`)}
+                                                    onClick={() => navigate(`/search?id=${favorite.id}`)}
                                                 >
                                                     <Text className={styles.noData}>
                                                         {favorite.text.length > 25 ? favorite.text.substring(0, 25) + '...' : favorite.text}
@@ -178,7 +178,7 @@ function Dashboard() {
                                             <Tooltip key={index} label={lastvisit.text} hasArrow>
                                                 <Box 
                                                     className={styles.tooltipBox}
-                                                    onClick={() => navigate(`/search?lawIndex=${lastvisit.lawIndex}`)}
+                                                    onClick={() => navigate(`/edit?id=${lastvisit.id}`)}
                                                 >
                                                     <Text className={styles.noData}>
                                                         {lastvisit.text.length >25 ? lastvisit.text.substring(0, 25) + '...' : lastvisit.text}
