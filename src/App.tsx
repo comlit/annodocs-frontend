@@ -9,7 +9,6 @@ import Search from "./pages/search/Search";
 import Create from "./pages/create/Create";
 import Edit from "./pages/edit/Edit";
 import UploadLaw from './pages/upload/UploadLaw';
-import MenuButton from './MenuButton';
 
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -29,7 +28,6 @@ function App() {
             <BrowserRouter>
                 <Flex id='layout' minH='100vh' direction='column'>
                     <Header />
-                    <MenuButton />
                     <Flex pb='65px' width='100%'>
                         <Routes>
                             <Route index element={<Landing />} />

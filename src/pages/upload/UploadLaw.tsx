@@ -63,21 +63,38 @@ const UploadLaw: React.FC = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const content = importMethod === 'file' && file ? `Datei hochgeladen: ${file.name}` : lawText;
-    const newLaw = {
-      name: lawName,
-      type: selectedType,
-      state: selectedState,
-      kommune: kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune',
-      lawType: selectedLawType,
-      lawFormat: lawFormat,
-      content: content
-    };
-    console.log(newLaw);
+    const formData = new FormData();
+    formData.append('lawName', lawName);
+    formData.append('type', selectedType);
+    formData.append('state', selectedState);
+    formData.append('kommune', kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune');
+    formData.append('lawType', selectedLawType);
+    formData.append('lawFormat', lawFormat);
+    formData.append('content', importMethod === 'file' && file ? '' : lawText);
+    if (file) {
+      formData.append('file', file);
+    }
+  
+    try {
+      const response = await fetch('http://localhost:8080/api/gesetze/import',
+       {
+        method: 'POST',
+        body: formData
+      });
+  
+      if (response.ok) {
+        alert('');
+      } else {
+        alert('');
+      }
+    } catch (error) {
+      console.error('Error uploading law:', error);
+      alert('An error occurred while uploading the law');
+    }
   };
-
+  
   return (
     <Box className={styles.container}>
       <Box className={styles.formContainer}>
