@@ -65,54 +65,48 @@ const UploadLaw: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+
     // Create a form data object to hold user input attributes
-    const formData = new FormData();
-    formData.append('lawName', lawName);
-    formData.append('type', selectedType);
-    formData.append('state', selectedState);
-    formData.append('kommune', kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune');
-    formData.append('lawType', selectedLawType);
-    formData.append('lawFormat', lawFormat);
-  
+    let payload;
+
     if (file && importMethod === 'file') {
       try {
-        // Read the content of the JSON file
+        // Lies den Inhalt der JSON-Datei
         const fileContent = await file.text();
         const jsonContent = JSON.parse(fileContent);
-  
-        // Add user input attributes to the JSON object
-        jsonContent.lawName = lawName;
-        jsonContent.type = selectedType;
+
+        // Füge die Benutzereingabe-Attribute zum JSON-Objekt hinzu
+        jsonContent.ebene = selectedType;
         jsonContent.state = selectedState;
         jsonContent.kommune = kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune';
-        jsonContent.lawType = selectedLawType;
-        jsonContent.lawFormat = lawFormat;
-  
-        // Convert the updated JSON object back to a string
-        const updatedFileContent = JSON.stringify(jsonContent);
-  
-        // Create a Blob from the updated JSON string
-        const updatedFile = new Blob([updatedFileContent], { type: 'application/json' });
-  
-        // Append the updated file to the form data
-        formData.append('file', updatedFile, file.name);
-  
+        jsonContent.typ = selectedLawType;
+
+        payload = jsonContent;
+
       } catch (error) {
-        console.error('Error reading or updating the file:', error);
-        alert('An error occurred while processing the file');
+        console.error('Fehler beim Lesen oder Aktualisieren der Datei:', error);
+        alert('Beim Verarbeiten der Datei ist ein Fehler aufgetreten');
         return;
       }
     } else {
-      // For text upload, add the text content directly to form data
-      formData.append('content', lawText);
+      // For text upload, create a JSON object with the text content
+      payload = {
+        content: lawText,
+        ebene: selectedType,
+        state: selectedState,
+        kommune: kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune',
+        typ: selectedLawType,
+      };
     }
   
     try {
       // Send the form data to the backend
       const response = await fetch('http://localhost:8080/api/gesetze/import', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
   
       if (response.ok) {
@@ -260,8 +254,8 @@ const UploadLaw: React.FC = () => {
           <Button type="submit" colorScheme="blue" className={styles.button}>Hochladen</Button>
         </form>
       </Box>
-    </Box>
-  );
+    </Box>
+  );
 };
 
 export default UploadLaw;
