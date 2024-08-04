@@ -65,6 +65,8 @@ const UploadLaw: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+  
+    // Create a form data object to hold user input attributes
     const formData = new FormData();
     formData.append('lawName', lawName);
     formData.append('type', selectedType);
@@ -72,29 +74,57 @@ const UploadLaw: React.FC = () => {
     formData.append('kommune', kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune');
     formData.append('lawType', selectedLawType);
     formData.append('lawFormat', lawFormat);
-    formData.append('content', importMethod === 'file' && file ? '' : lawText);
-    if (file) {
-      formData.append('file', file);
+  
+    if (file && importMethod === 'file') {
+      try {
+        // Read the content of the JSON file
+        const fileContent = await file.text();
+        const jsonContent = JSON.parse(fileContent);
+  
+        // Add user input attributes to the JSON object
+        jsonContent.lawName = lawName;
+        jsonContent.type = selectedType;
+        jsonContent.state = selectedState;
+        jsonContent.kommune = kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune';
+        jsonContent.lawType = selectedLawType;
+        jsonContent.lawFormat = lawFormat;
+  
+        // Convert the updated JSON object back to a string
+        const updatedFileContent = JSON.stringify(jsonContent);
+  
+        // Create a Blob from the updated JSON string
+        const updatedFile = new Blob([updatedFileContent], { type: 'application/json' });
+  
+        // Append the updated file to the form data
+        formData.append('file', updatedFile, file.name);
+  
+      } catch (error) {
+        console.error('Error reading or updating the file:', error);
+        alert('An error occurred while processing the file');
+        return;
+      }
+    } else {
+      // For text upload, add the text content directly to form data
+      formData.append('content', lawText);
     }
   
     try {
-      const response = await fetch('http://localhost:8080/api/gesetze/import',
-       {
+      // Send the form data to the backend
+      const response = await fetch('http://localhost:8080/api/gesetze/import', {
         method: 'POST',
         body: formData
       });
   
       if (response.ok) {
-        alert('');
+        alert('Gesetz wurde erfolgreich hochgeladen');
       } else {
-        alert('');
+        alert('Es gab eine Fehlermeldung beim Upload');
       }
     } catch (error) {
       console.error('Error uploading law:', error);
       alert('An error occurred while uploading the law');
     }
   };
-  
   return (
     <Box className={styles.container}>
       <Box className={styles.formContainer}>
@@ -208,7 +238,7 @@ const UploadLaw: React.FC = () => {
                   <FormLabel>Datei auswählen</FormLabel>
                   <Input 
                     type="file" 
-                    accept=".pdf" 
+                    accept=".json" 
                     onChange={handleFileChange}
                     className={styles.inputField}
                   />
