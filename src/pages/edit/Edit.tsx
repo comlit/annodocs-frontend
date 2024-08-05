@@ -1,5 +1,5 @@
 import Annotator from "./annotation/Annotator.tsx";
-import {Box, Grid, GridItem} from "@chakra-ui/react";
+import {Box, Center, Grid, GridItem} from "@chakra-ui/react";
 import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
@@ -10,7 +10,17 @@ export type Annotation = {
     id: number,
     name: string,
     color: string,
-    parts: AnnotationPart[]
+    author: string,
+    lastEdit: string,
+    parts: AnnotationPart[],
+    models?: Models
+}
+
+export type Models = {
+    process?: string,
+    formular?: object,
+    tree?: string,
+    freeText?: string
 }
 
 export type AnnotationPart = {
@@ -36,7 +46,8 @@ function Edit() {
     const [editMode, setEditMode] = useState<boolean>(false)
     const [annotations, setAnnotations] = useState<Annotation[]>([])
     const [textList, setTextList] = useState<any[]>([])
-    const [newAnnotation, setNewAnnotation] = useState<Annotation>({id: -1, name: "", color: "", parts: []})
+
+    const [parts, setParts] = useState<AnnotationPart[]>([])
 
     const [paragraph, setParagraph] = useState<Paragraph>({number: "", title: "", book: ""})
 
@@ -60,29 +71,58 @@ function Edit() {
     }
 
     const exitEditMode = (data: any) => {
-        if(!data) {
+        if (!data) {
             setEditMode(false)
             setFocusedAnnotation(null)
         } else {
             setEditMode(false)
             setFocusedAnnotation(null)
-            const annotation: Annotation = {id: data.id, name: data.name, color: data.color, parts: newAnnotation.parts}
+            const annotation: Annotation = {id: data.id, name: data.name, author: data.author, lastEdit: data.lastEdit, color: data.color, parts: parts, models: data.models}
 
-            if(annotations.find(annotation => annotation.id === data.id))
+            const body = {
+                name: annotation.name,
+                ersteller: "test",
+                datum: new Date().toISOString(),
+                color: annotation.color,
+                paragraphID: 3,
+                annotationAbschnitte: annotation.parts.map(part => {
+                    return {
+                        start: part.start,
+                        end: part.end,
+                        textAbschnittID: part.textID
+                    }
+                }),
+                treeNodes: annotation?.models?.tree,
+                form: JSON.stringify(annotation?.models?.formular),
+                bpmnXml: annotation?.models?.process,
+                freitext: annotation?.models?.freeText
+            }
+
+            if (annotations.find(annotation => annotation.id === data.id)){
                 setAnnotations(prevState => {
                     const filtered = prevState.filter(annotation => annotation.id !== data.id)
                     return [...filtered, annotation]
                 })
-            else
+
+                fetchWrapper.put(`api/annotations/${annotation.id}`, body, false).then((data) => {
+                    console.log(data)
+                })
+            }
+            else {
                 setAnnotations(prevState => [...prevState, annotation])
-            setNewAnnotation({id: -1, name: "", color: "", parts: []})
+
+                fetchWrapper.post('api/annotations', body, false).then((data) => {
+                    console.log(data)
+                })
+            }
+            setParts([])
         }
     }
 
-    const selectionChangeCallback = (parts: {parts: AnnotationPart[], textID: number}) => {
-        setNewAnnotation(prevState => {
-            const prevParts = prevState.parts.filter(part => part.textID !== parts.textID)
-            return {id: prevState.id, name: prevState.name, color: prevState.color, parts: [...prevParts, ...parts.parts]}
+    const selectionChangeCallback = (parts: { parts: AnnotationPart[], textID: number }) => {
+        setParts(prevState => {
+            const prevParts = prevState.filter(part => part.textID !== parts.textID)
+            return [...prevParts, ...parts.parts]
         })
     }
 
@@ -91,11 +131,14 @@ function Edit() {
 
         fetchWrapper.get(`api/paragraphs/${id}`, null, false).then((data) => {
             setParagraph({number: data.paragraph, title: data.titel, book: data.gesetz.name})
+            console.log(data)
             setAnnotations(data.annotations.map((annotation: any) => {
                 return {
                     id: annotation.id,
                     name: annotation.name,
-                    color: "#c0afd5",
+                    color: annotation.color,
+                    author: annotation.ersteller,
+                    lastEdit: annotation.datum,
                     parts: annotation.annotationAbschnitte.map((part: any) => {
                         return {
                             id: part.id,
@@ -103,7 +146,13 @@ function Edit() {
                             start: part.start,
                             end: part.end
                         }
-                    })
+                    }),
+                    models: {
+                        process: annotation.bpmnXml,
+                        formular: JSON.parse(annotation.form),
+                        tree: annotation.treeNodes,
+                        freeText: annotation.freitext
+                    }
                 }
             }))
             setTextList(data.textAbschnitte)
@@ -115,7 +164,17 @@ function Edit() {
     }, [paragraph]);
 
     return (
-        <AnnotationContext.Provider value={{focusedAnnotation, editMode, annotations, clickedCallback, exitEditMode, selectionChangeCallback, deleteMode, toggleDeleteMode, paragraph}}>
+        <AnnotationContext.Provider value={{
+            focusedAnnotation,
+            editMode,
+            annotations,
+            clickedCallback,
+            exitEditMode,
+            selectionChangeCallback,
+            deleteMode,
+            toggleDeleteMode,
+            paragraph
+        }}>
             <Box m='50px'>
                 <Grid
                     templateColumns="12fr 3fr"
