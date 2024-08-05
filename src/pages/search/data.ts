@@ -11,3 +11,4 @@ export const dummyData1 = [
   { id: 10, name: 'Kommunalgesetz 2', type: 'kommunal', state: 'Nordrhein-Westfalen', kommune: 'Unna', lawType: 'Satzungen'},
   { id: 11, name: 'Landesgesetz 3', type: 'land', state: 'Nordrhein-Westfalen', lawType: 'Satzungen' }
 ];
+

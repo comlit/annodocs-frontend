@@ -23,22 +23,22 @@ const germanStates = [
   "Thüringen"
 ];
 
-const federalLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
-const stateLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
-const municipalLawTypes = ["Satzungen", "Verwaltungsvorschriften", "sonstige"];
+const federalLawTypes = ["Verfassung", "Rechtsverordnung", "Satzung", "Verwaltungsvorschrift", "sonstige"];
+const stateLawTypes = ["Verfassung", "Rechtsverordnung", "Satzung", "Verwaltungsvorschrift", "sonstige"];
+const municipalLawTypes = ["Satzung", "Verwaltungsvorschrift", "sonstige"];
 
 const mockUser = {
   state: "Nordrhein-Westfalen",
-  commune: "Unna"
+  commune: "Münster"
 };
 
 interface Law {
   id: number;
   name: string;
-  type: string;
+  ebene: string;
   state?: string;
   kommune?: string;
-  lawType?: string;
+  typ?: string;
 }
 
 function Search() {
@@ -66,7 +66,7 @@ function Search() {
   useEffect(() => {
     if (selectedType === 'kommunal' && selectedState) {
       const filteredCommunes = [...new Set(laws
-        .filter(item => item.type === 'kommunal' && item.state === selectedState)
+        .filter(item => item.ebene === 'kommunal' && item.state === selectedState)
         .map(item => item.kommune)
       )].filter(Boolean) as string[];
       setCommunes(filteredCommunes);
@@ -144,7 +144,7 @@ function Search() {
     let filteredResults = laws;
 
     if (lawType !== 'alle') {
-      filteredResults = filteredResults.filter(item => item.type === lawType);
+      filteredResults = filteredResults.filter(item => item.ebene === lawType);
     }
 
     if (lawType === 'land' && state) {
@@ -153,13 +153,14 @@ function Search() {
 
     if (lawType === 'kommunal' && state) {
       filteredResults = filteredResults.filter(item => item.state === state);
-      if (kommune) {
-        filteredResults = filteredResults.filter(item => item.kommune === kommune);
-      }
+    }
+
+    if (lawType === 'kommunal' && kommune) {
+      filteredResults = filteredResults.filter(item => item.kommune === kommune);
     }
 
     if (lawCategory) {
-      filteredResults = filteredResults.filter(item => item.lawType === lawCategory);
+      filteredResults = filteredResults.filter(item => item.typ === lawCategory);
     }
 
     if (searchQuery) {
@@ -208,7 +209,7 @@ function Search() {
     setCommuneInput(value);
     if (value) {
       const filteredSuggestions = communes.filter(commune =>
-        commune.toLowerCase().includes(value.toLowerCase())
+          commune.toLowerCase().includes(value.toLowerCase())
       );
       setSuggestions(filteredSuggestions);
       setShowSuggestions(true);
@@ -216,6 +217,7 @@ function Search() {
       setSuggestions([]);
       setShowSuggestions(false);
     }
+    filterResults(query, selectedType, selectedState, value, selectedLawType);
   };
 
   const handleSuggestionClick = (commune: string) => {

@@ -21,8 +21,8 @@ const germanStates = [
   "Thüringen"
 ];
 
-const federalLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
-const stateLawTypes = ["Verfassung", "Rechtsverordnungen", "Satzungen", "Verwaltungsvorschriften", "sonstige"];
+const federalLawTypes = ["Verfassung", "Rechtsverordnung", "Satzung", "Verwaltungsvorschrift", "sonstige"];
+const stateLawTypes = ["Verfassung", "Rechtsverordnung", "Satzung", "Verwaltungsvorschrift", "sonstige"];
 const municipalLawTypes = ["Satzung", "Verwaltungsvorschrift", "sonstige"];
 
 const UploadLaw: React.FC = () => {
@@ -78,7 +78,9 @@ const UploadLaw: React.FC = () => {
         // Füge die Benutzereingabe-Attribute zum JSON-Objekt hinzu
         jsonContent.ebene = selectedType;
         jsonContent.state = selectedState;
-        jsonContent.kommune = kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune';
+        jsonContent.kommune = selectedType === 'kommunal'
+            ? (kommuneMethod === 'predefined' ? selectedKommune : 'Eigene Kommune')
+            : '';
         jsonContent.typ = selectedLawType;
 
         payload = jsonContent;
@@ -254,8 +256,8 @@ const UploadLaw: React.FC = () => {
           <Button type="submit" colorScheme="blue" className={styles.button}>Hochladen</Button>
         </form>
       </Box>
-    </Box>
-  );
+  </Box>
+);
 };
 
 export default UploadLaw;
