@@ -4,6 +4,7 @@ import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
 import {fetchWrapper} from "../../api/fetcher.ts";
+import {useLocation, useMatch} from "react-router-dom";
 
 export type Annotation = {
     id: number,
@@ -41,6 +42,8 @@ function Edit() {
 
 
     const [deleteMode, setDeleteMode] = useState<boolean>(false)
+
+    const location = useLocation();
 
     const clickedCallback = (id: number | null) => {
         if (editMode)
@@ -84,7 +87,9 @@ function Edit() {
     }
 
     useEffect(() => {
-        fetchWrapper.get('api/paragraphs/3', null, false).then((data) => {
+        const id = location.pathname.slice(location.pathname.lastIndexOf("/") , location.pathname.length)
+
+        fetchWrapper.get(`api/paragraphs/${id}`, null, false).then((data) => {
             setParagraph({number: data.paragraph, title: data.titel, book: data.gesetz.name})
             setAnnotations(data.annotations.map((annotation: any) => {
                 return {
@@ -103,7 +108,7 @@ function Edit() {
             }))
             setTextList(data.textAbschnitte)
         })
-    }, []);
+    }, [location]);
 
     useEffect(() => {
         document.title = `${paragraph.number} ${paragraph.book} - ${paragraph.title}`
