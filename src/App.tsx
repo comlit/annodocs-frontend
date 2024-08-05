@@ -1,44 +1,48 @@
-import './App.css'
-import {Flex} from "@chakra-ui/react";
-import Header from "./layout/Header.tsx";
-import Footer from "./layout/Footer.tsx";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Landing from "./pages/landing/Landing.tsx";
-import Dashboard from "./pages/dashboard/Dashboard.tsx";
-import Search from "./pages/pages/Search.tsx";
-import Create from "./pages/create/Create.tsx";
-import Edit from "./pages/edit/Edit.tsx";
-import {useDispatch} from "react-redux";
-import {useEffect} from "react";
-import {refreshToken} from "./auth/thunks.ts";
+import './App.css';
+import { Flex } from "@chakra-ui/react";
+import Header from "./layout/Header";
+import Footer from "./layout/Footer";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Landing from "./pages/landing/Landing";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Search from "./pages/search/Search";
+import Create from "./pages/create/Create";
+import Edit from "./pages/edit/Edit";
+import UploadLaw from './pages/upload/UploadLaw';
+
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { refreshToken } from "./auth/thunks";
 
 function App() {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    //at the start of the app, try to fetch the token
+    // At the start of the app, try to fetch the token
     useEffect(() => {
-        // @ts-expect-error ts hat irgendein problem mit dem type. funktioniert aber so
-        dispatch(refreshToken())
-    })
+        // @ts-expect-error ts has some issue with the type. works like this
+        dispatch(refreshToken());
+    }, [dispatch]);
+
     return (
         <>
-                <BrowserRouter>
-                    <Flex id='layout' minH='100vh' direction='column'>
-                        <Header/>
+            <BrowserRouter>
+                <Flex id='layout' minH='100vh' direction='column'>
+                    <Header />
                         <Flex pb='65px' width='100%' height='100%' justifyContent={"center"}>
-                            <Routes>
-                                <Route index element={<Landing/>}/>
-                                <Route path='/dashboard/*' element={<Dashboard/>}/>
-                                <Route path='/search/*' element={<Search/>}/>
-                                <Route path='/create/*' element={<Create/>}/>
-                                <Route path='/editor/*' element={<Edit/>}/>
-                            </Routes>
-                        </Flex>
-                        <Footer/>
+                        <Routes>
+                            <Route index element={<Landing />} />
+                            <Route path='/dashboard/*' element={<Dashboard />} />
+                            <Route path='/search/*' element={<Search />} />
+                            <Route path='/create/*' element={<Create />} />
+                            <Route path='/editor/*' element={<Edit/>}/>
+                            <Route path="/upload" element={<UploadLaw />} />
+                        </Routes>
                     </Flex>
-                </BrowserRouter>
+                    <Footer />
+                </Flex>
+            </BrowserRouter>
         </>
-    )
+    );
 }
 
-export default App
+export default App;
