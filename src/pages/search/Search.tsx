@@ -194,7 +194,7 @@ function Search() {
 
   const handleNavigateToEdit = () => {
     cart.forEach(item => {
-      const url = `/edit/${item.id}`;
+      const url = `/editor/${item.id}`;
       const newTab = window.open(url, '_blank');
       if (newTab) {
         newTab.focus();
