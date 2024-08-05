@@ -25,13 +25,13 @@ function App() {
                 <BrowserRouter>
                     <Flex id='layout' minH='100vh' direction='column'>
                         <Header/>
-                        <Flex pb='65px' width='100%'>
+                        <Flex pb='65px' width='100%' height='100%' justifyContent={"center"}>
                             <Routes>
                                 <Route index element={<Landing/>}/>
                                 <Route path='/dashboard/*' element={<Dashboard/>}/>
                                 <Route path='/search/*' element={<Search/>}/>
                                 <Route path='/create/*' element={<Create/>}/>
-                                <Route path='/edit/*' element={<Edit/>}/>
+                                <Route path='/editor/*' element={<Edit/>}/>
                             </Routes>
                         </Flex>
                         <Footer/>
