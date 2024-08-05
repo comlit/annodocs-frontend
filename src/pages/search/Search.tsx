@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, List, ListItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { dummyData1 } from './data';
 import Filter from './Filter';
 import styles from './Search.module.css';
 
@@ -30,18 +29,28 @@ const municipalLawTypes = ["Satzungen", "Verwaltungsvorschriften", "sonstige"];
 
 const mockUser = {
   state: "Nordrhein-Westfalen",
-  commune: "Unna" 
+  commune: "Unna"
 };
+
+interface Law {
+  id: number;
+  name: string;
+  type: string;
+  state?: string;
+  kommune?: string;
+  lawType?: string;
+}
 
 function Search() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState(dummyData1);
+  const [results, setResults] = useState<Law[]>([]);
+  const [laws, setLaws] = useState<Law[]>([]);
   const [selectedType, setSelectedType] = useState('alle');
   const [selectedState, setSelectedState] = useState('');
   const [selectedKommune, setSelectedKommune] = useState('');
   const [selectedLawType, setSelectedLawType] = useState('');
-  const [cart, setCart] = useState<any[]>([]);
+  const [cart, setCart] = useState<Law[]>([]);
   const [communes, setCommunes] = useState<string[]>([]);
   const [lawTypes, setLawTypes] = useState<string[]>([]);
   const [useOwnState, setUseOwnState] = useState(false);
@@ -56,10 +65,10 @@ function Search() {
 
   useEffect(() => {
     if (selectedType === 'kommunal' && selectedState) {
-      const filteredCommunes = [...new Set(dummyData1
+      const filteredCommunes = [...new Set(laws
         .filter(item => item.type === 'kommunal' && item.state === selectedState)
         .map(item => item.kommune)
-      )].filter(Boolean) as string[]; 
+      )].filter(Boolean) as string[];
       setCommunes(filteredCommunes);
     } else {
       setCommunes([]);
@@ -132,7 +141,7 @@ function Search() {
   };
 
   const filterResults = (searchQuery: string, lawType: string, state: string, kommune: string, lawCategory: string) => {
-    let filteredResults = dummyData1;
+    let filteredResults = laws;
 
     if (lawType !== 'alle') {
       filteredResults = filteredResults.filter(item => item.type === lawType);
@@ -170,7 +179,7 @@ function Search() {
     navigate(`/edit/${id}`);
   };
 
-  const handleAddToCart = (item: any) => {
+  const handleAddToCart = (item: Law) => {
     setCart(prevCart => [...prevCart, item]);
   };
 
@@ -212,6 +221,20 @@ function Search() {
   const handleSuggestionClick = (commune: string) => {
     handleKommuneChange(commune);
   };
+
+  useEffect(() => {
+    const fetchLaws = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/gesetze');
+        const data: Law[] = await response.json();
+        setLaws(data);
+      } catch (error) {
+        console.error('Error fetching laws:', error);
+      }
+    };
+
+    fetchLaws();
+  }, []);
 
   return (
     <Box className={styles.container}>
