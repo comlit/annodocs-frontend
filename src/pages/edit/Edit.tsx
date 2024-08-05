@@ -129,7 +129,7 @@ function Edit() {
     useEffect(() => {
         const id = location.pathname.slice(location.pathname.lastIndexOf("/") , location.pathname.length)
 
-        fetchWrapper.get(`api/paragraphs/${id}`, null, false).then((data) => {
+        fetchWrapper.get(`api/paragraphs${id}`, null, false).then((data) => {
             setParagraph({number: data.paragraph, title: data.titel, book: data.gesetz.name})
             console.log(data)
             setAnnotations(data.annotations.map((annotation: any) => {
