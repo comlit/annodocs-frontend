@@ -1,10 +1,11 @@
 import Annotator from "./annotation/Annotator.tsx";
-import {Box, Center, Grid, GridItem} from "@chakra-ui/react";
+import {Box, Center, Flex, Grid, GridItem, IconButton, Select} from "@chakra-ui/react";
 import AnnotatorSidebar from "./AnnotatorSidebar.tsx";
 import {useEffect, useState} from "react";
 import AnnotationContext from "./AnnotationContext.ts";
 import {fetchWrapper} from "../../api/fetcher.ts";
 import {useLocation, useMatch} from "react-router-dom";
+import {ArrowLeftIcon, ArrowRightIcon} from "@chakra-ui/icons";
 
 export type Annotation = {
     id: number,
@@ -176,6 +177,23 @@ function Edit() {
             paragraph
         }}>
             <Box m='50px'>
+                <Flex width="100%" alignItems="center" pb='10px'>
+                    <IconButton
+                        aria-label="Left Arrow"
+                        icon={<ArrowLeftIcon />}
+                    />
+                    <Flex flex="1" justifyContent="flex-end" alignItems="center">
+                        <Select placeholder="Paragraph Aussuchen" maxWidth="300px" mx={4}>
+                            <option value="1">§1</option>
+                            <option value="2">§2</option>
+                            <option value="3">§3</option>
+                        </Select>
+                        <IconButton
+                            aria-label="Right Arrow"
+                            icon={<ArrowRightIcon />}
+                        />
+                    </Flex>
+                </Flex>
                 <Grid
                     templateColumns="12fr 3fr"
                     gap="10px">
