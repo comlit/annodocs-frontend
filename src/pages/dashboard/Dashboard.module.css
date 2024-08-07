@@ -1,0 +1,73 @@
+.dashboard {
+    margin-top: 50px;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  
+  .container {
+    margin-left: 25%;
+    padding: 8px;
+    max-width: 6xl;
+    width: 100%;
+  }
+  
+  .heading {
+    text-align: center;
+  }
+  
+  .subtitle {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+  
+  .buttonContainer {
+    
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    height: 12vh;
+  }
+  
+  .button {
+    box-shadow: var(--chakra-shadows-md);
+    font-size: 1.25rem;
+    width: 50%;
+    height: 100%;
+  }
+  
+  .card {
+    height: 30vh;
+    margin-top: 20px;
+    padding: 16px;
+    background-color: white;
+    box-shadow: var(--chakra-shadows-md);
+    border-radius: var(--chakra-radii-md);
+    text-align: center;
+  }
+  
+  .cardContent {
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  
+  .tooltipBox {
+    padding: 12px;
+    background-color: var(--chakra-colors-gray-50);
+    border-radius: var(--chakra-radii-md);
+    cursor: pointer;
+    max-height: 30px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .tooltipBox:hover {
+    background-color: var(--chakra-colors-gray-100);
+  }
+  
+  .noData {
+    color: var(--chakra-colors-gray-700);
+  }
+  

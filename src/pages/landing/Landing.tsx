@@ -47,7 +47,7 @@ function Landing() {
 
     return (
         <>
-            <Box position={'relative'} bg='gray.50' h={'100%'} w='100%'>
+            <Box position={'relative'} bg='gray.50' h={'100%'} w='100%' marginTop = "50px">
                 <Container
                     as={SimpleGrid}
                     maxW={'7xl'}
@@ -56,6 +56,7 @@ function Landing() {
                     h={'100%'}>
                     <Stack spacing={{base: 10, md: 20}} py={{base: 10, sm: 20, lg: 32}}>
                         <Heading
+                            zIndex="5000"
                             lineHeight={1.1}
                             fontSize={{base: '3xl', sm: '4xl', md: '5xl', lg: '6xl'}}>
                             Annodocs: Ihre Annotations-Plattform
