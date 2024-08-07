@@ -230,6 +230,7 @@ function Search() {
         const response = await fetch('http://localhost:8080/api/gesetze');
         const data: Law[] = await response.json();
         setLaws(data);
+        setResults(data); 
       } catch (error) {
         console.error('Error fetching laws:', error);
       }
