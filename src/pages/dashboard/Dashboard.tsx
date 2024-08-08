@@ -1,40 +1,37 @@
 import { 
-    Box, 
-    Button, 
-    Flex, 
+    Box,
+    Button,
+    Flex,
     Heading,
-    Stack, 
+    Stack,
     Text,
     IconProps,
     useBreakpointValue,
     Icon,
     HStack,
-    useColorModeValue,
+    useColorModeValue, 
     Tooltip,
-    } from "@chakra-ui/react";
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { userMockData, annotationsMockData, recommendedMockData, lastVisitedMockData, favoritesMockData, } from "./dummydata.ts"; 
-//Placeholder Werte
+import { userMockData, annotationsMockData, recommendedMockData, lastVisitedMockData, favoritesMockData } from "./dummydata.ts"; 
+import styles from './Dashboard.module.css';
+
 function Dashboard() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [titel, setTitel] = useState('');
-    const [loading, setLoading] = useState(true);
     const [annotations, setAnnotations] = useState([]);
-    const [recommendations, setRecommendations] =  useState([]);
-    const [lastvisited, setLastVisited] =  useState([]);
-    const [favorites,setFavorites] =  useState([]);
-
+    const [recommendations, setRecommendations] = useState([]);
+    const [lastvisited, setLastVisited] = useState([]);
+    const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
         setTimeout(() => {
             setEmail(userMockData.email);
             setName(userMockData.name);
             setTitel(userMockData.titel);
-            //
-            setLoading(false);
         }, 1000);
 
         setTimeout(() => {
@@ -45,189 +42,166 @@ function Dashboard() {
         }, 1000);
     }, []);
 
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'r' || event.key === 'R') {
+            navigate('/search');
+        } else if (event.key === 'a' || event.key === 'A') {
+            navigate('/create');
+        }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    
+
     const bg = useColorModeValue('gray.100', 'gray.700');
 
     return (
-        <Box marginTop = "20px" h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="flex-end" bg={bg}>
-            <Box p={8} maxW="6xl" w="full" >
-                <HStack spacing = {4} alignItems="flex-start">
-                
-                <Stack spacing={2}>
-                    <Heading as="h1" size="xl" textAlign="center">
-                        Guten Tag, {titel} {name}
-                    </Heading>
-                    <Text fontSize='xl' textAlign='center'>Hier finden Sie Informationen zu Ihren Daten und letzen Aktivitäten</Text>
-
-                    <Flex justify="center" gap={4} height={{ base: "50px", md: "80px" }}>
-                        <Button boxShadow="md" fontSize="xl" w="50%" height="full" colorScheme="blue" onClick={() => navigate('/search')}>
-                            Gesetze suchen
-                        </Button>
-                        <Button boxShadow="md" fontSize="xl" w="50%" height="full" colorScheme="teal" onClick={() => navigate('/create')}>
-                            Annotation erstellen
-                        </Button>
-                    </Flex>
-                    //eigene Annotationen
-                    <Box  height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
-                        <Heading as="h2" size="md" mb={4}>
-                            Eigene Annotationen
+        <Box className={styles.dashboard} bg={bg}>
+            <Box className={styles.container}>
+                <HStack spacing={6} alignItems="flex-start" zIndex="10">
+                    <Stack spacing={2} zIndex="10" width="70%">
+                        <Heading as="h1" size="xl" className={styles.heading}>
+                            Guten Tag, {titel} {name}
                         </Heading>
-                        {annotations.length > 0 ? (
-                            <Box maxH="150px" overflowY="auto" >
-                                <Stack spacing={3}>//HStack law idx; annotation
-                                    {annotations.map((annotation, index) => (
-                                    <Tooltip key={index} label={annotation.text} hasArrow>
-                                        <Box 
-                                            key={index} 
-                                            p={3} 
-                                            bg="gray.50"
-                                            borderRadius="md" 
-                                            cursor="pointer"
-                                            maxH="30"
-                                            display = "flex"
-                                            alignItems="center"
-                                            _hover={{ bg: "gray.100" }}
-                                            onClick={() => navigate(`/search?lawIndex=${annotation.lawIndex}`)}
-                                        >
-                                            <Text color = "gray.700">
-                                                {annotation.text.length > 70 ? annotation.text.substring(0, 70) + '...' : annotation.text}
-                                            </Text>
-                                            
-                                        </Box>
-                                    </Tooltip>
-                                    ))}
-                                </Stack>
-                                
-                            </Box>
-                        ) : (
-                            <Text>Keine Annotationen gefunden.</Text>
-                        )}
-                    </Box>
-                    //Vorgeschlagene Gesetze;
-                    <Box height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
-                    <Heading as="h2" size="md" mb={4}>
-                            Vorgeschlagene Gesetze
-                        </Heading>
-                        {recommendations.length > 0 ? (
-                            <Box maxH="150px" overflowY="auto">
-                                <Stack spacing={3}>
-                                    {recommendations.map((recommendations, index) => (
-                                        <Tooltip key={index} label={recommendations.text} hasArrow>
+                        <Text className={styles.subtitle}>
+                            Hier finden Sie Informationen zu Ihren Daten und letzen Aktivitäten
+                        </Text>
 
-                                            <Box 
-                                            key={index} 
-                                            p={3} 
-                                            bg="gray.50" 
-                                            borderRadius="md" 
-                                            cursor="pointer"
-                                            maxH="30"
-                                            display = "flex"
-                                            alignItems="center"
-                                            _hover={{ bg: "gray.100" }}
-                                            onClick={() => navigate(`/search?lawIndex=${recommendations.lawIndex}`)}
-                                        >
-                                            <Text  color = "gray.700">
-                                                {recommendations.text.length > 50 ? recommendations.text.substring(0, 50) + '...' : recommendations.text}
-                                            </Text>
-                                        </Box>
-                                        </Tooltip>
-                                        
-                                    ))}
-                                </Stack>
-                                
-                            </Box>
-                        ) : (
-                            <Text>Keine recommendations gefunden.</Text>
-                        )}
-                    </Box>
-                </Stack>
-                //Favoriten-Box;
-                <Stack spacing={1} maxW="350px" >
-                    <Box height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center">
-                        <Heading as="h2" size="md" mb={4}>
-                                    Favoriten
-                                </Heading>
-                                {favorites.length > 0 ? (
-                                    <Box maxH="150px" overflowY="auto">
-                                        <Stack spacing={2} >
-                                            {favorites.map((favorites, index) => (
-                                                <Tooltip key={index} label={favorites.text} hasArrow placement='bottom'>
-                                                    <Box 
-                                                    textAlign="center"
-                                                    display="flex"
-                                                    alignItems="center"
-                                                    key={index} 
-                                                    p={3} 
-                                                    bg="gray.50" 
-                                                    borderRadius="md" 
-                                                    cursor="pointer"
-                                                    maxH = "30"
-                                                    
-                                                    _hover={{ bg: "gray.100" }} 
-                                                    onClick={() => navigate(`/search?lawIndex=${favorites.lawIndex}`)}
-                                                >
-                                                    <Text  color = "gray.700">
-                                                        {favorites.text.length > 30 ? favorites.text.substring(0, 30) + '...' : favorites.text}
-                                                    </Text>
+                        <Flex className={styles.buttonContainer}>
+                            <Button 
+                                className={`${styles.button} dashboard-gesetze-suchen`} 
+                                colorScheme="blue" 
+                                onClick={() => navigate('/search')}
+                                height="100%"
+                            >
+                                <u>R</u>echtsnormen suchen
+                            </Button>
+                            <Button 
+                                className={`${styles.button} dashboard-annotation-erstellen`} 
+                                colorScheme="teal" 
+                                onClick={() => navigate('/create')}
+                                height="100%"
+                            >
+                                <u>A</u>nnotation erstellen
+                            </Button>
+                        </Flex>
 
-                                                    </Box>
-                                                </Tooltip>
-                                                
-                                            ))}
-                                        </Stack>
-                                        
-                                    </Box>
-                                ) : (
-                                    <Text>Keine favorites gefunden.</Text>
-                                )}
-                    </Box>
-                    //Zuletzt Besucht Box;
-                    <Box height = "30vh" mt={5} p={4} bg="white" boxShadow="md" borderRadius="md" textAlign="center" minH="400px">
-                        <Heading as="h2" size="md" mb={4}>
-                                    Zuletzt besucht
-                                </Heading>
-                                {lastvisited.length > 0 ? (
-                                    <Box maxH = "320" overflowY="auto">
-                                        <Stack spacing={3}>
-                                            {lastvisited.map((lastvisited, index) => (
-                                                <Tooltip key={index} label={lastvisited.text} hasArrow>
-                                                    <Box 
-                                                    key={index} 
-                                                    p={3} 
-                                                    bg="gray.50"
-                                                    textAlign="center"
-                                                    display="flex"
-                                                    alignItems="center"
-                                                    borderRadius="md" 
-                                                    cursor="pointer"
-                                                    maxH = "30"
-                                                    _hover={{ bg: "gray.100" }} 
-                                                    onClick={() => navigate(`/search?lawIndex=${lastvisited.lawIndex}`)}
+                        <Box className={`${styles.card} dashboard-eigene-annotationen`}>
+                            <Heading as="h2" size="md" mb={4}>
+                                Eigene Annotationen
+                            </Heading>
+                            {annotations.length > 0 ? (
+                                <Box className={styles.cardContent}>
+                                    <Stack spacing={3}>
+                                        {annotations.map((annotation, index) => (
+                                            <Tooltip key={index} label={annotation.text} hasArrow>
+                                                <Box 
+                                                    className={styles.tooltipBox}
+                                                    onClick={() => navigate(`/search?id=${annotation.id}`)}
                                                 >
-                                                    <Text color = "gray.700">
-                                                        {lastvisited.text.length > 30 ? lastvisited.text.substring(0, 30) + '...' : lastvisited.text}
+                                                    <Text className={styles.noData}>
+                                                        {annotation.text.length > 70 ? annotation.text.substring(0, 70) + '...' : annotation.text}
                                                     </Text>
                                                 </Box>
-                                                </Tooltip>
-                                                
-                                            ))}
-                                        </Stack>
-                                        
-                                    </Box>
-                                ) : (
-                                    <Text>Keine lastvisited gefunden.</Text>
-                                )}
-                    </Box>
-                </Stack>
+                                            </Tooltip>
+                                        ))}
+                                    </Stack>
+                                </Box>
+                            ) : (
+                                <Text>Keine Annotationen gefunden.</Text>
+                            )}
+                        </Box>
+
+                        <Box className={`${styles.card} dashboard-vorgeschlagene-gesetze`}>
+                            <Heading as="h2" size="md" mb={4}>
+                                Vorgeschlagene Gesetze
+                            </Heading>
+                            {recommendations.length > 0 ? (
+                                <Box className={styles.cardContent}>
+                                    <Stack spacing={3}>
+                                        {recommendations.map((recommendation, index) => (
+                                            <Tooltip key={index} label={recommendation.text} hasArrow>
+                                                <Box 
+                                                    className={styles.tooltipBox}
+                                                    onClick={() => navigate(`/search?id=${recommendation.id}`)}
+                                                >
+                                                    <Text className={styles.noData}>
+                                                        {recommendation.text.length > 50 ? recommendation.text.substring(0, 50) + '...' : recommendation.text}
+                                                    </Text>
+                                                </Box>
+                                            </Tooltip>
+                                        ))}
+                                    </Stack>
+                                </Box>
+                            ) : (
+                                <Text>Keine recommendations gefunden.</Text>
+                            )}
+                        </Box>
+                    </Stack>
+
+                    <Stack spacing={2} w = "19vw" marginTop="5px">
+                        <Box className={`${styles.card} dashboard-favoriten`}>
+                            <Heading as="h2" size="md" mb={4}>
+                                Favoriten
+                            </Heading>
+                            {favorites.length > 0 ? (
+                                <Box className={styles.cardContent}>
+                                    <Stack spacing={2}>
+                                        {favorites.map((favorite, index) => (
+                                            <Tooltip key={index} label={favorite.text} hasArrow placement='bottom'>
+                                                <Box 
+                                                    className={styles.tooltipBox}
+                                                    onClick={() => navigate(`/search?id=${favorite.id}`)}
+                                                >
+                                                    <Text className={styles.noData}>
+                                                        {favorite.text.length > 25 ? favorite.text.substring(0, 25) + '...' : favorite.text}
+                                                    </Text>
+                                                </Box>
+                                            </Tooltip>
+                                        ))}
+                                    </Stack>
+                                </Box>
+                            ) : (
+                                <Text>Keine favorites gefunden.</Text>
+                            )}
+                        </Box>
+
+                        <Box className={`${styles.card} dashboard-last-visited`} height="55vh">
+                            <Heading as="h2" size="md" mb={4}>
+                                Zuletzt besucht
+                            </Heading>
+                            {lastvisited.length > 0 ? (
+                                <Box className={styles.cardContent} maxHeight="320px">
+                                    <Stack spacing={3}>
+                                        {lastvisited.map((lastvisit, index) => (
+                                            <Tooltip key={index} label={lastvisit.text} hasArrow>
+                                                <Box 
+                                                    className={styles.tooltipBox}
+                                                    onClick={() => navigate(`/edit?id=${lastvisit.id}`)}
+                                                >
+                                                    <Text className={styles.noData}>
+                                                        {lastvisit.text.length >25 ? lastvisit.text.substring(0, 25) + '...' : lastvisit.text}
+                                                    </Text>
+                                                </Box>
+                                            </Tooltip>
+                                        ))}
+                                    </Stack>
+                                </Box>
+                            ) : (
+                                <Text>Keine zuletzt besuchten Rechtsnormen gefunden.</Text>
+                            )}
+                        </Box>
+                    </Stack>
                 </HStack>
-                
+
                 <Blur
-                    position={'absolute'}
+                    position={'fixed'}
                     top={-20}
                     left={-20}
-                    style={{filter: 'blur(70px)'}}
+                    style={{ filter: 'blur(70px)' }}
                 />
             </Box>
-            
         </Box>
     );
 }
