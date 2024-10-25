@@ -6,7 +6,6 @@ import AnnotationContext from "./AnnotationContext.ts";
 import {fetchWrapper} from "../../api/fetcher.ts";
 import {useLocation, useMatch} from "react-router-dom";
 import {addTextToParts, processAnnotation} from "./AnnotationProcessor.ts";
-import {text} from "node:stream/consumers";
 
 export type Annotation = {
     id: number,
@@ -80,7 +79,7 @@ function Edit() {
         } else {
             setEditMode(false)
             setFocusedAnnotation(null)
-            const annotation: Annotation = {id: data.id, name: data.name, author: data.author, lastEdit: data.lastEdit, color: data.color, parts: parts, models: data.models}
+            let annotation: Annotation = {id: data.id, name: data.name, author: data.author, lastEdit: data.lastEdit, color: data.color, parts: parts, models: data.models}
 
             const body = {
                 name: annotation.name,
@@ -101,7 +100,9 @@ function Edit() {
                 freitext: annotation?.models?.freeText
             }
 
-            processAnnotation(addTextToParts(annotation, textList))
+            const processed = processAnnotation(addTextToParts(annotation, textList))
+            if(processed)
+                annotation = processed
 
             if (annotations.find(annotation => annotation.id === data.id)){
                 setAnnotations(prevState => {
