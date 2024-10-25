@@ -18,7 +18,7 @@ function AnnotationListItem({annotation, clicked}: { annotation: Annotation, cli
                 <Heading size="md" pb='10px'>{annotation.name}</Heading>
                 <CircleIcon w={7} h={7} color={annotation.color} position={"absolute"} top={"5"} right={"5"}/>
                 <Text>Ersteller: {annotation.author}</Text>
-                <Text>Zuletzt geändert am: {annotation.lastEdit}</Text>
+                <Text>Zuletzt geändert am: {new Date(annotation.lastEdit).toLocaleDateString("de-DE")}</Text>
 
             </CardBody>
             <CardFooter>

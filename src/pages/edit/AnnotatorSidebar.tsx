@@ -93,7 +93,7 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
             <Text>Bearbeiten eine Vorhandenen oder erstellen einer neuen Annotation</Text>
             <Input onChange={handleNameChange} value={name} placeholder="Name der Annotation"/>
 
-            <Button onClick={onOpen}>Modelle Bearbeiten</Button>
+            <Button onClick={onOpen} mt="10px">Modelle Bearbeiten</Button>
 
             <Divider my="10px"/>
             <HStack>
@@ -107,7 +107,9 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
                         id: focused?.id ?? Math.round(Math.random() * 100000),
                         name: name,
                         color: focused?.color ?? getRandomPastelColor(),
-                        models: models
+                        models: models,
+                        author: focused?.author ?? "Unbekannter Autor",
+                        lastEdit: new Date().toISOString()
                     }
                 )}>Speichern</Button>
             </HStack>
@@ -179,6 +181,9 @@ function AnnotatorSidebar({setEditMode, setFocusedAnnotation}: {
             <Heading size="md" w='100%' textAlign='center'>{focused?.name ?? "Details"}</Heading>
             <Text>Ersteller: {focused?.author}</Text>
             <Text>Zuletzt geändert am: {focused?.lastEdit}</Text>
+
+            {/**<Button onClick={() => showModels()}>Modelle Anzeigen</Button>**/}
+
             <Divider my="10px"/>
             <HStack>
                 <Button onClick={() => setFocusedAnnotation(null)}>Zurück</Button>
